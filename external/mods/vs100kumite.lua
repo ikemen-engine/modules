@@ -1,10 +1,12 @@
 -- Last tested on Ikemen GO v0.98
 -- This external module implements VS 100 KUMITE game mode known from Street
--- Fighter Alpha 3 MAX. Up to release 0.97 this mode was part of the default
--- scripts distributed with engine, now it's used as a showcase how to implement
--- full fledged mode with Ikemen GO external modules feature, without
--- conflicting with default scripts. Visit following link for more info:
+-- Fighter Alpha 3 MAX (defeat as many opponents as you can in 100 successive
+-- matches). Up to release 0.97 this mode was part of the default scripts
+-- distributed with engine, now it's used as a showcase how to implement full
+-- fledged mode with Ikemen GO external modules feature, without conflicting
+-- with default scripts. More info:
 -- https://github.com/K4thos/Ikemen_GO/wiki/Miscellaneous-Info#lua_modules
+-- This mode is detectable by GameMode trigger as vs100kumite
 
 --[[
 ; Example system.def parameters assignments

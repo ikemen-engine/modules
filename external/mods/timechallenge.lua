@@ -1,10 +1,11 @@
 -- Last tested on Ikemen GO v0.98
--- This external module implements TIME CHALLENGE game mode. Up to release 0.97
--- this mode was part of the default scripts distributed with engine, now it's
--- used as a showcase how to implement full fledged mode with Ikemen GO external
--- modules feature, without conflicting with default scripts. Visit following
--- link for more info:
+-- This external module implements TIME CHALLENGE game mode (defeat selected
+-- opponent beating previous time record). Up to release 0.97 this mode was part
+-- of the default scripts distributed with engine, now it's used as a showcase
+-- how to implement full fledged mode with Ikemen GO external modules feature,
+-- without conflicting with default scripts. More info:
 -- https://github.com/K4thos/Ikemen_GO/wiki/Miscellaneous-Info#lua_modules
+-- This mode is detectable by GameMode trigger as timechallenge
 
 --[[
 ; Example system.def parameters assignments

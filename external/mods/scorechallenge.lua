@@ -1,10 +1,11 @@
 -- Last tested on Ikemen GO v0.98
--- This external module implements SCORE CHALLENGE game mode. Up to release 0.97
--- this mode was part of the default scripts distributed with engine, now it's
--- used as a showcase how to implement full fledged mode with Ikemen GO external
--- modules feature, without conflicting with default scripts. Visit following
--- link for more info:
+-- This external module implements SCORE CHALLENGE game mode (defeat selected
+-- opponent beating previous score record). Up to release 0.97 this mode was
+-- part of the default scripts distributed with engine, now it's used as a
+-- showcase how to implement full fledged mode with Ikemen GO external modules
+-- feature, without conflicting with default scripts. More info:
 -- https://github.com/K4thos/Ikemen_GO/wiki/Miscellaneous-Info#lua_modules
+-- This mode is detectable by GameMode trigger as scorechallenge
 
 --[[
 ; Example system.def parameters assignments
