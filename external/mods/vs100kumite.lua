@@ -112,10 +112,7 @@ end
 
 -- [VS100 Kumite Results Screen] default parameters. Works similarly to
 -- [Win Screen] (used for rendering mode results screen after last match)
-if motif.vs100_kumite_results_screen == nil then
-	motif.vs100_kumite_results_screen = {}
-end
-for k, v in pairs({
+local t_base = {
 	enabled = 1,
 	sounds_enabled = 1,
 	fadein_time = 0,
@@ -144,11 +141,11 @@ for k, v in pairs({
 	p1_teammate_state_lose = {},
 	p2_teammate_state_win = {},
 	p2_teammate_state_lose = {},
-}) do
-	if motif.vs100_kumite_results_screen[k] == nil then
-		motif.vs100_kumite_results_screen[k] = v
-	end
+}
+if motif.vs100_kumite_results_screen == nil then
+	motif.vs100_kumite_results_screen = {}
 end
+motif.vs100_kumite_results_screen = main.f_tableMerge(t_base, motif.vs100_kumite_results_screen)
 
 -- If not defined, [VS100KumiteResultsBGdef] group defaults to [WinBGdef].
 if motif.vs100kumiteresultsbgdef == nil then

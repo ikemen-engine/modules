@@ -96,15 +96,12 @@ if motif.select_info.title_timechallenge_text == nil then
 	motif.select_info.title_timechallenge_text = 'Time Challenge'
 end
 if motif.select_info.record_timechallenge_text == nil then
-	motif.select_info.record_timechallenge_text = ''
+	motif.select_info.record_timechallenge_text = '- BEST RECORD -\n%c %m:%s.%x: %n'
 end
 
 -- [Time Challenge Results Screen] default parameters. Works similarly to
 -- [Win Screen] (used for rendering mode results screen after last match)
-if motif.time_challenge_results_screen == nil then
-	motif.time_challenge_results_screen = {}
-end
-for k, v in pairs({
+local t_base = {
 	enabled = 1,
 	sounds_enabled = 1,
 	fadein_time = 0,
@@ -132,11 +129,11 @@ for k, v in pairs({
 	p1_teammate_state_lose = {},
 	p2_teammate_state_win = {},
 	p2_teammate_state_lose = {},
-}) do
-	if motif.time_challenge_results_screen[k] == nil then
-		motif.time_challenge_results_screen[k] = v
-	end
+}
+if motif.time_challenge_results_screen == nil then
+	motif.time_challenge_results_screen = {}
 end
+motif.time_challenge_results_screen = main.f_tableMerge(t_base, motif.time_challenge_results_screen)
 
 -- If not defined, [TimeChallengeBGdef] group defaults to [WinBGdef].
 if motif.timechallengeresultsbgdef == nil then
