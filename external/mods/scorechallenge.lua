@@ -31,8 +31,7 @@ show.time = 300
 winstext.text = "Score: %i"
 winstext.offset = 159, 70
 winstext.font = 3, 0, 0
-winstext.font.scale = 1.0, 1.0
-winstext.font.height = -1
+winstext.scale = 1.0, 1.0
 winstext.displaytime = 0
 winstext.layerno = 2
 
