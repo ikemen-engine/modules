@@ -39,14 +39,14 @@ winstext.layerno = 2
 overlay.col = 0, 0, 0
 overlay.alpha = 20, 100
 
-p1.state.win = 180
-p1.state.lose = 175, 170
-p2.state.win = 
-p2.state.lose = 
-p1.teammate.state.win = 
-p1.teammate.state.lose = 
-p2.teammate.state.win = 
-p2.teammate.state.lose = 
+p1.state = 175, 170
+p1.win.state = 180
+p2.state = 
+p2.win.state = 
+p1.teammate.state = 
+p1.teammate.win.state = 
+p2.teammate.state = 
+p2.teammate.win.state = 
 
 [ScoreChallengeResultsBGdef]
 ; left blank (character and stage not covered)
@@ -77,6 +77,7 @@ main.t_itemname.scorechallenge = function()
 	main.versusScreen = true
 	main.txt_mainSelect:update({text = motif.select_info.title_scorechallenge_text})
 	setGameMode('scorechallenge')
+	hook.run("main.t_itemname")
 	return start.f_selectMode
 end
 
@@ -117,14 +118,14 @@ local t_base = {
 	overlay_window = {0, 0, main.SP_Localcoord[1], main.SP_Localcoord[2]},
 	overlay_col = {0, 0, 0},
 	overlay_alpha = {20, 100},
-	p1_state_win = {180},
-	p1_state_lose = {175, 170},
-	p2_state_win = {},
-	p2_state_lose = {},
-	p1_teammate_state_win = {},
-	p1_teammate_state_lose = {},
-	p2_teammate_state_win = {},
-	p2_teammate_state_lose = {},
+	p1_state = {175, 170},
+	p1_win_state = {180},
+	p2_state = {},
+	p2_win_state = {},
+	p1_teammate_state = {},
+	p1_teammate_win_state = {},
+	p2_teammate_state = {},
+	p2_teammate_win_state = {},
 }
 if motif.score_challenge_results_screen == nil then
 	motif.score_challenge_results_screen = {}
