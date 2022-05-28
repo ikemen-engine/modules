@@ -10,8 +10,6 @@ Installation
    - 240p directory has 320x240 localcoord variant (e.g. for winmugen motif)
    - 720p directory has 1280x720 localcoord variant (e.g. for mugen 1.x motif)
    Skip this step if motif of your choice comes with rank resources built-in.
-3. Open save/config.json and paste following line right below CommonStates:
-   "external/mods/rank/rank.zss",
 
 ================================================================================
 General info
