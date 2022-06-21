@@ -156,16 +156,17 @@
 ; and parameters specfic to each step of that trial are written
 ; out as 'trial.TRIALNUMBER.STEPNUMBER.parameter'.
 
-; KFMZ TRIALS LIST================================================
-[TrialDef] ;======================================================
-trial.1.steps 		= 1                 ;Optional - states the number of steps in this trial. If you do not define it, the number of steps will be determined automatically.
+; KFMZ TRIALS LIST ---------------------------
+
+[TrialDef]
+trial.1.steps 		= 1                 ;Mandatory - states the number of steps in this trial. If you do not define it, the number of steps will be determined automatically.
 trial.1.name 		= KFM's First Trial ;Optional - overall name for the trial. I recommend always defining this.
 trial.1.dummymode	= stand				;Optional - valid options are stand (default), crouch, jump, wjump. 
 trial.1.guardmode	= none				;Optional - valid options are none (default), auto.
 trial.1.dummybuttonjam = none			;Optional - valid options are none (default), a, b, c, x, y, z, start, d, w.
 
-trial.1.1.text 		= Strong KF Palm	;Optional - name for trial step (only displayed in vertical trials layout). I recommend always defining this.
-trial.1.1.glyphs 	= _QDF^Y  	        ;Optional - same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
+trial.1.1.text 		= Strong KF Palm	;Mandatory - name for trial step (only displayed in vertical trials layout). I recommend always defining this.
+trial.1.1.glyphs 	= _QDF^Y  	        ;Mandatory - same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
 trial.1.1.stateno 	= 1010				;Mandatory - state to be checked to pass trial.
 trial.1.1.anim		=					;Optional - identifies animno to be checked to pass trial. Useful in certain cases.
 trial.1.1.projid	= 					;Optional - identifies projectile ID to be checked to pass trial.
@@ -175,15 +176,20 @@ trial.1.1.specialbool 	=				;Optional - valid argument is 0 or 1. Can be used fo
 trial.1.1.specialvar	=				;Optional - valid argument is any numerical value. Can be used for custom games as required.
 trial.1.1.specialstr	=				;Optional - valid argument is any string. Can be used for custom games as required.
 
-[TrialDef] ;=====================================================
-trial.2.name		= Punch Throw
+;---------------------------------------------
 
-trial.2.1.text 		= Punch Throw
-trial.2.1.glyphs 	= ^HP
-trial.2.1.stateno 	= 200
+[TrialDef]
+trial.2.steps 		= 1
+trial.2.name		= Kung Fu Throw
+
+trial.2.1.text 		= Kung Fu Throw
+trial.2.1.glyphs 	= [_B/_F]_+^Y
+trial.2.1.stateno 	= 810
 trial.2.1.isthrow	= 1
 
-[TrialDef] ;=====================================================
+;---------------------------------------------
+
+[TrialDef]
 trial.3.steps 		= 2
 trial.3.name		= Standing Punch Chain
 
@@ -191,12 +197,13 @@ trial.3.1.text 		= Standing Light Punch
 trial.3.1.glyphs 	= ^X
 trial.3.1.stateno 	= 200
 
-
 trial.3.2.text 		= Standing Strong Punch
 trial.3.2.glyphs 	= ^Y
 trial.3.2.stateno 	= 210
 
-[TrialDef] ;=====================================================
+;---------------------------------------------
+
+[TrialDef]
 trial.4.steps 		= 4
 trial.4.name		= Kung Fu Fist Four Piece
 
@@ -216,8 +223,9 @@ trial.4.4.text 		= Strong Kung Fu Palm
 trial.4.4.glyphs 	= _QDF^Y
 trial.4.4.stateno 	= 1010
 
+;---------------------------------------------
 
-[TrialDef] ;=====================================================
+[TrialDef]
 trial.5.steps 		= 5
 trial.5.name 		= Kung Fu Super Cancel
 
