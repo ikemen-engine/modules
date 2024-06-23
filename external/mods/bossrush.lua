@@ -231,7 +231,10 @@ end
 if main.t_selOptions.bossrushmaxmatches == nil or #main.t_selOptions.bossrushmaxmatches == 0 then
 	local size = 1
 	for k, _ in pairs(main.t_bossChars) do if k > size then size = k end end
-	main.t_selOptions.bossrushmaxmatches = main.f_tableArray(size, 0)
+	main.t_selOptions.bossrushmaxmatches = {}
+	for i = 1, size do
+		table.insert(main.t_selOptions.bossrushmaxmatches, 0)
+	end	
 	for k, v in pairs(main.t_bossChars) do
 		main.t_selOptions.bossrushmaxmatches[k] = #v
 	end
