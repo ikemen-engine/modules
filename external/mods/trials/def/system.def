@@ -112,7 +112,7 @@
 	menu.itemname.back 						= "Continue"
 	menu.itemname.menutrials 				= "Trials Menu"
 	menu.itemname.menutrials.trialslist 	= "Trials List"
-	menu.itemname.menutrials.back 		= "Back"
+	menu.itemname.menutrials.back 			= "Back"
 	menu.itemname.menuinput 				= "Button Config"
 	menu.itemname.menuinput.keyboard 		= "Key Config"
 	menu.itemname.menuinput.gamepad 		= "Joystick Config"
