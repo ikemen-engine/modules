@@ -31,6 +31,20 @@
 	;trialcounter.font.height	=
 	trialcounter.text			= "Trial %s of %t"
 
+	; Total Trial Timer stopwatch can display the total time spent in the trial mode
+	totaltrialtimer.offset 			= 686,-196
+	totaltrialtimer.font 			= 4,0,1
+	totaltrialtimer.font.scale		= 1,1
+	;totaltrialtimer.font.height	=
+	totaltrialtimer.text			= "Trial Timer: %s"
+	
+	; Current Trial Timer stopwatch can display the total time spent on the current trial
+	;currenttrialtimer.offset 		= 686,-206
+	;currenttrialtimer.font 			= 4,0,1
+	;currenttrialtimer.font.scale	= 1,1
+	;currenttrialtimer.font.height	=
+	;currenttrialtimer.text			= "Current Trial: %s"
+
 	; Text and background element for all upcoming trial steps
 	upcomingstep.text.offset 		= 0,0
 	upcomingstep.text.font 			= 2,0,1

@@ -173,6 +173,7 @@
 [TrialDef]
 trial.1.steps 		= 1                 ;Mandatory - states the number of steps in this trial. If you do not define it, the number of steps will be determined automatically.
 trial.1.name 		= KFM's First Trial ;Optional - overall name for the trial. I recommend always defining this.
+
 trial.1.dummymode	= stand				;Optional - valid options are stand (default), crouch, jump, wjump. 
 trial.1.guardmode	= none				;Optional - valid options are none (default), auto.
 trial.1.dummybuttonjam = none			;Optional - valid options are none (default), a, b, c, x, y, z, start, d, w.
@@ -180,11 +181,14 @@ trial.1.dummybuttonjam = none			;Optional - valid options are none (default), a,
 trial.1.1.text 		= Strong KF Palm	;Mandatory - name for trial step (only displayed in vertical trials layout). I recommend always defining this.
 trial.1.1.glyphs 	= _QDF^Y  	        ;Mandatory - same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
 trial.1.1.stateno 	= 1010				;Mandatory - state to be checked to pass trial.
+
 trial.1.1.anim		=					;Optional - identifies animno to be checked to pass trial. Useful in certain cases.
 trial.1.1.projid	= 					;Optional - identifies projectile ID to be checked to pass trial.
-trial.1.1.isthrow 	= 					;Optional - (0 or 1), will default to 0 if not included or defined. Identifies whether the trial step is a throw. 
-trial.1.1.ishelper	= 					;Optional - (0 or 1), will default to 0 if not included or defined. Identifies whether the trial step is a helper. 
-trial.1.1.specialbool 	=				;Optional - valid argument is 0 or 1. Can be used for custom games as required.
+trial.1.1.isthrow 	= 					;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a throw. 
+trial.1.1.ishelper	= 					;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a helper. 
+trial.1.1.isnothit	= 					;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should increase the combo counter or hit the opponent.
+trial.1.1.iscounterhit	= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should be a counter hit.
+trial.1.1.specialbool 	=				;Optional - valid argument is true or false. No default. Can be used for custom games as required.
 trial.1.1.specialvar	=				;Optional - valid argument is any numerical value. Can be used for custom games as required.
 trial.1.1.specialstr	=				;Optional - valid argument is any string. Can be used for custom games as required.
 
@@ -197,7 +201,7 @@ trial.2.name		= Kung Fu Throw
 trial.2.1.text 		= Kung Fu Throw
 trial.2.1.glyphs 	= [_B/_F]_+^Y
 trial.2.1.stateno 	= 810
-trial.2.1.isthrow	= 1
+trial.2.1.isthrow	= true
 
 ;---------------------------------------------
 
@@ -995,7 +999,6 @@ function start.f_trialsChecker()
 
 		if (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(projcheck) and not(helpercheck) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -2147483648) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts])) or --stateno and NOT projectile and NOT helper
 		(projhittime(start.trialsdata.trial[ct].projid[cts]) == 0 and start.trialsdata.trial[ct].projcheck[cts]) then -- or --when we have a projectile, or
-		--  --when we have a taunt
 			ncts = cts + 1
 			if ncts >= 1 and (combocount() > 0 or start.trialsdata.trial[ct].isnohit[cts]) then
 				if ncts >= start.trialsdata.trial[ct].numsteps + 1 then
