@@ -575,7 +575,8 @@ function start.f_trialsBuilder()
 				animno = {},
 				isthrow = {},
 				isnohit = {},
-				ishelper = {},
+				helperid = {},
+				helpercheck = {},
 				stateledger = {},
 				helperIDledger = {},
 				helperfound = {},
@@ -597,7 +598,7 @@ function start.f_trialsBuilder()
 				start.trialsdata.trial[i].animno[j] = gettrialinfo('currenttrialanimno',i-1,j-1)
 				start.trialsdata.trial[i].isthrow[j] = gettrialinfo('currenttrialisthrow',i-1,j-1)
 				start.trialsdata.trial[i].isnohit[j] = gettrialinfo('currenttrialisnohit',i-1,j-1)
-				start.trialsdata.trial[i].ishelper[j] = gettrialinfo('currenttrialishelper',i-1,j-1)
+				start.trialsdata.trial[i].helperid[j] = gettrialinfo('currenttrialhelperid',i-1,j-1)
 				start.trialsdata.trial[i].stateledger[j] = {}
 				start.trialsdata.trial[i].helperIDledger[j] = {}
 				start.trialsdata.trial[i].helperfound[j] = false
@@ -606,6 +607,7 @@ function start.f_trialsBuilder()
 				start.trialsdata.trial[i].specialstr[j] = gettrialinfo('currenttrialspecialstr',i-1,j-1)
 				start.trialsdata.trial[i].specialval[j] = gettrialinfo('currenttrialspecialval',i-1,j-1)
 				start.trialsdata.trial[i].projcheck[j] = false
+				start.trialsdata.trial[i].helpercheck[j] = false
 				start.trialsdata.trial[i].counterhitcheck[j] = gettrialinfo('currenttrialiscounterhit',i-1,j-1)
 				start.trialsdata.trial[i].glyphline[j] = {
 					glyph = {},
@@ -619,6 +621,11 @@ function start.f_trialsBuilder()
 					start.trialsdata.trial[i].projcheck[j] = true 
 				else
 					start.trialsdata.trial[i].projid[j] = 0
+				end
+				if start.trialsdata.trial[i].helperid[j] ~= -2147483648 then 
+					start.trialsdata.trial[i].helpercheck[j] = true 
+				else
+					start.trialsdata.trial[i].helperid[j] = 0
 				end
 				local movelistline = start.trialsdata.trial[i].glyphs[j]
 				for k, v in main.f_sortKeys(motif.glyphs, function(t, a, b) return string.len(a) > string.len(b) end) do
@@ -966,13 +973,13 @@ function start.f_trialsChecker()
 	--To help follow along, ct = current trial, cts = current trial step, ncts = next current trial step
 
 	if ct <= start.trialsdata.numoftrials and start.trialsdata.draw.success == 0 and start.trialsdata.active then
-		if start.trialsdata.trial[ct].ishelper[cts] and not start.trialsdata.trial[ct].helperfound[cts] then
-			start.trialsdata.trial[ct].helperIDledger[cts] = id()
-			start.trialsdata.trial[ct].stateledger[cts] = stateno(start.trialsdata.trial[ct].helperIDledger[cts])
-			if start.trialsdata.trial[ct].stateledger[cts] == start.trialsdata.trial[ct].stateno[cts] then
-				start.trialsdata.trial[ct].helperfound[cts]  = true
-			end
-		end
+		-- if start.trialsdata.trial[ct].ishelper[cts] and not start.trialsdata.trial[ct].helperfound[cts] then
+		-- 	start.trialsdata.trial[ct].helperIDledger[cts] = id()
+		-- 	start.trialsdata.trial[ct].stateledger[cts] = stateno(start.trialsdata.trial[ct].helperIDledger[cts])
+		-- 	if start.trialsdata.trial[ct].stateledger[cts] == start.trialsdata.trial[ct].stateno[cts] then
+		-- 		start.trialsdata.trial[ct].helperfound[cts]  = true
+		-- 	end
+		-- end
 
 		-- Gating Criteria for Passing a Trial Step:
 		-- You'll want to change this if you're doing something out of the ordinary with your game, but I've taken every step possible to 
@@ -996,9 +1003,23 @@ function start.f_trialsChecker()
 		--		d) is NOT a move that hits
 
 		-- That's all you should have to change!
+		
+		--if movehit() > 0 then
+			player(2)
+			local tempid = gethitvar('id')
+			if tempid > 0 then
+				print("ID: " .. tempid)
+				print("Is helper:" .. tostring(ishelper(tempid)))
+				playerid(tempid)
+				print("State: " .. stateno())
+				player(1)
+			end
+			
+		--end
 
-		if (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(projcheck) and not(helpercheck) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -2147483648) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts])) or --stateno and NOT projectile and NOT helper
-		(projhittime(start.trialsdata.trial[ct].projid[cts]) == 0 and start.trialsdata.trial[ct].projcheck[cts]) then -- or --when we have a projectile, or
+		if (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(start.trialsdata.trial[ct].projcheck[cts]) and not(start.trialsdata.trial[ct].helpercheck[cts]) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -2147483648) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts])) or --stateno and NOT projectile and NOT helper
+		(projhittime(start.trialsdata.trial[ct].projid[cts]) == 0 and start.trialsdata.trial[ct].projcheck[cts]) or 
+		(start.trialsdata.trial[ct].helpercheck[cts] and start.trialsdata.trial[ct].helperid[cts] == gethitvar("id")) then -- or --when we have a projectile, or
 			ncts = cts + 1
 			if ncts >= 1 and (combocount() > 0 or start.trialsdata.trial[ct].isnohit[cts]) then
 				if ncts >= start.trialsdata.trial[ct].numsteps + 1 then
@@ -1013,15 +1034,15 @@ function start.f_trialsChecker()
 					end
 				else
 					start.trialsdata.currenttrialstep = ncts
-					start.trialsdata.trial[ct].helperfound[cts]  = false
+					--start.trialsdata.trial[ct].helperfound[cts]  = false
 				end
 			elseif ncts > 1 and combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
 				start.trialsdata.currenttrialstep = 1
-				start.trialsdata.trial[ct].helperfound[cts]  = false
+				--start.trialsdata.trial[ct].helperfound[cts]  = false
 			end
 		elseif combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
 			start.trialsdata.currenttrialstep = 1
-			start.trialsdata.trial[ct].helperfound[cts]  = false
+			--start.trialsdata.trial[ct].helperfound[cts]  = false
 		end
 	end
 
@@ -1070,30 +1091,30 @@ function menu.f_trialslistParse()
 end
 
 function menu.f_trialsMenu()
-	menu.t_valuename.trialslist = {
-		menu.f_trialslistParse()
-	}	
+	-- menu.t_valuename.trialslist = {
+	-- 	menu.f_trialslistParse()
+	-- }	
 
-	if main.t_sort.trials_info == nil or main.t_sort.trials_info.menu == nil or #main.t_sort.trials_info.menu == 0 then
-		motif.setBaseTrialsInfo()
-	end
+	-- if main.t_sort.trials_info == nil or main.t_sort.trials_info.menu == nil or #main.t_sort.trials_info.menu == 0 then
+	-- 	motif.setBaseTrialsInfo()
+	-- end
 
-	table.insert(menu.t_menus, {id = 'trials', section = 'trials_info', bgdef = 'trialsbgdef', txt_title = 'txt_title_trials', movelist = true})
+	-- table.insert(menu.t_menus, {id = 'trials', section = 'trials_info', bgdef = 'trialsbgdef', txt_title = 'txt_title_trials', movelist = true})
 
-	menu.t_itemname.trialslist = function()
-		if main.f_input(main.t_players, {'pal', 's'}) then
-			sndPlay(motif.files.snd_data, motif[section].cursor_done_snd[1], motif[section].cursor_done_snd[2])
-			menu.f_trialslistParse()
-			menu.itemname = t.items[item].itemname
-		end
-		return true
-	end
+	-- menu.t_itemname.trialslist = function()
+	-- 	if main.f_input(main.t_players, {'pal', 's'}) then
+	-- 		sndPlay(motif.files.snd_data, motif[section].cursor_done_snd[1], motif[section].cursor_done_snd[2])
+	-- 		menu.f_trialslistParse()
+	-- 		menu.itemname = t.items[item].itemname
+	-- 	end
+	-- 	return true
+	-- end
 
-	menu.t_vardisplay.trialslist = function()
-		return menu.t_valuename.trialslist[menu.trialslist or 1].displayname
-	end
+	-- menu.t_vardisplay.trialslist = function()
+	-- 	return menu.t_valuename.trialslist[menu.trialslist or 1].displayname
+	-- end
 
-	-- hook.run("menu.menu.loop")
+	-- -- hook.run("menu.menu.loop")
 end
 
 function menu.f_trialsReset()
