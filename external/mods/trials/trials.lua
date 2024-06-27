@@ -982,22 +982,51 @@ function start.f_trialsChecker()
 		--		d) is NOT a move that hits
 
 		-- That's all you should have to change!
-		
-		--if movehit() > 0 then
-			player(2)
-			local tempid = gethitvar('id')
-			if tempid > 0 then
-				print("ID: " .. tempid)
-				print("Is helper:" .. tostring(ishelper(tempid)))
-				playerid(tempid)
-				print("State: " .. stateno())
-				player(1)
-			end
-		--end
 
-		if (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(start.trialsdata.trial[ct].isproj[cts]) and not(start.trialsdata.trial[ct].ishelper[cts]) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts])) or --stateno and NOT projectile and NOT helper
-		(projhittime(start.trialsdata.trial[ct].projid[cts]) == 0 and start.trialsdata.trial[ct].isproj[cts]) or 
-		(start.trialsdata.trial[ct].ishelper[cts] and start.trialsdata.trial[ct].helperid[cts] == gethitvar("id")) then -- or --when we have a projectile, or
+		-- Helper and Projectile Check Logic
+		local helpercheck = false
+		local projcheck = false
+		local maincharcheck = false
+
+		player(2)
+		local attackerid = gethitvar('id')
+		player(1)
+
+		if attackerid > 0 then
+			player(2)
+			print("ID: " .. attackerid)
+			print("Is helper:" .. tostring(helperindexexist(attackerid)))
+			playerid(attackerid)
+			local attackerstate = stateno()
+			print("State: " .. attackerstate)
+			player(1)
+		end
+		if start.trialsdata.trial[ct].ishelper[cts] and start.trialsdata.trial[ct].stateno[cts] == attackerstate then
+			print("trialstatenoH:" .. start.trialsdata.trial[ct].stateno[cts])
+			print("attacktatenoH:" .. attackerstate)
+			--if start.trialsdata.trial[ct].helperid[cts] > -1 and start.trialsdata.trial[ct].helperid[cts] == attackerid then
+				helpercheck = true
+			--elseif 
+		end
+		if start.trialsdata.trial[ct].isproj[cts] and start.trialsdata.trial[ct].stateno[cts] == attackerstate then
+			print("trialstatenoP:" .. start.trialsdata.trial[ct].stateno[cts])
+			print("attacktatenoP:" .. attackerstate)
+			--if start.trialsdata.trial[ct].helperid[cts] > -1 and start.trialsdata.trial[ct].helperid[cts] == attackerid then
+				projcheck = true
+			--elseif 
+		end
+
+		-- Main Char Check Logic
+		local maincharcheck = (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(start.trialsdata.trial[ct].isproj[cts]) and not(start.trialsdata.trial[ct].ishelper[cts]) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts])) --stateno and NOT projectile and NOT helper
+		
+		if maincharcheck then
+			print("charcheck true")
+		end
+
+		if maincharcheck or projcheck or helpercheck then
+		--(projhittime(start.trialsdata.trial[ct].projid[cts]) == 0 and start.trialsdata.trial[ct].isproj[cts]) or 
+		--(start.trialsdata.trial[ct].isproj[cts] and (start.trialsdata.trial[ct].projid[cts] > -1 and ProjHit(start.trialsdata.trial[ct].projid[cts])))
+		--(start.trialsdata.trial[ct].ishelper[cts] and start.trialsdata.trial[ct].helperid[cts] == gethitvar("id")) then -- or --when we have a projectile, or
 			ncts = cts + 1
 			if ncts >= 1 and (combocount() > 0 or start.trialsdata.trial[ct].isnohit[cts]) then
 				if ncts >= start.trialsdata.trial[ct].numsteps + 1 then
@@ -1111,8 +1140,8 @@ function menu.f_trialsReset()
 	charMapSet(2, '_iksys_trainingFallRecovery', 0)
 	charMapSet(2, '_iksys_trainingDistance', 0)
 	charMapSet(2, '_iksys_trainingButtonJam', 0)
-	start.trialsdata.currenttrial = 1
-	start.trialsdata.currenttrialstep = 1
+	player(1)
+	start.trialsdata = {}
 end
 
 function start.f_trialsMode()
@@ -1135,6 +1164,7 @@ function start.f_trialsMode()
 		-- this might break reset on success...
 		start.trialsInit = false
 		menu.f_trialsReset()
+		start.f_trialsBuilder()
 	end
 
 	if gettrialinfo('trialsexist') then
