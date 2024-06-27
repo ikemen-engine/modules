@@ -156,114 +156,102 @@
 ; 
 ; The trials.def needs to be identified in the character's main 
 ; .def under the [Files] section as follows:
-; trialslist = trials.def 	;Ikemen feature: Trials Mode Definition
+; trials = trials.def 	;Ikemen feature: Trials Mode Definition
 ;
 ; Below you'll find a trials.def example for kfmZ. All "Optional" 
 ; definitions can be left blank or unspecified. The first trial
 ; is fully populated with commenting. Follow-up trials are written 
 ; without Optional parameter definitions if they are not required.
 ; In the example below, note the syntax. Each trial is preceeded
-; by a [TrialDef] section header. Then, parameters that affect the
-; entire trial are written out as 'trial.TRIALNUMBER.parameter'
-; and parameters specfic to each step of that trial are written
-; out as 'trial.TRIALNUMBER.STEPNUMBER.parameter'.
+; by a [TrialDef] section header, which can also contain an optional
+; Trial Title. Dummy actions for the trial can optionally be specified.
+; The trial steps are written out as 
+; 'trialstep.TRIALSTEPNUMBER.parameter'.
+
 
 ; KFMZ TRIALS LIST ---------------------------
 
-[TrialDef]
-trial.1.steps 		= 1                 ;Mandatory - states the number of steps in this trial. If you do not define it, the number of steps will be determined automatically.
-trial.1.name 		= KFM's First Trial ;Optional - overall name for the trial. I recommend always defining this.
+[TrialDef, KFM's First Trial] 				;Mandatory - [TriafDef] is required, the trial title after the the comma is optional.
+trial.dummymode			= stand				;Optional - valid options are stand (default), crouch, jump, wjump. 
+trial.guardmode			= none				;Optional - valid options are none (default), auto.
+trial.dummybuttonjam 	= none				;Optional - valid options are none (default), a, b, c, x, y, z, start, d, w.
 
-trial.1.dummymode	= stand				;Optional - valid options are stand (default), crouch, jump, wjump. 
-trial.1.guardmode	= none				;Optional - valid options are none (default), auto.
-trial.1.dummybuttonjam = none			;Optional - valid options are none (default), a, b, c, x, y, z, start, d, w.
+trialstep.1.stateno 	= 1010				;Mandatory - (integer). State to be checked to pass trial. This is the state whether it's the main character, a helper, or even a projectile.
+trialstep.1.text 		= Strong KF Palm	;Optional - (string). Name for trial step (only displayed in vertical trials layout). I recommend always defining this.
+trialstep.1.glyphs 		= _QDF^Y  	        ;Optional - (string, see Glyph docs). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
 
-trial.1.1.text 		= Strong KF Palm	;Mandatory - name for trial step (only displayed in vertical trials layout). I recommend always defining this.
-trial.1.1.glyphs 	= _QDF^Y  	        ;Mandatory - same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
-trial.1.1.stateno 	= 1010				;Mandatory - state to be checked to pass trial.
-
-trial.1.1.anim		=					;Optional - identifies animno to be checked to pass trial. Useful in certain cases.
-trial.1.1.projid	= 					;Optional - identifies projectile ID to be checked to pass trial.
-trial.1.1.isthrow 	= 					;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a throw. 
-trial.1.1.ishelper	= 					;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a helper. 
-trial.1.1.isnothit	= 					;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should increase the combo counter or hit the opponent.
-trial.1.1.iscounterhit	= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should be a counter hit.
-trial.1.1.specialbool 	=				;Optional - valid argument is true or false. No default. Can be used for custom games as required.
-trial.1.1.specialvar	=				;Optional - valid argument is any numerical value. Can be used for custom games as required.
-trial.1.1.specialstr	=				;Optional - valid argument is any string. Can be used for custom games as required.
-
-;---------------------------------------------
-
-[TrialDef]
-trial.2.steps 		= 1
-trial.2.name		= Kung Fu Throw
-
-trial.2.1.text 		= Kung Fu Throw
-trial.2.1.glyphs 	= [_B/_F]_+^Y
-trial.2.1.stateno 	= 810
-trial.2.1.isthrow	= true
+trialstep.1.anim			=				;Optional - (integer). identifies animno to be checked to pass trial. Useful in certain cases.
+trialstep.1.projid			= 				;Optional - (integer). Identifies projectile ID to be checked to pass trial.
+trialstep.1.isthrow 		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
+trialstep.1.ishelper		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
+trialstep.1.helperid		= 				;Optional - (integer). Facilitates identification of a helper if provided. Should only be used for helpers with fixed IDs.
+trialstep.1.helpername		= 				;Optional - (string). Facilitates identification of a helper if provided. Should only be used for helpers with names.
+trialstep.1.isnothit		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
+trialstep.1.iscounterhit	= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should be a counter hit.
+trialstep.1.specialbool 	=				;Optional - (true or false), will default to false if not included or defined. Can be used for custom games as required.
+trialstep.1.specialvar		=				;Optional - (integer). Can be used for custom games as required.
+trialstep.1.specialstr		=				;Optional - (string). Can be used for custom games as required.
 
 ;---------------------------------------------
 
-[TrialDef]
-trial.3.steps 		= 2
-trial.3.name		= Standing Punch Chain
-
-trial.3.1.text 		= Standing Light Punch
-trial.3.1.glyphs 	= ^X
-trial.3.1.stateno 	= 200
-
-trial.3.2.text 		= Standing Strong Punch
-trial.3.2.glyphs 	= ^Y
-trial.3.2.stateno 	= 210
+[TrialDef, Kung Fu Throw]
+trialstep.1.text 		= Kung Fu Throw
+trialstep.1.glyphs 		= [_B/_F]_+^Y
+trialstep.1.stateno 	= 810
+trialstep.1.isthrow		= true
 
 ;---------------------------------------------
 
-[TrialDef]
-trial.4.steps 		= 4
-trial.4.name		= Kung Fu Fist Four Piece
+[TrialDef, Standing Punch Chain]
+trialstep.1.text 		= Standing Light Punch
+trialstep.1.glyphs 		= ^X
+trialstep.1.stateno 	= 200
 
-trial.4.1.text 		= Jumping Strong Punch
-trial.4.1.glyphs 	= _AIR^Y
-trial.4.1.stateno 	= 610
-
-trial.4.2.text 		= Standing Light Punch
-trial.4.2.glyphs 	= ^X
-trial.4.2.stateno 	= 200
-
-trial.4.3.text 		= Standing Strong Punch
-trial.4.3.glyphs 	= ^Y
-trial.4.3.stateno 	= 210
-
-trial.4.4.text 		= Strong Kung Fu Palm
-trial.4.4.glyphs 	= _QDF^Y
-trial.4.4.stateno 	= 1010
+trialstep.2.text 		= Standing Strong Punch
+trialstep.2.glyphs 		= ^Y
+trialstep.2.stateno 	= 210
 
 ;---------------------------------------------
 
-[TrialDef]
-trial.5.steps 		= 5
-trial.5.name 		= Kung Fu Super Cancel
+[TrialDef, Kung Fu Fist Four Piece]
+trialstep.1.text 		= Jumping Strong Punch
+trialstep.1.glyphs 		= _AIR^Y
+trialstep.1.stateno 	= 610
 
-trial.5.1.text 		= Jumping Strong Kick
-trial.5.1.glyphs 	= _AIR^B
-trial.5.1.stateno 	= 640
+trialstep.2.text 		= Standing Light Punch
+trialstep.2.glyphs 		= ^X
+trialstep.2.stateno 	= 200
 
-trial.5.2.text 		= Standing Light Kick
-trial.5.2.glyphs 	= ^A
-trial.5.2.stateno 	= 230
+trialstep.3.text 		= Standing Strong Punch
+trialstep.3.glyphs 		= ^Y
+trialstep.3.stateno 	= 210
 
-trial.5.3.text 		= Standing Strong Kick
-trial.5.3.glyphs 	= ^B
-trial.5.3.stateno 	= 240
+trialstep.4.text 		= Strong Kung Fu Palm
+trialstep.4.glyphs 		= _QDF^Y
+trialstep.4.stateno 	= 1010
 
-trial.5.4.text 		= Fast Kung Fu Zankou
-trial.5.4.glyphs 	= _QDF^A^B
-trial.5.4.stateno 	= 1420
+;---------------------------------------------
 
-trial.5.5.text 		= Triple Kung Fu Palm
-trial.5.5.glyphs 	= _QDF_QDF^P
-trial.5.5.stateno 	= 3000
+[TrialDef, Kung Fu Super Cancel]
+trialstep.1.text 		= Jumping Strong Kick
+trialstep.1.glyphs 		= _AIR^B
+trialstep.1.stateno 	= 640
+
+trialstep.2.text 		= Standing Light Kick
+trialstep.2.glyphs 		= ^A
+trialstep.2.stateno 	= 230
+
+trialstep.3.text 		= Standing Strong Kick
+trialstep.3.glyphs 		= ^B
+trialstep.3.stateno 	= 240
+
+trialstep.4.text 		= Fast Kung Fu Zankou
+trialstep.4.glyphs 		= _QDF^A^B
+trialstep.4.stateno 	= 1420
+
+trialstep.5.text 		= Triple Kung Fu Palm
+trialstep.5.glyphs 		= _QDF_QDF^P
+trialstep.5.stateno 	= 3000
 
 ]]
 
@@ -538,7 +526,7 @@ function start.f_trialsBuilder()
 		--Pre-populate trialsdata table
 		start.trialsdata = {
 			active = false,
-			trialspresent = gettrialinfo('trialspresent'),
+			trialsexist = gettrialinfo('trialsexist'),
 			numoftrials = gettrialinfo('numoftrials'),
 			currenttrial = 1,
 			currenttrialstep = 1,
@@ -560,11 +548,11 @@ function start.f_trialsBuilder()
 		--Obtain all of the trials information, to include the offset positions based on whether the display layout is horizontal or vertical
 		for i = 1, start.trialsdata.numoftrials, 1 do
 			start.trialsdata.trial[i] = {
-				name = gettrialinfo('currenttrialname',i-1),
-				numsteps = gettrialinfo('currenttrialnumofsteps',i-1),
-				dummymode = gettrialinfo('currenttrialdummymode',i-1),
-				guardmode = gettrialinfo('currenttrialguardmode',i-1),
-				buttonjam = gettrialinfo('currenttrialdummybuttonjam',i-1),
+				name = gettrialinfo('trialname',i-1),
+				numsteps = gettrialinfo('trialnumofsteps',i-1),
+				dummymode = gettrialinfo('trialdummymode',i-1),
+				guardmode = gettrialinfo('trialguardmode',i-1),
+				buttonjam = gettrialinfo('trialdummybuttonjam',i-1),
 				active = false,
 				complete = false,
 				elapsedtime = 0,
@@ -575,11 +563,10 @@ function start.f_trialsBuilder()
 				animno = {},
 				isthrow = {},
 				isnohit = {},
+				ishelper = {},
 				helperid = {},
+				helpername = {},
 				helpercheck = {},
-				stateledger = {},
-				helperIDledger = {},
-				helperfound = {},
 				projid = {},
 				projcheck = {},
 				counterhitcheck = {},
@@ -588,27 +575,28 @@ function start.f_trialsBuilder()
 				specialval = {},
 				glyphline = {},
 			}
+
 			if start.trialsdata.trial[i].numsteps > start.trialsdata.maxsteps then
 				start.trialsdata.maxsteps = start.trialsdata.trial[i].numsteps
 			end
+
 			for j = 1, start.trialsdata.trial[i].numsteps, 1 do
-				start.trialsdata.trial[i].text[j] = gettrialinfo('currenttrialtext',i-1,j-1)
-				start.trialsdata.trial[i].glyphs[j] = gettrialinfo('currenttrialglyphs',i-1,j-1)
-				start.trialsdata.trial[i].stateno[j] = gettrialinfo('currenttrialstateno',i-1,j-1)
-				start.trialsdata.trial[i].animno[j] = gettrialinfo('currenttrialanimno',i-1,j-1)
-				start.trialsdata.trial[i].isthrow[j] = gettrialinfo('currenttrialisthrow',i-1,j-1)
-				start.trialsdata.trial[i].isnohit[j] = gettrialinfo('currenttrialisnohit',i-1,j-1)
-				start.trialsdata.trial[i].helperid[j] = gettrialinfo('currenttrialhelperid',i-1,j-1)
-				start.trialsdata.trial[i].stateledger[j] = {}
-				start.trialsdata.trial[i].helperIDledger[j] = {}
-				start.trialsdata.trial[i].helperfound[j] = false
-				start.trialsdata.trial[i].projid[j] = gettrialinfo('currenttrialprojid',i-1,j-1)
-				start.trialsdata.trial[i].specialbool[j] = gettrialinfo('currenttrialspecialbool',i-1,j-1)
-				start.trialsdata.trial[i].specialstr[j] = gettrialinfo('currenttrialspecialstr',i-1,j-1)
-				start.trialsdata.trial[i].specialval[j] = gettrialinfo('currenttrialspecialval',i-1,j-1)
+				start.trialsdata.trial[i].text[j] = gettrialinfo('trialstepname',i-1,j-1)
+				start.trialsdata.trial[i].glyphs[j] = gettrialinfo('trialstepglyphs',i-1,j-1)
+				start.trialsdata.trial[i].stateno[j] = gettrialinfo('trialstepstateno',i-1,j-1)
+				start.trialsdata.trial[i].animno[j] = gettrialinfo('trialstepanimno',i-1,j-1)
+				start.trialsdata.trial[i].isthrow[j] = gettrialinfo('trialstepisthrow',i-1,j-1)
+				start.trialsdata.trial[i].isnohit[j] = gettrialinfo('trialstepisnohit',i-1,j-1)
+				start.trialsdata.trial[i].ishelper[j] = gettrialinfo('trialstepishelper',i-1,j-1)
+				start.trialsdata.trial[i].helperid[j] = gettrialinfo('trialstephelperid',i-1,j-1)
+				start.trialsdata.trial[i].helpername[j] = gettrialinfo('trialstephelpername',i-1,j-1)
+				start.trialsdata.trial[i].projid[j] = gettrialinfo('trialstepprojid',i-1,j-1)
+				start.trialsdata.trial[i].specialbool[j] = gettrialinfo('trialstepspecialbool',i-1,j-1)
+				start.trialsdata.trial[i].specialstr[j] = gettrialinfo('trialstepspecialstr',i-1,j-1)
+				start.trialsdata.trial[i].specialval[j] = gettrialinfo('trialstepspecialval',i-1,j-1)
+				start.trialsdata.trial[i].counterhitcheck[j] = gettrialinfo('trialstepiscounterhit',i-1,j-1)
 				start.trialsdata.trial[i].projcheck[j] = false
 				start.trialsdata.trial[i].helpercheck[j] = false
-				start.trialsdata.trial[i].counterhitcheck[j] = gettrialinfo('currenttrialiscounterhit',i-1,j-1)
 				start.trialsdata.trial[i].glyphline[j] = {
 					glyph = {},
 					pos = {},
@@ -617,6 +605,7 @@ function start.f_trialsBuilder()
 					lengthOffset = {},
 					scale = {}
 				}
+				print(gettrialinfo('trialstepname',i-1,j-1))
 				if start.trialsdata.trial[i].projid[j] ~= -2147483648 then 
 					start.trialsdata.trial[i].projcheck[j] = true 
 				else
@@ -1158,7 +1147,8 @@ function start.f_trialsMode()
 		start.trialsInit = false
 		menu.f_trialsReset()
 	end
-	if gettrialinfo('trialspresent') then
+
+	if gettrialinfo('trialsexist') then
 		if not start.trialsInit then
 			start.f_trialsBuilder()
 			menu.f_trialsMenu()
