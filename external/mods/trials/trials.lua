@@ -604,7 +604,6 @@ function start.f_trialsBuilder()
 					lengthOffset = {},
 					scale = {}
 				}
-				print(gettrialinfo('trialstepname',i-1,j-1))
 
 				local movelistline = start.trialsdata.trial[i].glyphs[j]
 				for k, v in main.f_sortKeys(motif.glyphs, function(t, a, b) return string.len(a) > string.len(b) end) do
@@ -1141,7 +1140,8 @@ function menu.f_trialsReset()
 	charMapSet(2, '_iksys_trainingDistance', 0)
 	charMapSet(2, '_iksys_trainingButtonJam', 0)
 	player(1)
-	start.trialsdata = {}
+	start.trialsdata.currenttrial = 1
+	start.trialsdata.currenttrialstep = 1
 end
 
 function start.f_trialsMode()
@@ -1164,7 +1164,6 @@ function start.f_trialsMode()
 		-- this might break reset on success...
 		start.trialsInit = false
 		menu.f_trialsReset()
-		start.f_trialsBuilder()
 	end
 
 	if gettrialinfo('trialsexist') then
