@@ -181,13 +181,14 @@ trialstep.1.text 		= Strong KF Palm	;Optional - (string). Name for trial step (o
 trialstep.1.glyphs 		= _QDF^Y  	        ;Optional - (string, see Glyph docs). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
 
 trialstep.1.anim			=				;Optional - (integer). identifies animno to be checked to pass trial. Useful in certain cases.
-trialstep.1.projid			= 				;Optional - (integer). Identifies projectile ID to be checked to pass trial.
 trialstep.1.isthrow 		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
+trialstep.1.isnothit		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
+trialstep.1.iscounterhit	= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should be a counter hit.
 trialstep.1.ishelper		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
 trialstep.1.helperid		= 				;Optional - (integer). Facilitates identification of a helper if provided. Should only be used for helpers with fixed IDs.
 trialstep.1.helpername		= 				;Optional - (string). Facilitates identification of a helper if provided. Should only be used for helpers with names.
-trialstep.1.isnothit		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
-trialstep.1.iscounterhit	= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should be a counter hit.
+trialstep.1.isproj			= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
+trialstep.1.projid			= 				;Optional - (integer). Facilitates identification of a projectile if provided. Should only be used for projectiles with fixed IDs.
 trialstep.1.specialbool 	=				;Optional - (true or false), will default to false if not included or defined. Can be used for custom games as required.
 trialstep.1.specialvar		=				;Optional - (integer). Can be used for custom games as required.
 trialstep.1.specialstr		=				;Optional - (string). Can be used for custom games as required.
@@ -563,13 +564,12 @@ function start.f_trialsBuilder()
 				animno = {},
 				isthrow = {},
 				isnohit = {},
+				iscounterhit = {},
 				ishelper = {},
 				helperid = {},
 				helpername = {},
-				helpercheck = {},
+				isproj = {},
 				projid = {},
-				projcheck = {},
-				counterhitcheck = {},
 				specialbool = {},
 				specialstr = {},
 				specialval = {},
@@ -590,13 +590,12 @@ function start.f_trialsBuilder()
 				start.trialsdata.trial[i].ishelper[j] = gettrialinfo('trialstepishelper',i-1,j-1)
 				start.trialsdata.trial[i].helperid[j] = gettrialinfo('trialstephelperid',i-1,j-1)
 				start.trialsdata.trial[i].helpername[j] = gettrialinfo('trialstephelpername',i-1,j-1)
+				start.trialsdata.trial[i].isproj[j] = gettrialinfo('trialstepisproj',i-1,j-1)
 				start.trialsdata.trial[i].projid[j] = gettrialinfo('trialstepprojid',i-1,j-1)
 				start.trialsdata.trial[i].specialbool[j] = gettrialinfo('trialstepspecialbool',i-1,j-1)
 				start.trialsdata.trial[i].specialstr[j] = gettrialinfo('trialstepspecialstr',i-1,j-1)
 				start.trialsdata.trial[i].specialval[j] = gettrialinfo('trialstepspecialval',i-1,j-1)
-				start.trialsdata.trial[i].counterhitcheck[j] = gettrialinfo('trialstepiscounterhit',i-1,j-1)
-				start.trialsdata.trial[i].projcheck[j] = false
-				start.trialsdata.trial[i].helpercheck[j] = false
+				start.trialsdata.trial[i].iscounterhit[j] = gettrialinfo('trialstepiscounterhit',i-1,j-1)
 				start.trialsdata.trial[i].glyphline[j] = {
 					glyph = {},
 					pos = {},
@@ -606,16 +605,7 @@ function start.f_trialsBuilder()
 					scale = {}
 				}
 				print(gettrialinfo('trialstepname',i-1,j-1))
-				if start.trialsdata.trial[i].projid[j] ~= -2147483648 then 
-					start.trialsdata.trial[i].projcheck[j] = true 
-				else
-					start.trialsdata.trial[i].projid[j] = 0
-				end
-				if start.trialsdata.trial[i].helperid[j] ~= -2147483648 then 
-					start.trialsdata.trial[i].helpercheck[j] = true 
-				else
-					start.trialsdata.trial[i].helperid[j] = 0
-				end
+
 				local movelistline = start.trialsdata.trial[i].glyphs[j]
 				for k, v in main.f_sortKeys(motif.glyphs, function(t, a, b) return string.len(a) > string.len(b) end) do
 					movelistline = movelistline:gsub(main.f_escapePattern(k), '<' .. numberToRune(v[1] + 0xe000) .. '>')
@@ -1003,12 +993,11 @@ function start.f_trialsChecker()
 				print("State: " .. stateno())
 				player(1)
 			end
-			
 		--end
 
-		if (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(start.trialsdata.trial[ct].projcheck[cts]) and not(start.trialsdata.trial[ct].helpercheck[cts]) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -2147483648) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts])) or --stateno and NOT projectile and NOT helper
-		(projhittime(start.trialsdata.trial[ct].projid[cts]) == 0 and start.trialsdata.trial[ct].projcheck[cts]) or 
-		(start.trialsdata.trial[ct].helpercheck[cts] and start.trialsdata.trial[ct].helperid[cts] == gethitvar("id")) then -- or --when we have a projectile, or
+		if (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(start.trialsdata.trial[ct].isproj[cts]) and not(start.trialsdata.trial[ct].ishelper[cts]) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts])) or --stateno and NOT projectile and NOT helper
+		(projhittime(start.trialsdata.trial[ct].projid[cts]) == 0 and start.trialsdata.trial[ct].isproj[cts]) or 
+		(start.trialsdata.trial[ct].ishelper[cts] and start.trialsdata.trial[ct].helperid[cts] == gethitvar("id")) then -- or --when we have a projectile, or
 			ncts = cts + 1
 			if ncts >= 1 and (combocount() > 0 or start.trialsdata.trial[ct].isnohit[cts]) then
 				if ncts >= start.trialsdata.trial[ct].numsteps + 1 then
