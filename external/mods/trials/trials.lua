@@ -182,13 +182,10 @@ trialstep.1.glyphs 		= _QDF^Y  	        ;Optional - (string, see Glyph docs). sa
 
 trialstep.1.anim			=				;Optional - (integer). identifies animno to be checked to pass trial. Useful in certain cases.
 trialstep.1.isthrow 		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
-trialstep.1.isnothit		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
-trialstep.1.iscounterhit	= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should be a counter hit.
+trialstep.1.isnohit			= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
+trialstep.1.iscounterhit	= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
 trialstep.1.ishelper		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
-trialstep.1.helperid		= 				;Optional - (integer). Facilitates identification of a helper if provided. Should only be used for helpers with fixed IDs.
-trialstep.1.helpername		= 				;Optional - (string). Facilitates identification of a helper if provided. Should only be used for helpers with names.
 trialstep.1.isproj			= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
-trialstep.1.projid			= 				;Optional - (integer). Facilitates identification of a projectile if provided. Should only be used for projectiles with fixed IDs.
 trialstep.1.specialbool 	=				;Optional - (true or false), will default to false if not included or defined. Can be used for custom games as required.
 trialstep.1.specialvar		=				;Optional - (integer). Can be used for custom games as required.
 trialstep.1.specialstr		=				;Optional - (string). Can be used for custom games as required.
@@ -566,10 +563,7 @@ function start.f_trialsBuilder()
 				isnohit = {},
 				iscounterhit = {},
 				ishelper = {},
-				helperid = {},
-				helpername = {},
 				isproj = {},
-				projid = {},
 				specialbool = {},
 				specialstr = {},
 				specialval = {},
@@ -588,10 +582,7 @@ function start.f_trialsBuilder()
 				start.trialsdata.trial[i].isthrow[j] = gettrialinfo('trialstepisthrow',i-1,j-1)
 				start.trialsdata.trial[i].isnohit[j] = gettrialinfo('trialstepisnohit',i-1,j-1)
 				start.trialsdata.trial[i].ishelper[j] = gettrialinfo('trialstepishelper',i-1,j-1)
-				start.trialsdata.trial[i].helperid[j] = gettrialinfo('trialstephelperid',i-1,j-1)
-				start.trialsdata.trial[i].helpername[j] = gettrialinfo('trialstephelpername',i-1,j-1)
 				start.trialsdata.trial[i].isproj[j] = gettrialinfo('trialstepisproj',i-1,j-1)
-				start.trialsdata.trial[i].projid[j] = gettrialinfo('trialstepprojid',i-1,j-1)
 				start.trialsdata.trial[i].specialbool[j] = gettrialinfo('trialstepspecialbool',i-1,j-1)
 				start.trialsdata.trial[i].specialstr[j] = gettrialinfo('trialstepspecialstr',i-1,j-1)
 				start.trialsdata.trial[i].specialval[j] = gettrialinfo('trialstepspecialval',i-1,j-1)
@@ -951,38 +942,6 @@ function start.f_trialsChecker()
 	--To help follow along, ct = current trial, cts = current trial step, ncts = next current trial step
 
 	if ct <= start.trialsdata.numoftrials and start.trialsdata.draw.success == 0 and start.trialsdata.active then
-		-- if start.trialsdata.trial[ct].ishelper[cts] and not start.trialsdata.trial[ct].helperfound[cts] then
-		-- 	start.trialsdata.trial[ct].helperIDledger[cts] = id()
-		-- 	start.trialsdata.trial[ct].stateledger[cts] = stateno(start.trialsdata.trial[ct].helperIDledger[cts])
-		-- 	if start.trialsdata.trial[ct].stateledger[cts] == start.trialsdata.trial[ct].stateno[cts] then
-		-- 		start.trialsdata.trial[ct].helperfound[cts]  = true
-		-- 	end
-		-- end
-
-		-- Gating Criteria for Passing a Trial Step:
-		-- You'll want to change this if you're doing something out of the ordinary with your game, but I've taken every step possible to 
-		-- create the most universal trials checker possible. That said, this 'if' statement clause is what you'll want to change if you 
-		-- need to modify the trials check logic. Here is the order of operation as shipped:
-		-- 1) IF:
-		-- 		a) stateno matches desired trials stateno AND
-		-- 		b) optional animcheck matches the desired trials animno 
-		-- 		OR
-		--		c) projectile is trial step and projectile ID is matched to desired trials projID
-		-- 		OR
-		--		d) helper is trial step and the right helper was found and helper state matches trials stateno
-		-- AND
-		-- 2) IF: 
-		--		a) move hit and we are NOT looking for a counterhit
-		--		OR 
-		--		b) move hit and we ARE looking for a counterhit and it is a counterhit
-		--		OR
-		--		c) is a throw
-		--		OR
-		--		d) is NOT a move that hits
-
-		-- That's all you should have to change!
-
-		-- Helper and Projectile Check Logic
 		local helpercheck = false
 		local projcheck = false
 		local maincharcheck = false
@@ -990,44 +949,32 @@ function start.f_trialsChecker()
 		player(2)
 		local attackerid = gethitvar('id')
 		player(1)
-
+		local attackerstate = nil
+		local attackeranim = nil
 		if attackerid > 0 then
-			player(2)
-			print("ID: " .. attackerid)
-			print("Is helper:" .. tostring(helperindexexist(attackerid)))
 			playerid(attackerid)
-			local attackerstate = stateno()
-			print("State: " .. attackerstate)
+			attackerstate = stateno()
+			attackeranim = anim()
 			player(1)
-		end
-		if start.trialsdata.trial[ct].ishelper[cts] and start.trialsdata.trial[ct].stateno[cts] == attackerstate then
-			print("trialstatenoH:" .. start.trialsdata.trial[ct].stateno[cts])
-			print("attacktatenoH:" .. attackerstate)
-			--if start.trialsdata.trial[ct].helperid[cts] > -1 and start.trialsdata.trial[ct].helperid[cts] == attackerid then
-				helpercheck = true
-			--elseif 
-		end
-		if start.trialsdata.trial[ct].isproj[cts] and start.trialsdata.trial[ct].stateno[cts] == attackerstate then
-			print("trialstatenoP:" .. start.trialsdata.trial[ct].stateno[cts])
-			print("attacktatenoP:" .. attackerstate)
-			--if start.trialsdata.trial[ct].helperid[cts] > -1 and start.trialsdata.trial[ct].helperid[cts] == attackerid then
-				projcheck = true
-			--elseif 
+			-- Can uncomment this section to debug helper/proj data
+			print("ID: " .. attackerid)
+			print("State: " .. attackerstate)
+			print("Anim: " .. attackeranim)
 		end
 
-		-- Main Char Check Logic
-		local maincharcheck = (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(start.trialsdata.trial[ct].isproj[cts]) and not(start.trialsdata.trial[ct].ishelper[cts]) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts])) --stateno and NOT projectile and NOT helper
-		
-		if maincharcheck then
-			print("charcheck true")
+		if (start.trialsdata.trial[ct].ishelper[cts] and start.trialsdata.trial[ct].stateno[cts] == attackerstate) and (attackeranim == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) then
+			helpercheck = true
 		end
+
+		if (start.trialsdata.trial[ct].isproj[cts] and start.trialsdata.trial[ct].stateno[cts] == attackerstate) and (attackeranim == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) then
+			projcheck = true 
+		end
+
+		maincharcheck = (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(start.trialsdata.trial[ct].isproj[cts]) and not(start.trialsdata.trial[ct].ishelper[cts]) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts] or start.trialsdata.trial[ct].isnohit[cts]))
 
 		if maincharcheck or projcheck or helpercheck then
-		--(projhittime(start.trialsdata.trial[ct].projid[cts]) == 0 and start.trialsdata.trial[ct].isproj[cts]) or 
-		--(start.trialsdata.trial[ct].isproj[cts] and (start.trialsdata.trial[ct].projid[cts] > -1 and ProjHit(start.trialsdata.trial[ct].projid[cts])))
-		--(start.trialsdata.trial[ct].ishelper[cts] and start.trialsdata.trial[ct].helperid[cts] == gethitvar("id")) then -- or --when we have a projectile, or
 			ncts = cts + 1
-			if ncts >= 1 and (combocount() > 0 or start.trialsdata.trial[ct].isnohit[cts]) then
+			if ncts >= 1 and (combocount() > 0 or start.trialsdata.trial[ct].isnohit[cts]) and ((start.trialsdata.trial[ct].iscounterhit[cts] and movecountered() > 0) or not start.trialsdata.trial[ct].iscounterhit[cts]) then
 				if ncts >= start.trialsdata.trial[ct].numsteps + 1 then
 					start.trialsdata.currenttrial = ct + 1
 					start.trialsdata.currenttrialstep = 1
@@ -1040,15 +987,12 @@ function start.f_trialsChecker()
 					end
 				else
 					start.trialsdata.currenttrialstep = ncts
-					--start.trialsdata.trial[ct].helperfound[cts]  = false
 				end
 			elseif ncts > 1 and combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
 				start.trialsdata.currenttrialstep = 1
-				--start.trialsdata.trial[ct].helperfound[cts]  = false
 			end
 		elseif combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
 			start.trialsdata.currenttrialstep = 1
-			--start.trialsdata.trial[ct].helperfound[cts]  = false
 		end
 	end
 
@@ -1078,6 +1022,7 @@ function start.f_trialsSuccess(successstring, index)
 	main.f_createTextImg(motif.trials_info, successstring .. '_text')
 	start.trialsdata.trial[index].complete = true
 	start.trialsdata.trial[index].active = false
+	start.trialsdata.active = false
 	if index ~= start.trialsdata.numoftrials then
 		start.trialsdata.trial[index+1].starttick = tickcount()
 	end
@@ -1183,38 +1128,3 @@ end
 
 hook.add("loop#trials", "f_trialsMode", start.f_trialsMode)
 hook.add("menu.menu.loop", "f_trialsMenu", menu.f_trialsMenu)
-
--- Lua Hook System
--- Allows hooking additional code into existing functions, from within external
--- modules, without having to worry as much about your code being removed by
--- engine update.
--- * hook.run(list, ...): Runs all the functions within a certain list.
---   It won't do anything if the list doesn't exist or is empty. ... is any
---   number of arguments, which will be passed to every function in the list.
--- * hook.add(list, name, function): Adds a function to a hook list with a name.
---   It will replace anything in the list with the same name.
--- * hook.stop(list, name): Removes a hook from a list, if it's not needed.
--- Currently there are only few hooks available by default:
--- * loop: global.lua 'loop' function start (called by CommonLua)
--- * loop#[gamemode]: global.lua 'loop' function, limited to the gamemode
--- * main.f_commandLine: main.lua 'f_commandLine' function (before loading)
--- * main.f_default: main.lua 'f_default' function
--- * main.t_itemname: main.lua table entries (modes configuration)
--- * main.menu.loop: main.lua menu loop function (each submenu loop start)
--- * menu.menu.loop: menu.lua menu loop function (each submenu loop start)
--- * options.menu.loop: options.lua menu loop function (each submenu loop start)
--- * motif.setBaseTitleInfo: motif.lua default game mode items assignment
--- * motif.setBaseOptionInfo: motif.lua default option items assignment
--- * motif.setBaseMenuInfo: motif.lua default pause menu items assignment
--- * motif.setBaseTrainingInfo: motif.lua default training menu items assignment
--- * launchFight: start.lua 'launchFight' function (right before match starts)
--- * start.f_selectScreen: start.lua 'f_selectScreen' function (pre layerno=1)
--- * start.f_selectVersus: start.lua 'f_selectVersus' function (pre layerno=1)
--- * start.f_result: start.lua 'f_result' function (pre layerno=1)
--- * start.f_victory: start.lua 'f_victory' function (pre layerno=1)
--- * start.f_continue: start.lua 'f_continue' function (pre layerno=1)
--- * start.f_hiscore: start.lua 'f_hiscore' function (pre layerno=1)
--- * start.f_challenger: start.lua 'f_challenger' function (pre layerno=1)
--- * start.f_selectReset: start.lua 'f_selectReset' function (before returning)
--- More entry points may be added in future - let us know if your external
--- module needs to hook code in place where it's not allowed yet.
