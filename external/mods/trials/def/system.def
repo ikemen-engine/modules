@@ -9,12 +9,12 @@
 ; a trials.sff, make sure you point to it in the system.def's [Files] 
 ; section as "trialsbgdef = trials.sff"
 
-[Trials Info]
+[Trials Info] ;VERTICAL EXAMPLE
 	pos 				= 100,250				;Coords to show
 	spacing 			= 0,20					;Spacing between trial steps
 	window				= 100,250, 1180,550 	;X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
 
-	resetonsuccess		= 0 	;set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
+	resetonsuccess		= 1 	;set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
 	trialslayout 		= 0		;set to 0 for vertical, 1 for horizontal--affects scrolling logic, as stated above, also enables dynamic step width
 
 	; Overall background element for all trial steps
@@ -123,16 +123,135 @@
 	;allclear.front.spr 		= 701,0
 	
 	; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features/#submenus
-	menu.itemname.back 						= "Continue"
-	menu.itemname.menutrials 				= "Trials Menu"
-	menu.itemname.menutrials.trialslist 	= "Trials List"
-	menu.itemname.menutrials.back 			= "Back"
-	menu.itemname.menuinput 				= "Button Config"
-	menu.itemname.menuinput.keyboard 		= "Key Config"
-	menu.itemname.menuinput.gamepad 		= "Joystick Config"
-	menu.itemname.menuinput.empty 			= ""
-	menu.itemname.menuinput.inputdefault 	= "Default"
-	menu.itemname.menuinput.back 			= "Back"
-	menu.itemname.commandlist 				= "Command List"
-	menu.itemname.characterchange 			= "Character Change"
-	menu.itemname.exit 						= "Exit"
+	; If custom menu is not declared, following menu is loaded by default:
+	;menu.itemname.back 						= "Continue"
+	;menu.itemname.menutrials 				= "Trials Menu"
+	;menu.itemname.menutrials.trialslist 	= "Trials List"
+	;menu.itemname.menutraining.back 		= "Back"
+	;menu.itemname.menuinput 				= "Button Config"
+	;menu.itemname.menuinput.keyboard 		= "Key Config"
+	;menu.itemname.menuinput.gamepad 		= "Joystick Config"
+	;menu.itemname.menuinput.empty 			= ""
+	;menu.itemname.menuinput.inputdefault 	= "Default"
+	;menu.itemname.menuinput.back 			= "Back"
+	;menu.itemname.commandlist 				= "Command List"
+	;menu.itemname.characterchange 			= "Character Change"
+	;menu.itemname.exit 						= "Exit"
+
+[TrialsBgDef] ;Ikemen feature
+	spr 			= ""
+	bgclearcolor 	= 0, 0, 0
+
+;-----------------------------------------------------------------------------//brokenIKEMEN//
+;------------------------------------------------------------------------------//Trials Mode//
+; Ikemen feature
+;[Trials Info] ;;HORIZONTAL EXAMPLE
+;pos 				= 100,250			;Coords to show
+;spacing 			= 20,40			;Spacing between trial steps
+;window				= 100,250, 1180,550 	;X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
+;
+;resetonsuccess				= 0 		;set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
+;trialslayout 				= 1			;set to 0 for vertical, 1 for horizontal--affects scrolling logic, as stated above, also enables dynamic step width
+;
+;;Overall background element for all trial steps
+;;bg.layerno 		= 2
+;;bg.offset 		= 0,0
+;;bg.anim 			= 1
+;;bg.scale 			= 1.5,1.5
+;;bg.spr 			= 399,0
+;
+;;Trial text that displays current trial number and total number of trials
+;trialcounter.offset 		= 486,-206
+;trialcounter.font 			= 4,0,-1
+;trialcounter.font.scale	= 1,1
+;;trialcounter.font.height	=
+;trialcounter.text			= "Trial %s of %t"
+;
+;;Text and background element for all upcoming trial steps
+;upcomingstep.bg.offset 		= 0,-14
+;;upcomingstep.bg.anim 			= 609
+;upcomingstep.bg.spr 			= 702,5
+;;upcomingstep.bg.scale			= 1,1
+;;upcomingstep.bg.displaytime	= -1
+;
+;upcomingstep.bginc.offset 			= 0,-14
+;;upcomingstep.bginc.anim 			= -1
+;upcomingstep.bginc.spr 			= 702,4
+;upcomingstep.bginc.scale 			= 1,1
+;upcomingstep.bginc.facing			= 1
+;
+;;Text and background element for current trial step
+;currentstep.bg.offset 			= 0,-14 
+;;currentstep.bg.anim 			= -1
+;currentstep.bg.spr 			= 702,3
+;currentstep.bg.scale 			= 1,1
+;currentstep.bg.facing			= 1
+;;currentstep.bg.displaytime		= -1
+;
+;currentstep.bginc.offset 			= 0,-14
+;;currentstep.bginc.anim 			= -1
+;currentstep.bginc.spr 				= 702,2
+;currentstep.bginc.scale 			= 1,1
+;currentstep.bginc.facing			= 1
+;
+;;Text and background element for all completed trial steps
+;completedstep.bg.offset 		= 0,-14
+;completedstep.bg.spr 			= 702,1
+;;completedstep.bg.anim 			= 2
+;;completedstep.bg.scale 		= 1,1
+;
+;completedstep.bginc.offset 		= 0,-14
+;;completedstep.bginc.anim 			= -1
+;completedstep.bginc.spr 			= 702,0
+;completedstep.bginc.scale 			= 1,1
+;completedstep.bginc.facing			= 1
+;
+;completedstep.bginctoCTS.offset 	= 0,-14
+;;completedstep.bginctoCTS.anim 	= -1
+;completedstep.bginctoCTS.spr 		= 702,6
+;completedstep.bginctoCTS.scale 	= 1,1
+;completedstep.bginctoCTS.facing	= 1
+;
+;;Glyphs information
+;glyphs.offset		= 144,5
+;glyphs.scale		= .4,.4 
+;glyphs.spacing		= 0,0
+;glyphs.align		= 1 
+;
+;;Success positioning, sound, text, and animation (bg and front elements)
+;;Displayed after each completed trial except the final one
+;success.pos					= 300,250
+;success.snd					= 600,0 
+;;success.text.text			=
+;;success.text.offset 		= 0,0
+;;success.text.font 			= 4,0,1
+;;success.text.font.scale 	= 
+;;success.text.font.height	=
+;success.bg.offset 			= 0,0
+;success.bg.anim 			= 650
+;;success.bg.scale 			= 1,1
+;;success.bg.spr 			= 701,0
+;;succes.bg.displaytime		= -1
+;success.front.offset 		= 0,0
+;success.front.anim 			= 651
+;;success.front.scale 		= 1,1
+;;success.front.spr 			= 701,0
+;;success.front.displaytime	= -1
+;
+;;All Clear positioning, sound, text, and animation (bg and front elements)
+;;Displayed after completing the final trial
+;allclear.pos				= 300,250
+;allclear.snd				= 900,0
+;;allclear.text.text			=
+;;allclear.text.offset 		= 0,0
+;;allclear.text.font 		= 4,0,1
+;;allclear.text.font.scale 	= 
+;;allclear.text.font.height	=
+;allclear.bg.offset 			= 0,0
+;allclear.bg.anim 			= 650
+;;allclear.bg.scale 			= 1,1
+;;allclear.bg.spr 			= 701,0
+;allclear.front.offset 		= 0,0
+;allclear.front.anim 		= 652
+;;allclear.front.scale 		= 1,1
+;;allclear.front.spr 		= 701,0

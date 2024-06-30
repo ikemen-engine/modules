@@ -462,6 +462,7 @@ for _, v in ipairs({
 	 	main.f_loadingRefresh()
 	 	motif.f_loadSprData(motif.trials_info, v, motif.files.trials_data)
 	elseif main.f_fileExists('external/mods/trials/trials.sff') then
+		print("loading trials.sff")
 		motif.files.trials_data = sffNew(searchFile('external/mods/trials/trials.sff', {motif.fileDir, '', 'data/'}))
 	 	main.f_loadingRefresh()
 	 	motif.f_loadSprData(motif.trials_info, v, motif.files.trials_data)
@@ -524,6 +525,7 @@ function start.f_trialsBuilder()
 		--Pre-populate trialsdata table
 		start.trialsdata = {
 			active = false,
+			allclear = false,
 			trialsexist = gettrialinfo('trialsexist'),
 			numoftrials = gettrialinfo('numoftrials'),
 			currenttrial = 1,
@@ -706,9 +708,8 @@ function start.f_trialsSetup()
 	setAILevel(0)
 	player(1)
 	charMapSet(2, '_iksys_trainingDummyControl', 0)
-	start.trialsdata.active = true
-		
-	if not start.trialsdata.trial[start.trialsdata.numoftrials].complete and not start.trialsdata.trial[start.trialsdata.currenttrial].active and start.trialsdata.active then
+			
+	if not start.trialsdata.allclear and not start.trialsdata.trial[start.trialsdata.currenttrial].active then
 		if start.trialsdata.trial[start.trialsdata.currenttrial].dummymode == 'stand' then
 			charMapSet(2, '_iksys_trainingDummyMode', 0)
 		elseif start.trialsdata.trial[start.trialsdata.currenttrial].dummymode == 'crouch' then
@@ -743,15 +744,11 @@ function start.f_trialsSetup()
 			charMapSet(2, '_iksys_trainingButtonJam', 7)
 		elseif start.trialsdata.trial[start.trialsdata.currenttrial].buttonjam == 'd' then
 			charMapSet(2, '_iksys_trainingButtonJam', 8)
-		elseif start.trialsdata.trial[cstart.trialsdata.currenttrialt].buttonjam == 'w' then
+		elseif start.trialsdata.trial[start.trialsdata.currenttrial].buttonjam == 'w' then
 			charMapSet(2, '_iksys_trainingButtonJam', 9)
 		end
 
 		start.trialsdata.trial[start.trialsdata.currenttrial].active = true
-
-	elseif start.trialsdata.trial[start.trialsdata.numoftrials].complete then
-		print("reseting now")
-		menu.f_trialsReset()
 	end
 
 end
@@ -778,6 +775,7 @@ end
 function start.f_trialsDrawer()
 	if start.trialsInit and roundstate() == 2 and not start.trialsdata.active then
 		start.f_trialsSetup()
+		start.trialsdata.active = true
 	end
 
 	local accwidth = 0
@@ -914,6 +912,7 @@ function start.f_trialsDrawer()
 			end
 		elseif ct > start.trialsdata.numoftrials then
 			-- All trials have been completed, draw the all clear and freeze the timer
+			start.trialsdata.allclear = true
 			if start.trialsdata.draw.allclear ~= 0 then
 				start.f_trialsSuccess('allclear', ct-1)
 				main.f_createTextImg(motif.trials_info, 'allclear_text')
@@ -974,7 +973,7 @@ function start.f_trialsChecker()
 
 		if maincharcheck or projcheck or helpercheck then
 			ncts = cts + 1
-			if ncts >= 1 and (combocount() > 0 or start.trialsdata.trial[ct].isnohit[cts]) and ((start.trialsdata.trial[ct].iscounterhit[cts] and movecountered() > 0) or not start.trialsdata.trial[ct].iscounterhit[cts]) then
+			if ncts >= 1 and ((combocount() > 0 and (start.trialsdata.trial[ct].iscounterhit[cts] and movecountered() > 0) or not start.trialsdata.trial[ct].iscounterhit[cts]) or start.trialsdata.trial[ct].isnohit[cts]) then
 				if ncts >= start.trialsdata.trial[ct].numsteps + 1 then
 					start.trialsdata.currenttrial = ct + 1
 					start.trialsdata.currenttrialstep = 1
@@ -1008,11 +1007,11 @@ function start.f_trialsChecker()
 end
 
 function start.f_trialsSuccess(successstring, index)
-	-- This function is responsible for drawing the Success banner after a trial is completed successfully.
+	-- This function is responsible for drawing the Success or All Clear banners after a trial is completed successfully.
 	--
-	-- charMapSet(2, '_iksys_trainingDummyMode', 0)
-	-- charMapSet(2, '_iksys_trainingGuardMode', 0)
-	-- charMapSet(2, '_iksys_trainingButtonJam', 0)
+	charMapSet(2, '_iksys_trainingDummyMode', 0)
+	charMapSet(2, '_iksys_trainingGuardMode', 0)
+	charMapSet(2, '_iksys_trainingButtonJam', 0)
 	sndPlay(motif.files.snd_data, motif.trials_info[successstring .. '_snd'][1], motif.trials_info[successstring .. '_snd'][2])
 	animUpdate(motif.trials_info[successstring .. '_bg_data'])
 	animDraw(motif.trials_info[successstring .. '_bg_data'])
@@ -1085,6 +1084,7 @@ function menu.f_trialsReset()
 	charMapSet(2, '_iksys_trainingDistance', 0)
 	charMapSet(2, '_iksys_trainingButtonJam', 0)
 	player(1)
+	print("here now")
 	start.trialsdata.currenttrial = 1
 	start.trialsdata.currenttrialstep = 1
 end
