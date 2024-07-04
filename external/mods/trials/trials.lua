@@ -180,13 +180,14 @@ trialstep.1.stateno 	= 1010				;Mandatory - (integer). State to be checked to pa
 trialstep.1.text 		= Strong KF Palm	;Optional - (string). Name for trial step (only displayed in vertical trials layout). I recommend always defining this.
 trialstep.1.glyphs 		= _QDF^Y  	        ;Optional - (string, see Glyph docs). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
 
-trialstep.1.anim			=				;Optional - (integer). identifies animno to be checked to pass trial. Useful in certain cases.
-trialstep.1.isthrow 		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
-trialstep.1.isnohit			= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
-trialstep.1.iscounterhit	= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
-trialstep.1.ishelper		= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
-trialstep.1.isproj			= 				;Optional - (true or false), will default to false if not included or defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
-trialstep.1.specialbool 	=				;Optional - (true or false), will default to false if not included or defined. Can be used for custom games as required.
+trialstep.1.anim			=				;Optional - (integer). Identifies animno to be checked to pass trial. Useful in certain cases.
+trialstep.1.numofhits		=				;Optional - (integer), will default to 1 if not defined. In some instances, you might want to specify a trial step to meet a multi-hit criteria before proceeding to the next trial step.
+trialstep.1.isthrow 		= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
+trialstep.1.isnohit			= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
+trialstep.1.iscounterhit	= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
+trialstep.1.ishelper		= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
+trialstep.1.isproj			= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
+trialstep.1.specialbool 	=				;Optional - (true or false), will default to false if not defined. Can be used for custom games as required.
 trialstep.1.specialvar		=				;Optional - (integer). Can be used for custom games as required.
 trialstep.1.specialstr		=				;Optional - (string). Can be used for custom games as required.
 
@@ -530,6 +531,7 @@ function start.f_trialsBuilder()
 			numoftrials = gettrialinfo('numoftrials'),
 			currenttrial = 1,
 			currenttrialstep = 1,
+			currenttrialmicrostep = 1,
 			maxsteps = 0,
 			starttick = tickcount(),
 			elapsedtime = 0,
@@ -547,9 +549,11 @@ function start.f_trialsBuilder()
 
 		--Obtain all of the trials information, to include the offset positions based on whether the display layout is horizontal or vertical
 		for i = 1, start.trialsdata.numoftrials, 1 do
+
 			start.trialsdata.trial[i] = {
 				name = gettrialinfo('trialname',i-1),
 				numsteps = gettrialinfo('trialnumofsteps',i-1),
+				drawsteps = gettrialinfo('trialnumofsteps',i-1),
 				dummymode = gettrialinfo('trialdummymode',i-1),
 				guardmode = gettrialinfo('trialguardmode',i-1),
 				buttonjam = gettrialinfo('trialdummybuttonjam',i-1),
@@ -557,19 +561,7 @@ function start.f_trialsBuilder()
 				complete = false,
 				elapsedtime = 0,
 				starttick = tickcount(),
-				text = {},
-				glyphs = {},
-				stateno = {},
-				animno = {},
-				isthrow = {},
-				isnohit = {},
-				iscounterhit = {},
-				ishelper = {},
-				isproj = {},
-				specialbool = {},
-				specialstr = {},
-				specialval = {},
-				glyphline = {},
+				trialstep = {},
 			}
 
 			if start.trialsdata.trial[i].numsteps > start.trialsdata.maxsteps then
@@ -577,28 +569,63 @@ function start.f_trialsBuilder()
 			end
 
 			for j = 1, start.trialsdata.trial[i].numsteps, 1 do
-				start.trialsdata.trial[i].text[j] = gettrialinfo('trialstepname',i-1,j-1)
-				start.trialsdata.trial[i].glyphs[j] = gettrialinfo('trialstepglyphs',i-1,j-1)
-				start.trialsdata.trial[i].stateno[j] = gettrialinfo('trialstepstateno',i-1,j-1)
-				start.trialsdata.trial[i].animno[j] = gettrialinfo('trialstepanimno',i-1,j-1)
-				start.trialsdata.trial[i].isthrow[j] = gettrialinfo('trialstepisthrow',i-1,j-1)
-				start.trialsdata.trial[i].isnohit[j] = gettrialinfo('trialstepisnohit',i-1,j-1)
-				start.trialsdata.trial[i].ishelper[j] = gettrialinfo('trialstepishelper',i-1,j-1)
-				start.trialsdata.trial[i].isproj[j] = gettrialinfo('trialstepisproj',i-1,j-1)
-				start.trialsdata.trial[i].specialbool[j] = gettrialinfo('trialstepspecialbool',i-1,j-1)
-				start.trialsdata.trial[i].specialstr[j] = gettrialinfo('trialstepspecialstr',i-1,j-1)
-				start.trialsdata.trial[i].specialval[j] = gettrialinfo('trialstepspecialval',i-1,j-1)
-				start.trialsdata.trial[i].iscounterhit[j] = gettrialinfo('trialstepiscounterhit',i-1,j-1)
-				start.trialsdata.trial[i].glyphline[j] = {
-					glyph = {},
-					pos = {},
-					width = {},
-					alignOffset = {},
-					lengthOffset = {},
-					scale = {}
+				start.trialsdata.trial[i].trialstep[j] = {
+					numofmicrosteps = gettrialinfo('trialstepmicrosteps',i-1,j-1),
+					text = gettrialinfo('trialstepname',i-1,j-1),
+					glyphs = gettrialinfo('trialstepglyphs',i-1,j-1),
+					stateno = {},
+					animno = {},
+					numofhits = {},
+					stephitscount = {},
+					combocountonstep = {},
+					isthrow = {},
+					isnohit = {},
+					ishelper = {},
+					isproj = {},
+					specialbool = {},
+					specialstr = {},
+					specialval = {},
+					iscounterhit = {},
+					glyphline = {
+						glyph = {},
+						pos = {},
+						width = {},
+						alignOffset = {},
+						lengthOffset = {},
+						scale = {},
+					},
 				}
 
-				local movelistline = start.trialsdata.trial[i].glyphs[j]
+				for ii = 1, start.trialsdata.trial[i].trialstep[j].numofmicrosteps, 1 do
+					table.insert(start.trialsdata.trial[i].trialstep[j].stateno, gettrialinfo('trialstepstateno',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].animno, gettrialinfo('trialstepanimno',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].numofhits, gettrialinfo('trialstepnumofhits',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].stephitscount, 0)
+					table.insert(start.trialsdata.trial[i].trialstep[j].combocountonstep, 0)
+					table.insert(start.trialsdata.trial[i].trialstep[j].isthrow, gettrialinfo('trialstepisthrow',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].isnohit, gettrialinfo('trialstepisnohit',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].ishelper, gettrialinfo('trialstepishelper',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].isproj, gettrialinfo('trialstepisproj',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].specialbool, gettrialinfo('trialstepspecialbool',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].specialstr, gettrialinfo('trialstepspecialstr',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].specialval, gettrialinfo('trialstepspecialval',i-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].iscounterhit, gettrialinfo('trialstepiscounterhit',i-1,j-1,ii-1))
+
+					-- start.trialsdata.trial[i].trialstep[j].stateno[ii] = gettrialinfo('trialstepstateno',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].animno[ii] = gettrialinfo('trialstepanimno',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].numofhits[ii] = gettrialinfo('trialstepnumofhits',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].stephitscount[ii] = 0
+					-- start.trialsdata.trial[i].trialstep[j].combocountonstep[ii] = 0
+					-- start.trialsdata.trial[i].trialstep[j].isthrow[ii] = gettrialinfo('trialstepisthrow',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].isnohit[ii] = gettrialinfo('trialstepisnohit',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].ishelper[ii] = gettrialinfo('trialstepishelper',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].isproj[ii] = gettrialinfo('trialstepisproj',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].specialbool[ii] = gettrialinfo('trialstepspecialbool',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].specialstr[ii] = gettrialinfo('trialstepspecialstr',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].specialval[ii] = gettrialinfo('trialstepspecialval',i-1,j-1,ii-1)
+					-- start.trialsdata.trial[i].trialstep[j].iscounterhit[ii] = gettrialinfo('trialstepiscounterhit',i-1,j-1,ii-1)
+				end
+				local movelistline = start.trialsdata.trial[i].trialstep[j].glyphs
 				for k, v in main.f_sortKeys(motif.glyphs, function(t, a, b) return string.len(a) > string.len(b) end) do
 					movelistline = movelistline:gsub(main.f_escapePattern(k), '<' .. numberToRune(v[1] + 0xe000) .. '>')
 				end
@@ -613,21 +640,21 @@ function start.f_trialsBuilder()
 					end
 					if motif.trials_info.glyphs_align == -1 then
 						for ii = #tempglyphs, 1, -1 do
-							start.trialsdata.trial[i].glyphline[j].glyph[#start.trialsdata.trial[i].glyphline[j].glyph+1] = tempglyphs[ii]
-							start.trialsdata.trial[i].glyphline[j].pos[#start.trialsdata.trial[i].glyphline[j].glyph+1] = {0,0}
-							start.trialsdata.trial[i].glyphline[j].width[#start.trialsdata.trial[i].glyphline[j].glyph+1] = 0
-							start.trialsdata.trial[i].glyphline[j].alignOffset[#start.trialsdata.trial[i].glyphline[j].glyph+1] = 0
-							start.trialsdata.trial[i].glyphline[j].lengthOffset[#start.trialsdata.trial[i].glyphline[j].glyph+1] = 0
-							start.trialsdata.trial[i].glyphline[j].scale[#start.trialsdata.trial[i].glyphline[j].glyph+1] = {1,1}
+							start.trialsdata.trial[i].trialstep[j].glyphline.glyph[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = tempglyphs[ii]
+							start.trialsdata.trial[i].trialstep[j].glyphline.pos[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = {0,0}
+							start.trialsdata.trial[i].trialstep[j].glyphline.width[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
+							start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
+							start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
+							start.trialsdata.trial[i].trialstep[j].glyphline.scale[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = {1,1}
 						end
 					else
 						for ii = 1, #tempglyphs do
-							start.trialsdata.trial[i].glyphline[j].glyph[ii] = tempglyphs[ii]
-							start.trialsdata.trial[i].glyphline[j].pos[ii] = {0,0}
-							start.trialsdata.trial[i].glyphline[j].width[ii] = 0
-							start.trialsdata.trial[i].glyphline[j].alignOffset[ii] = 0
-							start.trialsdata.trial[i].glyphline[j].lengthOffset[ii] = 0
-							start.trialsdata.trial[i].glyphline[j].scale[ii] = {1,1}
+							start.trialsdata.trial[i].trialstep[j].glyphline.glyph[ii] = tempglyphs[ii]
+							start.trialsdata.trial[i].trialstep[j].glyphline.pos[ii] = {0,0}
+							start.trialsdata.trial[i].trialstep[j].glyphline.width[ii] = 0
+							start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[ii] = 0
+							start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[ii] = 0
+							start.trialsdata.trial[i].trialstep[j].glyphline.scale[ii] = {1,1}
 						end
 					end
 				end
@@ -637,8 +664,8 @@ function start.f_trialsBuilder()
 				local align = 1
 				local width = 0
 				local font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font_height] 
-				for m in pairs(start.trialsdata.trial[i].glyphline[j].glyph) do
-					if motif.glyphs_data[start.trialsdata.trial[i].glyphline[j].glyph[m]] ~= nil then
+				for m in pairs(start.trialsdata.trial[i].trialstep[j].glyphline.glyph) do
+					if motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]] ~= nil then
 						if motif.trials_info.trialslayout == 0 then
 							if motif.trials_info.glyphs_align == 0 then --center align
 								alignOffset = motif.trials_info.glyphs_offset[1] * 0.5
@@ -653,32 +680,35 @@ function start.f_trialsBuilder()
 						local scaleX = motif.trials_info.glyphs_scale[1]
 						local scaleY = motif.trials_info.glyphs_scale[2]
 						if motif.trials_info.trialslayout == 0 then
-							scaleX = font_def.Size[2] * motif.trials_info.currentstep_text_font_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].glyphline[j].glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[1]
-							scaleY = font_def.Size[2] * motif.trials_info.currentstep_text_font_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].glyphline[j].glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[2]
+							scaleX = font_def.Size[2] * motif.trials_info.currentstep_text_font_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[1]
+							scaleY = font_def.Size[2] * motif.trials_info.currentstep_text_font_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[2]
 						end
 						if motif.trials_info.glyphs_align == -1 then
-							alignOffset = alignOffset - motif.glyphs_data[start.trialsdata.trial[i].glyphline[j].glyph[m]].info.Size[1] * scaleX
+							alignOffset = alignOffset - motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX
 						end
-						start.trialsdata.trial[i].glyphline[j].alignOffset[m] = alignOffset
-						start.trialsdata.trial[i].glyphline[j].scale[m] = {scaleX, scaleY}
-						start.trialsdata.trial[i].glyphline[j].pos[m] = {
+						start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[m] = alignOffset
+						start.trialsdata.trial[i].trialstep[j].glyphline.scale[m] = {scaleX, scaleY}
+						start.trialsdata.trial[i].trialstep[j].glyphline.pos[m] = {
 							math.floor(motif.trials_info.pos[1] + motif.trials_info.glyphs_offset[1] + alignOffset + lengthOffset),
 							motif.trials_info.pos[2] + motif.trials_info.glyphs_offset[2]
 						}
-						start.trialsdata.trial[i].glyphline[j].width[m] = math.floor(motif.glyphs_data[start.trialsdata.trial[i].glyphline[j].glyph[m]].info.Size[1] * scaleX + motif.trials_info.glyphs_spacing[1])
+						start.trialsdata.trial[i].trialstep[j].glyphline.width[m] = math.floor(motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX + motif.trials_info.glyphs_spacing[1])
 						if motif.trials_info.glyphs_align == 1 then
-							lengthOffset = lengthOffset + start.trialsdata.trial[i].glyphline[j].width[m]
+							lengthOffset = lengthOffset + start.trialsdata.trial[i].trialstep[j].glyphline.width[m]
 						elseif motif.trials_info.glyphs_align == -1 then
-							lengthOffset = lengthOffset - start.trialsdata.trial[i].glyphline[j].width[m]
+							lengthOffset = lengthOffset - start.trialsdata.trial[i].trialstep[j].glyphline.width[m]
 						else
-							lengthOffset = lengthOffset + start.trialsdata.trial[i].glyphline[j].width[m] / 2
+							lengthOffset = lengthOffset + start.trialsdata.trial[i].trialstep[j].glyphline.width[m] / 2
 						end
-						start.trialsdata.trial[i].glyphline[j].lengthOffset[m] = lengthOffset
+						start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[m] = lengthOffset
 					end
 				end
 			end
+			if start.trialsdata.trial[i].drawsteps > start.trialsdata.maxsteps then
+				start.trialsdata.maxsteps = start.trialsdata.trial[i].drawsteps
+			end
 		end
-		--Pre-populate the draw table so that each trial
+		--Pre-populate the draw table
 		start.trialsdata.draw = {
 			upcomingtextline = {},
 			currenttextline = {},
@@ -780,8 +810,11 @@ function start.f_trialsDrawer()
 
 	local accwidth = 0
 	local addrow = 0
+	
+	-- Initialize abbreviated values for readability
 	ct = start.trialsdata.currenttrial
 	cts = start.trialsdata.currenttrialstep
+	ctms = start.trialsdata.currenttrialmicrostep
 
 	if start.trialsdata.active then 
 		if ct <= start.trialsdata.numoftrials and start.trialsdata.draw.success == 0 then
@@ -813,17 +846,18 @@ function start.f_trialsDrawer()
 			animDraw(motif.trials_info.bg_data)
 
 			local startonstep = 1
-			local drawtothisstep = start.trialsdata.trial[ct].numsteps
+			local drawtothisstep = start.trialsdata.trial[ct].drawsteps
 			
 			--For vertical trial layouts, determine if all assets will be drawn within the trials window range, or if scrolling needs to be enabled. For horizontal layouts, we will figure it out
 			--when we determine glyph and incrementor widths (see notes below). We do this step outside of the draw loop to speed things up.
-			if start.trialsdata.trial[ct].numsteps*motif.trials_info.spacing[2] > start.trialsdata.draw.windowYrange and motif.trials_info.trialslayout == 0 then
+			if start.trialsdata.trial[ct].drawsteps*motif.trials_info.spacing[2] > start.trialsdata.draw.windowYrange and motif.trials_info.trialslayout == 0 then
 				startonstep = math.max(cts-2, 1)
 				if (drawtothisstep - startonstep)*motif.trials_info.spacing[2] > start.trialsdata.draw.windowYrange then
-					drawtothisstep = math.min(startonstep+math.floor(start.trialsdata.draw.windowYrange/motif.trials_info.spacing[2]),start.trialsdata.trialnumsteps[ct])
+					drawtothisstep = math.min(startonstep+math.floor(start.trialsdata.draw.windowYrange/motif.trials_info.spacing[2]),start.trialsdata.trial[ct].drawsteps)
 				end
 			end
 
+			-- how to account for hidden steps here?
 			--This is the draw loop
 			for i = startonstep, drawtothisstep, 1 do
 				local tempoffset = {motif.trials_info.spacing[1]*(i-startonstep),motif.trials_info.spacing[2]*(i-startonstep)}
@@ -853,7 +887,7 @@ function start.f_trialsDrawer()
 					start.trialsdata.draw[sub .. 'textline'][i]:update({
 						x = motif.trials_info.pos[1]+motif.trials_info.upcomingstep_text_offset[1]+motif.trials_info.spacing[1]*(i-startonstep), 
 						y = motif.trials_info.pos[2]+motif.trials_info.upcomingstep_text_offset[2]+motif.trials_info.spacing[2]*(i-startonstep),
-						text = start.trialsdata.trial[ct].text[i]
+						text = start.trialsdata.trial[ct].trialstep[i].text
 					})
 					start.trialsdata.draw[sub .. 'textline'][i]:draw()
 				elseif motif.trials_info.trialslayout == 1 then
@@ -866,7 +900,7 @@ function start.f_trialsDrawer()
 					local bgsize = {0,0}
 					if start.trialsdata.bgelemdata[sub .. 'bgincwidth'] ~= nil then bgincwidth = math.floor(start.trialsdata.bgelemdata[sub .. 'bgincwidth'].Size[1]) end
 					if start.trialsdata.bgelemdata[sub .. 'bgsize'] ~= nil then bgsize = start.trialsdata.bgelemdata[sub .. 'bgsize'].Size end
-					totaloffset = start.trialsdata.trial[ct].glyphline[i].lengthOffset[#start.trialsdata.trial[ct].glyphline[i].lengthOffset]
+					totaloffset = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[#start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset]
 					padding = motif.trials_info.spacing[1]
 					accwidth = accwidth + totaloffset + padding + bgincwidth + padding
 					if accwidth - motif.trials_info.spacing[1] > start.trialsdata.draw.windowXrange then
@@ -877,16 +911,16 @@ function start.f_trialsDrawer()
 					tempoffset[2] = motif.trials_info.spacing[2]*(addrow)
 					local gpoffset = 0
 					for m in pairs(start.trialsdata.trial[ct].glyphline[i].glyph) do
-						if m > 1 then gpoffset = start.trialsdata.trial[ct].glyphline[i].lengthOffset[m-1] end
-						start.trialsdata.trial[ct].glyphline[i].pos[m][1] = motif.trials_info.pos[1] + start.trialsdata.trial[ct].glyphline[i].alignOffset[m] + (accwidth-totaloffset-bgincwidth-padding) + gpoffset-- + start.trialsdata.glyphline[ct][i][m].lengthOffset --+ motif.trials_info.spacing[1]*(i-1)),
+						if m > 1 then gpoffset = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[m-1] end
+						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1] = motif.trials_info.pos[1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[m] + (accwidth-totaloffset-bgincwidth-padding) + gpoffset-- + start.trialsdata.glyphline[ct][i][m].lengthOffset --+ motif.trials_info.spacing[1]*(i-1)),
 					end
 					bgtargetscale = {
 						(padding + totaloffset + padding)/bgsize[1],
 						1
 					}
 					bgtargetpos = {
-						motif.trials_info.pos[1] + motif.trials_info[sub .. 'step_bg_offset'][1] + start.trialsdata.trial[ct].glyphline[i].alignOffset[1] + (accwidth-totaloffset-bgincwidth-2*padding), -- + start.trialsdata.glyphline[ct][i][m].lengthOffset),
-						start.trialsdata.trial[ct].glyphline[i].pos[1][2] + motif.trials_info[sub .. 'step_bg_offset'][2] + tempoffset[2]
+						motif.trials_info.pos[1] + motif.trials_info[sub .. 'step_bg_offset'][1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[1] + (accwidth-totaloffset-bgincwidth-2*padding), -- + start.trialsdata.glyphline[ct][i][m].lengthOffset),
+						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[1][2] + motif.trials_info[sub .. 'step_bg_offset'][2] + tempoffset[2]
 					}
 					animSetScale(motif.trials_info[sub .. 'step_bg_data'], bgtargetscale[1], bgtargetscale[2])
 					animSetPos(motif.trials_info[sub .. 'step_bg_data'], bgtargetpos[1], bgtargetpos[2])
@@ -897,17 +931,17 @@ function start.f_trialsDrawer()
 						if i == cts - 1 then suffix = 'step_bginctocts_' end -- -1 added for cts
 						animSetPos(
 							motif.trials_info[sub .. suffix .. 'data'], 
-							motif.trials_info.pos[1] + motif.trials_info[sub .. suffix .. 'offset'][1] + start.trialsdata.trial[ct].glyphline[i].alignOffset[1] + (accwidth-bgincwidth), -- + start.trialsdata.glyphline[ct][i][m].lengthOffset),
-							start.trialsdata.trial[ct].glyphline[i].pos[1][2] + motif.trials_info[sub .. suffix .. 'offset'][2] + tempoffset[2]
+							motif.trials_info.pos[1] + motif.trials_info[sub .. suffix .. 'offset'][1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[1] + (accwidth-bgincwidth), -- + start.trialsdata.glyphline[ct][i][m].lengthOffset),
+							start.trialsdata.trial[ct].trialstep[i].glyphline.pos[1][2] + motif.trials_info[sub .. suffix .. 'offset'][2] + tempoffset[2]
 						)
 						animUpdate(motif.trials_info[sub .. suffix .. 'data'])
 						animDraw(motif.trials_info[sub .. suffix .. 'data'])
 					end
 				end
-				for m in pairs(start.trialsdata.trial[ct].glyphline[i].glyph) do
-					animSetScale(motif.glyphs_data[start.trialsdata.trial[ct].glyphline[i].glyph[m]].anim, start.trialsdata.trial[ct].glyphline[i].scale[m][1], start.trialsdata.trial[ct].glyphline[i].scale[m][2])
-					animSetPos(motif.glyphs_data[start.trialsdata.trial[ct].glyphline[i].glyph[m]].anim, start.trialsdata.trial[ct].glyphline[i].pos[m][1], start.trialsdata.trial[ct].glyphline[i].pos[m][2]+tempoffset[2])
-					animDraw(motif.glyphs_data[start.trialsdata.trial[ct].glyphline[i].glyph[m]].anim)
+				for m in pairs(start.trialsdata.trial[ct].trialstep[i].glyphline.glyph) do
+					animSetScale(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim, start.trialsdata.trial[ct].trialstep[i].glyphline.scale[m][1], start.trialsdata.trial[ct].trialstep[i].glyphline.scale[m][2])
+					animSetPos(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim, start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1], start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][2]+tempoffset[2])
+					animDraw(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim)
 				end
 			end
 		elseif ct > start.trialsdata.numoftrials then
@@ -956,45 +990,104 @@ function start.f_trialsChecker()
 			attackeranim = anim()
 			player(1)
 			-- Can uncomment this section to debug helper/proj data
-			print("ID: " .. attackerid)
-			print("State: " .. attackerstate)
-			print("Anim: " .. attackeranim)
+			-- print("ID: " .. attackerid)
+			-- print("State: " .. attackerstate)
+			-- print("Anim: " .. attackeranim)
 		end
 
-		if (start.trialsdata.trial[ct].ishelper[cts] and start.trialsdata.trial[ct].stateno[cts] == attackerstate) and (attackeranim == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) then
+		if (start.trialsdata.trial[ct].trialstep[cts].ishelper[ctms] and start.trialsdata.trial[ct].trialstep[cts].stateno[ctms] == attackerstate) and (attackeranim == start.trialsdata.trial[ct].trialstep[cts].animno[ctms] or start.trialsdata.trial[ct].trialstep[cts].animno[ctms] == -1) then
 			helpercheck = true
 		end
 
-		if (start.trialsdata.trial[ct].isproj[cts] and start.trialsdata.trial[ct].stateno[cts] == attackerstate) and (attackeranim == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) then
-			projcheck = true 
+		if (start.trialsdata.trial[ct].trialstep[cts].isproj[ctms] and start.trialsdata.trial[ct].trialstep[cts].stateno[ctms] == attackerstate) and (attackeranim == start.trialsdata.trial[ct].trialstep[cts].animno[ctms] or start.trialsdata.trial[ct].trialstep[cts].animno[ctms] == -1) then
+			projcheck = true
 		end
 
-		maincharcheck = (stateno() == start.trialsdata.trial[ct].stateno[cts] and not(start.trialsdata.trial[ct].isproj[cts]) and not(start.trialsdata.trial[ct].ishelper[cts]) and (anim() == start.trialsdata.trial[ct].animno[cts] or start.trialsdata.trial[ct].animno[cts] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].isthrow[cts] or start.trialsdata.trial[ct].isnohit[cts]))
+		maincharcheck = (stateno() == start.trialsdata.trial[ct].trialstep[cts].stateno[ctms] and not(start.trialsdata.trial[ct].trialstep[cts].isproj[ctms]) and not(start.trialsdata.trial[ct].trialstep[cts].ishelper[ctms]) and (anim() == start.trialsdata.trial[ct].trialstep[cts].animno[ctms] or start.trialsdata.trial[ct].trialstep[cts].animno[ctms] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].trialstep[cts].isthrow[ctms] or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]))
+
+		if ct == 6 then
+			print("ct = " .. ct .. ", cts = " .. cts .. ", ctms = " .. ctms)
+
+			print("stateno = " .. tostring(stateno()) .. ", ctmsstate = " .. start.trialsdata.trial[ct].trialstep[cts].stateno[ctms])
+		end
 
 		if maincharcheck or projcheck or helpercheck then
-			ncts = cts + 1
-			if ncts >= 1 and ((combocount() > 0 and (start.trialsdata.trial[ct].iscounterhit[cts] and movecountered() > 0) or not start.trialsdata.trial[ct].iscounterhit[cts]) or start.trialsdata.trial[ct].isnohit[cts]) then
-				if ncts >= start.trialsdata.trial[ct].numsteps + 1 then
-					start.trialsdata.currenttrial = ct + 1
-					start.trialsdata.currenttrialstep = 1
-					if ct < start.trialsdata.numoftrials then 
-						if (motif.trials_info.success_front_displaytime == -1) and (motif.trials_info.success_bg_displaytime == -1) then
-							start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data)) 
-						else 
-							start.trialsdata.draw.success = math.max(motif.trials_info.success_front_displaytime, motif.trials_info.success_bg_displaytime) 
-						end
-					end
-				else
-					start.trialsdata.currenttrialstep = ncts
+			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 then
+				if start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] == 0 then
+					start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = combocount()
+				end	
+
+				if combocount() - start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] == start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] then
+					start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + 1
 				end
-			elseif ncts > 1 and combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
-				start.trialsdata.currenttrialstep = 1
+			elseif start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 then
+				start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 1
+			elseif start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 0 then
+				start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
 			end
-		elseif combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
+			print("made it in")
+			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] then
+				print("1")
+				nctms = ctms + 1
+				if nctms >= 1 and ((combocount() > 0 and (start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms] and movecountered() > 0) or not start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms]) or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
+					print("2")
+					--if nctms <= nummicrosteps and gating criteria met, increment ctms
+					if nctms < start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then 
+						print("3")
+						start.trialsdata.currenttrialmicrostep = nctms
+					--elseif ncts > nummicrosteps and gating criteria met, increment cts
+					elseif nctms > start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
+						print("4")
+						ncts = cts + 1
+						if ncts >= 1 then
+							print("5")
+							--if ncts > numsteps, increment ct
+							if ncts > start.trialsdata.trial[ct].numsteps then
+								print("6")
+								start.trialsdata.currenttrial = ct + 1
+								start.trialsdata.currenttrialstep = 1
+								start.trialsdata.currenttrialmicrostep = 1
+								--if ct < numtrials, draw success; if ct == numtrials, draw all clear
+								if ct < start.trialsdata.numoftrials then 
+									if (motif.trials_info.success_front_displaytime == -1) and (motif.trials_info.success_bg_displaytime == -1) then
+										start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data)) 
+									else 
+										start.trialsdata.draw.success = math.max(motif.trials_info.success_front_displaytime, motif.trials_info.success_bg_displaytime) 
+									end
+								end
+							else
+								print("7")
+								start.trialsdata.currenttrialstep = ncts
+								start.trialsdata.currenttrialmicrostep = 1
+							end
+						--else, reset cts and ctms to 1
+						elseif ncts > 1 and combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+							print("8")
+							start.trialsdata.currenttrialstep = 1
+							start.trialsdata.currenttrialmicrostep = 1
+							start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
+							start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
+						end
+					elseif nctms > 1 and start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+						print("9")
+						start.trialsdata.currenttrialmicrostep = nctms
+					elseif nctms > 1 and combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+						print("10")
+						start.trialsdata.currenttrialstep = 1
+						start.trialsdata.currenttrialmicrostep = 1
+						start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
+						start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
+					end
+				end
+			end
+		elseif combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+			print("11")
 			start.trialsdata.currenttrialstep = 1
+			start.trialsdata.currenttrialmicrostep = 1
+			start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
+			start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
 		end
 	end
-
 	--If the trial was completed successfully, draw the trials success
 	if start.trialsdata.draw.success > 0 then
 		start.f_trialsSuccess('success', ct)
@@ -1008,7 +1101,6 @@ end
 
 function start.f_trialsSuccess(successstring, index)
 	-- This function is responsible for drawing the Success or All Clear banners after a trial is completed successfully.
-	--
 	charMapSet(2, '_iksys_trainingDummyMode', 0)
 	charMapSet(2, '_iksys_trainingGuardMode', 0)
 	charMapSet(2, '_iksys_trainingButtonJam', 0)
@@ -1087,6 +1179,7 @@ function menu.f_trialsReset()
 	print("here now")
 	start.trialsdata.currenttrial = 1
 	start.trialsdata.currenttrialstep = 1
+	start.trialsdata.currenttrialmicrostep = 1
 end
 
 function start.f_trialsMode()
