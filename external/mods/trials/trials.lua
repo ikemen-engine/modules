@@ -1005,12 +1005,6 @@ function start.f_trialsChecker()
 
 		maincharcheck = (stateno() == start.trialsdata.trial[ct].trialstep[cts].stateno[ctms] and not(start.trialsdata.trial[ct].trialstep[cts].isproj[ctms]) and not(start.trialsdata.trial[ct].trialstep[cts].ishelper[ctms]) and (anim() == start.trialsdata.trial[ct].trialstep[cts].animno[ctms] or start.trialsdata.trial[ct].trialstep[cts].animno[ctms] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].trialstep[cts].isthrow[ctms] or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]))
 
-		if ct == 6 then
-			print("ct = " .. ct .. ", cts = " .. cts .. ", ctms = " .. ctms)
-
-			print("stateno = " .. tostring(stateno()) .. ", ctmsstate = " .. start.trialsdata.trial[ct].trialstep[cts].stateno[ctms])
-		end
-
 		if maincharcheck or projcheck or helpercheck then
 			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 then
 				if start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] == 0 then
@@ -1025,63 +1019,112 @@ function start.f_trialsChecker()
 			elseif start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 0 then
 				start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
 			end
-			print("made it in")
+
+			--ctms logic first
 			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] then
-				print("1")
 				nctms = ctms + 1
 				if nctms >= 1 and ((combocount() > 0 and (start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms] and movecountered() > 0) or not start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms]) or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
-					print("2")
-					--if nctms <= nummicrosteps and gating criteria met, increment ctms
-					if nctms < start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then 
-						print("3")
+					--if ct == 6 then
+						print("stephitcount = " .. start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms])
+						print("combocountonstep = " .. start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms])
+						print("combocount = " .. combocount())
+						print("numofhits = " .. start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms])
+						print("gating val = " .. start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1)
+					--end
+					--if nctms <= nummicrosteps and gating criteria met for move that hits, increment ctms
+					if nctms >= 1 and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then 
 						start.trialsdata.currenttrialmicrostep = nctms
-					--elseif ncts > nummicrosteps and gating criteria met, increment cts
-					elseif nctms > start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
-						print("4")
-						ncts = cts + 1
-						if ncts >= 1 then
-							print("5")
-							--if ncts > numsteps, increment ct
-							if ncts > start.trialsdata.trial[ct].numsteps then
-								print("6")
-								start.trialsdata.currenttrial = ct + 1
-								start.trialsdata.currenttrialstep = 1
-								start.trialsdata.currenttrialmicrostep = 1
-								--if ct < numtrials, draw success; if ct == numtrials, draw all clear
-								if ct < start.trialsdata.numoftrials then 
-									if (motif.trials_info.success_front_displaytime == -1) and (motif.trials_info.success_bg_displaytime == -1) then
-										start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data)) 
-									else 
-										start.trialsdata.draw.success = math.max(motif.trials_info.success_front_displaytime, motif.trials_info.success_bg_displaytime) 
-									end
-								end
-							else
-								print("7")
-								start.trialsdata.currenttrialstep = ncts
-								start.trialsdata.currenttrialmicrostep = 1
-							end
-						--else, reset cts and ctms to 1
-						elseif ncts > 1 and combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
-							print("8")
-							start.trialsdata.currenttrialstep = 1
-							start.trialsdata.currenttrialmicrostep = 1
-							start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
-							start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
-						end
-					elseif nctms > 1 and start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
-						print("9")
-						start.trialsdata.currenttrialmicrostep = nctms
-					elseif nctms > 1 and combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
-						print("10")
+					--elseif ctms is nohit, increment ctms
+					-- elseif nctms > 1 and start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+					-- 	print("ctms is nohit, increment ctms")
+					-- 	start.trialsdata.currenttrialmicrostep = nctms
+					--else, nctms failed
+					elseif combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
 						start.trialsdata.currenttrialstep = 1
 						start.trialsdata.currenttrialmicrostep = 1
 						start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
 						start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
 					end
 				end
+
+				--next, check ctms and increment cts if needed
+				if start.trialsdata.currenttrialmicrostep > start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps then
+					--print("numofmicrosteps exceeded")
+					--ncts = cts + 1
+					start.trialsdata.currenttrialmicrostep = 1
+					start.trialsdata.currenttrialstep = cts + 1
+					if start.trialsdata.currenttrialstep > start.trialsdata.trial[ct].numsteps then
+						--print("numofsteps exceeded")
+						start.trialsdata.currenttrial = ct + 1
+						start.trialsdata.currenttrialstep = 1
+						if ct < start.trialsdata.numoftrials then 
+							if (motif.trials_info.success_front_displaytime == -1) and (motif.trials_info.success_bg_displaytime == -1) then
+								start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data)) 
+							else 
+								start.trialsdata.draw.success = math.max(motif.trials_info.success_front_displaytime, motif.trials_info.success_bg_displaytime) 
+							end
+						end
+					else
+						--do nothing
+					end
+				end
 			end
+
+			-- if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] then
+			-- 	print("1")
+			-- 	nctms = ctms + 1
+			-- 	if nctms >= 1 and ((combocount() > 0 and (start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms] and movecountered() > 0) or not start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms]) or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
+			-- 		print("2")
+			-- 		--if nctms <= nummicrosteps and gating criteria met, increment ctms
+			-- 		if nctms < start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then 
+			-- 			print("3")
+			-- 			start.trialsdata.currenttrialmicrostep = nctms
+			-- 		--elseif ncts > nummicrosteps and gating criteria met, increment cts
+			-- 		elseif nctms > start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
+			-- 			print("4")
+			-- 			ncts = cts + 1
+			-- 			if ncts >= 1 then
+			-- 				print("5")
+			-- 				--if ncts > numsteps, increment ct
+			-- 				if ncts > start.trialsdata.trial[ct].numsteps then
+			-- 					print("6")
+			-- 					start.trialsdata.currenttrial = ct + 1
+			-- 					start.trialsdata.currenttrialstep = 1
+			-- 					start.trialsdata.currenttrialmicrostep = 1
+			-- 					--if ct < numtrials, draw success; if ct == numtrials, draw all clear
+			-- 					if ct < start.trialsdata.numoftrials then 
+			-- 						if (motif.trials_info.success_front_displaytime == -1) and (motif.trials_info.success_bg_displaytime == -1) then
+			-- 							start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data)) 
+			-- 						else 
+			-- 							start.trialsdata.draw.success = math.max(motif.trials_info.success_front_displaytime, motif.trials_info.success_bg_displaytime) 
+			-- 						end
+			-- 					end
+			-- 				else
+			-- 					print("7")
+			-- 					start.trialsdata.currenttrialstep = ncts
+			-- 					start.trialsdata.currenttrialmicrostep = 1
+			-- 				end
+			-- 			--else, reset cts and ctms to 1
+			-- 			elseif ncts > 1 and combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+			-- 				print("8")
+			-- 				start.trialsdata.currenttrialstep = 1
+			-- 				start.trialsdata.currenttrialmicrostep = 1
+			-- 				start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
+			-- 				start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
+			-- 			end
+			-- 		elseif nctms > 1 and start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+			-- 			print("9")
+			-- 			start.trialsdata.currenttrialmicrostep = nctms
+			-- 		elseif nctms > 1 and combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+			-- 			print("10")
+			-- 			start.trialsdata.currenttrialstep = 1
+			-- 			start.trialsdata.currenttrialmicrostep = 1
+			-- 			start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
+			-- 			start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
+			-- 		end
+			-- 	end
+			-- end
 		elseif combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
-			print("11")
 			start.trialsdata.currenttrialstep = 1
 			start.trialsdata.currenttrialmicrostep = 1
 			start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
