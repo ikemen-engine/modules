@@ -692,10 +692,7 @@ function start.f_trialsBuilder()
 				local align = 1
 				local width = 0
 
-				print(tostring(motif.trials_info.currentstep_text_font[1]))
-				print(tostring(motif.trials_info.currentstep_text_font_height))
 				local font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font[7]]
-				print(tostring(font_def))
 				for m in pairs(start.trialsdata.trial[i].trialstep[j].glyphline.glyph) do
 					if motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]] ~= nil then
 						if motif.trials_info.trialslayout == 0 then
@@ -1025,6 +1022,7 @@ function start.f_trialsChecker()
 			attackerstate = stateno()
 			attackeranim = anim()
 			player(1)
+			
 			-- Can uncomment this section to debug helper/proj data
 			-- print("ID: " .. attackerid)
 			-- print("State: " .. attackerstate)
