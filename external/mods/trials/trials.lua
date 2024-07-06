@@ -171,25 +171,25 @@
 
 ; KFMZ TRIALS LIST ---------------------------
 
-[TrialDef, KFM's First Trial] 				;Mandatory - [TriafDef] is required, the trial title after the the comma is optional.
-trial.dummymode			= stand				;Optional - valid options are stand (default), crouch, jump, wjump. 
-trial.guardmode			= none				;Optional - valid options are none (default), auto.
-trial.dummybuttonjam 	= none				;Optional - valid options are none (default), a, b, c, x, y, z, start, d, w.
+[TrialDef, KFM's First Trial] 				;Mandatory - [TriafDef] is required, the trial title after the comma is optional.
+trial.dummymode			    = stand			;Optional - valid options are stand (default), crouch, jump, wjump. Defaults to stand if unspecified.
+trial.guardmode			    = none			;Optional - valid options are none, auto. Defaults to none if unspecified.
+trial.dummybuttonjam 	    = none			;Optional - valid options are none, a, b, c, x, y, z, start, d, w. Defaults to none if unspecified.
 
-trialstep.1.stateno 	= 1010				;Mandatory - (integer). State to be checked to pass trial. This is the state whether it's the main character, a helper, or even a projectile.
-trialstep.1.text 		= Strong KF Palm	;Optional - (string). Name for trial step (only displayed in vertical trials layout). I recommend always defining this.
-trialstep.1.glyphs 		= _QDF^Y  	        ;Optional - (string, see Glyph docs). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
+trialstep.1.text 		    = Strong Kung Fu Palm	;Optional - (string). Name for trial step (only displayed in vertical trials layout). I recommend always defining this.
+trialstep.1.glyphs 		    = _QDF^Y  	            ;Optional - (string, see Glyph docs). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
 
-trialstep.1.anim			=				;Optional - (integer). Identifies animno to be checked to pass trial. Useful in certain cases.
-trialstep.1.numofhits		=				;Optional - (integer), will default to 1 if not defined. In some instances, you might want to specify a trial step to meet a multi-hit criteria before proceeding to the next trial step.
-trialstep.1.isthrow 		= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
-trialstep.1.isnohit			= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
-trialstep.1.iscounterhit	= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
-trialstep.1.ishelper		= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
-trialstep.1.isproj			= 				;Optional - (true or false), will default to false if not defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
-trialstep.1.specialbool 	=				;Optional - (true or false), will default to false if not defined. Can be used for custom games as required.
-trialstep.1.specialvar		=				;Optional - (integer). Can be used for custom games as required.
-trialstep.1.specialstr		=				;Optional - (string). Can be used for custom games as required.
+trialstep.1.stateno 		= 1010			;Mandatory - (integer or comma-separated integers). State to be checked to pass trial. This is the state whether it's the main character, a helper, or even a projectile.
+trialstep.1.anim			=				;Optional - (integer or comma-separated integers). Identifies animno to be checked to pass trial. Useful in certain cases.
+trialstep.1.numofhits		=				;Optional - (integer or comma-separated integers), will default to 1 if not defined. In some instances, you might want to specify a trial step to meet a multi-hit criteria before proceeding to the next trial step.
+trialstep.1.isthrow 		= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
+trialstep.1.isnohit			= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
+trialstep.1.iscounterhit	= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
+trialstep.1.ishelper		= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
+trialstep.1.isproj			= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
+trialstep.1.specialbool 	=				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Can be used for custom games as required.
+trialstep.1.specialvar		=				;Optional - (integer or comma-separated integers). Can be used for custom games as required.
+trialstep.1.specialstr		=				;Optional - (string, or comma-separated strings). Can be used for custom games as required.
 
 ;---------------------------------------------
 
@@ -201,6 +201,14 @@ trialstep.1.isthrow		= true
 
 ;---------------------------------------------
 
+[TrialDef, Kung Fu Taunt]
+trialstep.1.text 		= Kung Fu Taunt
+trialstep.1.glyphs 		= ^S
+trialstep.1.stateno 	= 195
+trialstep.1.isnohit		= true
+
+;---------------------------------------------
+
 [TrialDef, Standing Punch Chain]
 trialstep.1.text 		= Standing Light Punch
 trialstep.1.glyphs 		= ^X
@@ -209,6 +217,34 @@ trialstep.1.stateno 	= 200
 trialstep.2.text 		= Standing Strong Punch
 trialstep.2.glyphs 		= ^Y
 trialstep.2.stateno 	= 210
+
+;---------------------------------------------
+
+[TrialDef, Condensed Standing Punch Chain]
+; The next two trials show examples ofcondensed trial steps which check a series of parameters sequentially by using comma separated values. In other words, think of being able to specify multiple trial steps in a single step.
+; For instance, this trial is the same as the previous, but has two steps condensed into one.
+; The next trial uses a combination of condensed steps and normal steps to provide a concise trial.
+; Condensed steps can be very practical for multi-state moves where the trial step should only clear if all of the states are met, without having to create multiple trial steps.
+
+trialstep.1.text 		= Standing Light to Strong Punch Chain		
+trialstep.1.glyphs 		= ^X_,^Y			; When desired, you can collapsed multiple steps into a single one but using comma separated values in the following parameters:
+trialstep.1.stateno 	= 200, 210		; stateno, animno, numofhits, isthrow, iscounterhit, isnohit, ishelper, isproj, specialbool, specialvar, specialstr
+trialstep.1.numofhits	= 1, 1			; If one parameter on the trial step is defined using comma separated values, all parameters on that trial step must be defined similarly.
+
+;---------------------------------------------
+
+[TrialDef, Kung Fu Juggle Combo]
+trialstep.1.text 		= Kung Fu Knee and Extra Kick
+trialstep.1.glyphs 		= _F_F_+^K_.^K
+trialstep.1.stateno 	= 1060, 1055
+
+trialstep.2.text 		= Crouching Jab
+trialstep.2.glyphs 		= _D_+^X
+trialstep.2.stateno 	= 400
+
+trialstep.3.text 		= Weak Kung Fu Palm
+trialstep.3.glyphs 		= _QCF_+^X
+trialstep.3.stateno 	= 1000
 
 ;---------------------------------------------
 
@@ -251,6 +287,7 @@ trialstep.4.stateno 	= 1420
 trialstep.5.text 		= Triple Kung Fu Palm
 trialstep.5.glyphs 		= _QDF_QDF^P
 trialstep.5.stateno 	= 3000
+trialstep.5.numofhits   = 3
 
 ]]
 
@@ -290,6 +327,8 @@ if motif.select_info.title_trials_text == nil then
 end
 
 local t_base = {
+	enabled = 1,
+	sounds_enabled = 1,
     pos = {0, 0}, --Ikemen feature
     spacing = {0, 0}, --Ikemen feature
     window = {0,0,0,0}, --Ikemen feature
@@ -300,6 +339,7 @@ local t_base = {
     trialcounter_font_scale = {1.0, 1.0}, --Ikemen feature
     trialcounter_font_height = -1, --Ikemen feature
     trialcounter_text = '', --Ikemen feature
+	trialcounterallclear_text = '', --Ikemen feature
 	totaltrialtimer_offset = {0,0}, --Ikemen feature
     totaltrialtimer_font = {'f-6x9.def', 0, 1, 255, 255, 255}, --Ikemen feature
     totaltrialtimer_font_scale = {1.0, 1.0}, --Ikemen feature
@@ -387,6 +427,7 @@ local t_base = {
     success_front_facing = 1, --Ikemen feature
     success_front_scale = {1.0, 1.0}, --Ikemen feature
     success_front_displaytime = -1, --Ikemen feature
+	success_text_displaytime = -1, --Ikemen feature
     success_text_offset = {0,0}, --Ikemen feature
     success_text_font = {'f-6x9.def', 0, 1, 255, 255, 255}, --Ikemen feature
     success_text_font_scale = {1.0, 1.0}, --Ikemen feature
@@ -406,6 +447,7 @@ local t_base = {
     allclear_front_facing = 1, --Ikemen feature
     allclear_front_scale = {1.0, 1.0}, --Ikemen feature
     allclear_front_displaytime = -1, --Ikemen feature
+	allclear_text_displaytime = -1, --Ikemen feature
     allclear_text_offset = {0,0}, --Ikemen feature
     allclear_text_font = {'f-6x9.def', 0, 1, 255, 255, 255}, --Ikemen feature
     allclear_text_font_scale = {1.0, 1.0}, --Ikemen feature
@@ -463,7 +505,6 @@ for _, v in ipairs({
 	 	main.f_loadingRefresh()
 	 	motif.f_loadSprData(motif.trials_info, v, motif.files.trials_data)
 	elseif main.f_fileExists('external/mods/trials/trials.sff') then
-		print("loading trials.sff")
 		motif.files.trials_data = sffNew(searchFile('external/mods/trials/trials.sff', {motif.fileDir, '', 'data/'}))
 	 	main.f_loadingRefresh()
 	 	motif.f_loadSprData(motif.trials_info, v, motif.files.trials_data)
@@ -571,7 +612,7 @@ function start.f_trialsBuilder()
 			for j = 1, start.trialsdata.trial[i].numsteps, 1 do
 				start.trialsdata.trial[i].trialstep[j] = {
 					numofmicrosteps = gettrialinfo('trialstepmicrosteps',i-1,j-1),
-					text = gettrialinfo('trialstepname',i-1,j-1),
+					text = gettrialinfo('trialsteptext',i-1,j-1),
 					glyphs = gettrialinfo('trialstepglyphs',i-1,j-1),
 					stateno = {},
 					animno = {},
@@ -610,21 +651,8 @@ function start.f_trialsBuilder()
 					table.insert(start.trialsdata.trial[i].trialstep[j].specialstr, gettrialinfo('trialstepspecialstr',i-1,j-1,ii-1))
 					table.insert(start.trialsdata.trial[i].trialstep[j].specialval, gettrialinfo('trialstepspecialval',i-1,j-1,ii-1))
 					table.insert(start.trialsdata.trial[i].trialstep[j].iscounterhit, gettrialinfo('trialstepiscounterhit',i-1,j-1,ii-1))
-
-					-- start.trialsdata.trial[i].trialstep[j].stateno[ii] = gettrialinfo('trialstepstateno',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].animno[ii] = gettrialinfo('trialstepanimno',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].numofhits[ii] = gettrialinfo('trialstepnumofhits',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].stephitscount[ii] = 0
-					-- start.trialsdata.trial[i].trialstep[j].combocountonstep[ii] = 0
-					-- start.trialsdata.trial[i].trialstep[j].isthrow[ii] = gettrialinfo('trialstepisthrow',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].isnohit[ii] = gettrialinfo('trialstepisnohit',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].ishelper[ii] = gettrialinfo('trialstepishelper',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].isproj[ii] = gettrialinfo('trialstepisproj',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].specialbool[ii] = gettrialinfo('trialstepspecialbool',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].specialstr[ii] = gettrialinfo('trialstepspecialstr',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].specialval[ii] = gettrialinfo('trialstepspecialval',i-1,j-1,ii-1)
-					-- start.trialsdata.trial[i].trialstep[j].iscounterhit[ii] = gettrialinfo('trialstepiscounterhit',i-1,j-1,ii-1)
 				end
+				
 				local movelistline = start.trialsdata.trial[i].trialstep[j].glyphs
 				for k, v in main.f_sortKeys(motif.glyphs, function(t, a, b) return string.len(a) > string.len(b) end) do
 					movelistline = movelistline:gsub(main.f_escapePattern(k), '<' .. numberToRune(v[1] + 0xe000) .. '>')
@@ -663,7 +691,11 @@ function start.f_trialsBuilder()
 				local alignOffset = 0
 				local align = 1
 				local width = 0
-				local font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font_height] 
+
+				print(tostring(motif.trials_info.currentstep_text_font[1]))
+				print(tostring(motif.trials_info.currentstep_text_font_height))
+				local font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font_height]
+				print(tostring(font_def))
 				for m in pairs(start.trialsdata.trial[i].trialstep[j].glyphline.glyph) do
 					if motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]] ~= nil then
 						if motif.trials_info.trialslayout == 0 then
@@ -679,7 +711,7 @@ function start.f_trialsBuilder()
 						end
 						local scaleX = motif.trials_info.glyphs_scale[1]
 						local scaleY = motif.trials_info.glyphs_scale[2]
-						if motif.trials_info.trialslayout == 0 then
+						if motif.trials_info.trialslayout == 0 then						
 							scaleX = font_def.Size[2] * motif.trials_info.currentstep_text_font_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[1]
 							scaleY = font_def.Size[2] * motif.trials_info.currentstep_text_font_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[2]
 						end
@@ -714,13 +746,17 @@ function start.f_trialsBuilder()
 			currenttextline = {},
 			completedtextline = {},
 			success = 0,
-			allclear = math.max(animGetLength(motif.trials_info.allclear_front_data), animGetLength(motif.trials_info.allclear_bg_data)),
+			success_text = main.f_createTextImg(motif.trials_info, 'success_text'),
+			allclear = math.max(animGetLength(motif.trials_info.allclear_front_data), animGetLength(motif.trials_info.allclear_bg_data), motif.trials_info.allclear_text_displaytime),
+			allclear_text = main.f_createTextImg(motif.trials_info, 'allclear_text'),
 			trialcounter = main.f_createTextImg(motif.trials_info, 'trialcounter'),
 			totaltrialtimer = main.f_createTextImg(motif.trials_info, 'totaltrialtimer'),
 			currenttrialtimer = main.f_createTextImg(motif.trials_info, 'currenttrialtimer'),
 			windowXrange = motif.trials_info.window[3] - motif.trials_info.window[1],
 			windowYrange = motif.trials_info.window[4] - motif.trials_info.window[2],
 		}
+		start.trialsdata.draw.success_text:update({x = motif.trials_info.pos[1]+motif.trials_info.success_text_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.success_text_offset[2],})
+		start.trialsdata.draw.allclear_text:update({x = motif.trials_info.pos[1]+motif.trials_info.allclear_text_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.allclear_text_offset[2],})
 		start.trialsdata.draw.trialcounter:update({x = motif.trials_info.pos[1]+motif.trials_info.trialcounter_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.trialcounter_offset[2],})
 		start.trialsdata.draw.totaltrialtimer:update({x = motif.trials_info.pos[1]+motif.trials_info.totaltrialtimer_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.totaltrialtimer_offset[2],})
 		start.trialsdata.draw.currenttrialtimer:update({x = motif.trials_info.pos[1]+motif.trials_info.currenttrialtimer_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.currenttrialtimer_offset[2],})
@@ -952,7 +988,7 @@ function start.f_trialsDrawer()
 				main.f_createTextImg(motif.trials_info, 'allclear_text')
 			end
 			start.trialsdata.draw.success = 0
-			start.trialsdata.draw.trialcounter:update({text = 'All Trials Clear'})
+			start.trialsdata.draw.trialcounter:update({text = motif.trials_info.trialcounterallclear_text})
 			start.trialsdata.draw.trialcounter:draw()
 
 			local totaltimertext = motif.trials_info.totaltrialtimer_text
@@ -1010,7 +1046,6 @@ function start.f_trialsChecker()
 				if start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] == 0 then
 					start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = combocount()
 				end	
-
 				if combocount() - start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] == start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] then
 					start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + 1
 				end
@@ -1020,25 +1055,12 @@ function start.f_trialsChecker()
 				start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
 			end
 
-			--ctms logic first
 			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] then
 				nctms = ctms + 1
+				-- First, check that the microstep has passed
 				if nctms >= 1 and ((combocount() > 0 and (start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms] and movecountered() > 0) or not start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms]) or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
-					--if ct == 6 then
-						print("stephitcount = " .. start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms])
-						print("combocountonstep = " .. start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms])
-						print("combocount = " .. combocount())
-						print("numofhits = " .. start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms])
-						print("gating val = " .. start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1)
-					--end
-					--if nctms <= nummicrosteps and gating criteria met for move that hits, increment ctms
 					if nctms >= 1 and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then 
 						start.trialsdata.currenttrialmicrostep = nctms
-					--elseif ctms is nohit, increment ctms
-					-- elseif nctms > 1 and start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
-					-- 	print("ctms is nohit, increment ctms")
-					-- 	start.trialsdata.currenttrialmicrostep = nctms
-					--else, nctms failed
 					elseif combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
 						start.trialsdata.currenttrialstep = 1
 						start.trialsdata.currenttrialmicrostep = 1
@@ -1046,84 +1068,24 @@ function start.f_trialsChecker()
 						start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
 					end
 				end
-
-				--next, check ctms and increment cts if needed
+				-- Next, if microstep is exceeded, go to next trial step
 				if start.trialsdata.currenttrialmicrostep > start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps then
-					--print("numofmicrosteps exceeded")
-					--ncts = cts + 1
 					start.trialsdata.currenttrialmicrostep = 1
 					start.trialsdata.currenttrialstep = cts + 1
 					if start.trialsdata.currenttrialstep > start.trialsdata.trial[ct].numsteps then
-						--print("numofsteps exceeded")
+						-- If trial step was last, go to next trial and display success banner
 						start.trialsdata.currenttrial = ct + 1
 						start.trialsdata.currenttrialstep = 1
 						if ct < start.trialsdata.numoftrials then 
 							if (motif.trials_info.success_front_displaytime == -1) and (motif.trials_info.success_bg_displaytime == -1) then
-								start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data)) 
+								start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data), motif.trials_info.success_text_displaytime) 
 							else 
-								start.trialsdata.draw.success = math.max(motif.trials_info.success_front_displaytime, motif.trials_info.success_bg_displaytime) 
+								start.trialsdata.draw.success = math.max(motif.trials_info.success_front_displaytime, motif.trials_info.success_bg_displaytime, motif.trials_info.success_text_displaytime) 
 							end
 						end
-					else
-						--do nothing
 					end
 				end
 			end
-
-			-- if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] then
-			-- 	print("1")
-			-- 	nctms = ctms + 1
-			-- 	if nctms >= 1 and ((combocount() > 0 and (start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms] and movecountered() > 0) or not start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms]) or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
-			-- 		print("2")
-			-- 		--if nctms <= nummicrosteps and gating criteria met, increment ctms
-			-- 		if nctms < start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then 
-			-- 			print("3")
-			-- 			start.trialsdata.currenttrialmicrostep = nctms
-			-- 		--elseif ncts > nummicrosteps and gating criteria met, increment cts
-			-- 		elseif nctms > start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
-			-- 			print("4")
-			-- 			ncts = cts + 1
-			-- 			if ncts >= 1 then
-			-- 				print("5")
-			-- 				--if ncts > numsteps, increment ct
-			-- 				if ncts > start.trialsdata.trial[ct].numsteps then
-			-- 					print("6")
-			-- 					start.trialsdata.currenttrial = ct + 1
-			-- 					start.trialsdata.currenttrialstep = 1
-			-- 					start.trialsdata.currenttrialmicrostep = 1
-			-- 					--if ct < numtrials, draw success; if ct == numtrials, draw all clear
-			-- 					if ct < start.trialsdata.numoftrials then 
-			-- 						if (motif.trials_info.success_front_displaytime == -1) and (motif.trials_info.success_bg_displaytime == -1) then
-			-- 							start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data)) 
-			-- 						else 
-			-- 							start.trialsdata.draw.success = math.max(motif.trials_info.success_front_displaytime, motif.trials_info.success_bg_displaytime) 
-			-- 						end
-			-- 					end
-			-- 				else
-			-- 					print("7")
-			-- 					start.trialsdata.currenttrialstep = ncts
-			-- 					start.trialsdata.currenttrialmicrostep = 1
-			-- 				end
-			-- 			--else, reset cts and ctms to 1
-			-- 			elseif ncts > 1 and combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
-			-- 				print("8")
-			-- 				start.trialsdata.currenttrialstep = 1
-			-- 				start.trialsdata.currenttrialmicrostep = 1
-			-- 				start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
-			-- 				start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
-			-- 			end
-			-- 		elseif nctms > 1 and start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
-			-- 			print("9")
-			-- 			start.trialsdata.currenttrialmicrostep = nctms
-			-- 		elseif nctms > 1 and combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
-			-- 			print("10")
-			-- 			start.trialsdata.currenttrialstep = 1
-			-- 			start.trialsdata.currenttrialmicrostep = 1
-			-- 			start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
-			-- 			start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
-			-- 		end
-			-- 	end
-			-- end
 		elseif combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
 			start.trialsdata.currenttrialstep = 1
 			start.trialsdata.currenttrialmicrostep = 1
@@ -1152,8 +1114,8 @@ function start.f_trialsSuccess(successstring, index)
 	animDraw(motif.trials_info[successstring .. '_bg_data'])
 	animUpdate(motif.trials_info[successstring .. '_front_data'])
 	animDraw(motif.trials_info[successstring .. '_front_data'])
+	start.trialsdata.draw[successstring .. '_text']:draw()
 	start.trialsdata.draw[successstring] = start.trialsdata.draw[successstring] - 1
-	main.f_createTextImg(motif.trials_info, successstring .. '_text')
 	start.trialsdata.trial[index].complete = true
 	start.trialsdata.trial[index].active = false
 	start.trialsdata.active = false
@@ -1219,7 +1181,6 @@ function menu.f_trialsReset()
 	charMapSet(2, '_iksys_trainingDistance', 0)
 	charMapSet(2, '_iksys_trainingButtonJam', 0)
 	player(1)
-	print("here now")
 	start.trialsdata.currenttrial = 1
 	start.trialsdata.currenttrialstep = 1
 	start.trialsdata.currenttrialmicrostep = 1
