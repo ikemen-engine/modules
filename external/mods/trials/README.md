@@ -1,31 +1,38 @@
 # Universal Trials Mode
+> Last tested on Ikemen GO v0.99
 
-This external module offers a universal solution for Trials Mode.
+> Module developed by two4teezee
+---
+This external module offers a universal solution for Trials Mode. This markdown file is best viewed in Github or your favorite markdown file viewer.
 
 ## Installation
-
 1. Extract archive content into "./external/mods/trials" directory
-2. Add DEF code to your screenpack `system.def`. Use the sample system.def additions from this file to your `system.def`.
-3. Add sprites to system.sff, or alternatively, use `trials.sff`, found in "./external/mods/trials", included in this archive.
-4. Add sounds to system.snd, or alternatively, use `trials.snd`, found in "./external/mods/trials", included in this archive.
-5. Create new trials for your favorite characters. As a starting point, you can use the files found in "./external/mods/trials/kfmZ" and copy them into "./chars/kfmZ". Instructions for creating new trials are detailed in this file.
+2. Add DEF code to your screenpack's `system.def`. Use the sample DEF code additions from this file to your `system.def`.
+3. Add sprites to system.sff, or alternatively, create a `trials.sff`.
+4. Add sounds to system.snd.
+5. Create new trials for your favorite characters and share them with others! As a starting point, you can use the templates found in this file to create a `trials.def` file and edit `kfmZ.def`, both in "./chars/kfmZ". You can follow the instructions in the template to create trials for any character you would like. I also have created some trials and am sharing them on Github.
 
 ## General info
+The Trials mode 
 
-
-## system.def Customization
+## system.def Template and Customization
 Using this external module allows full customization of the trials mode in system.def, with sprites in system.sff OR in `trials.sff`, if so desired. If you are using `trials.sff`, make sure you point to it in the system.def's [Files] section as `trialsbgdef = trials.sff`.
 
-The universal trials mode supports both vertical trials readouts, and horizontal readouts made popular by KOF XIV, among others. The sample `system.def` included in this file 
+The universal trials mode supports both vertical trials readouts, and horizontal readouts as seen in KOF XIV, among other games. The sample `system.def` included in this file can be configured to support either layouts, but as shown, it is configured to work exclusively with default assets (only uses fonts and stock glyphs, for instance).
 
 ```
 [Trials Info]
-    pos 				= 100,250				;Local coordinates for all Trials items
-    spacing 			= 0,20					;Spacing between trial steps
-    window				= 100,250, 1180,550 	;X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
+    pos 	= 100,250
+    spacing = 0,20
+    window	= 100,250, 1180,550 	
+    ; pos - local coordinates for all Trials items
+    ; spacing - spacing between trial steps
+    ; window - X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
 
-    resetonsuccess		= 0 	;set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
-    trialslayout 		= 0		;set to 0 for vertical, 1 for horizontal--affects scrolling logic, as stated above, also enables dynamic step width
+    resetonsuccess		= 0
+    trialslayout 		= 0
+    ; resetonsuccess - set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
+    ; trialslayout - set to 0 for vertical, 1 for horizontal--affects scrolling logic, as stated above, also enables dynamic step width
 
     ; Trial text that displays current trial number and total number of trials
     trialcounter.offset 		= 486,-206
@@ -142,35 +149,71 @@ The universal trials mode supports both vertical trials readouts, and horizontal
 
 ## Creating a Character's Trials Definition File
 
-Trials data is created on a per-character basis. To specify new trials for a character, you'll want to create a new file in the character's folder to hold the trials data. For the purposes of this tutorial, I call this file `trials.def`, but you can call it whatever you want. As mentioned before, each character gets its own `trials.def`. You can specify as many trials as you want, in any order you want.
+Trials data is created on a per-character basis. To specify new trials for a character, you'll want to create a new file in the character's folder to hold the trials data. For the purposes of this tutorial, I name this file `trials.def`, but you can call it whatever you want. As mentioned before, each character gets its own `trials.def`. You can specify as many trials as you want, in any order you want.
 
-Each trial is preceeded by a header: `[TrialDef, Title]`, where `Title` is the name or title of the trial and is optional.
-
-
-A sample `trials.def` for kfmZ is provided below.
+A sample `trials.def` for kfmZ is provided below. The trials are presented to the player in the order in which they are listed in `trials.def`. Detailed information for each configurable parameter can be found in this template.
 
 ```
 ; KFMZ TRIALS LIST ---------------------------
 
-[TrialDef, KFM's First Trial] 				;Mandatory - [TriafDef] is required, the trial title after the comma is optional.
-trial.dummymode			    = stand			;Optional - valid options are stand (default), crouch, jump, wjump. Defaults to stand if unspecified.
-trial.guardmode			    = none			;Optional - valid options are none, auto. Defaults to none if unspecified.
-trial.dummybuttonjam 	    = none			;Optional - valid options are none, a, b, c, x, y, z, start, d, w. Defaults to none if unspecified.
+[TrialDef, KFM's First Trial]
 
-trialstep.1.text 		    = Strong Kung Fu Palm	;Optional - (string). Name for trial step (only displayed in vertical trials layout). I recommend always defining this.
-trialstep.1.glyphs 		    = _QDF^Y  	            ;Optional - (string, see Glyph docs). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
+trial.dummymode			    = stand
+trial.guardmode			    = none
+trial.dummybuttonjam 	    = none
 
-trialstep.1.stateno 		= 1010			;Mandatory - (integer or comma-separated integers). State to be checked to pass trial. This is the state whether it's the main character, a helper, or even a projectile.
-trialstep.1.anim			=				;Optional - (integer or comma-separated integers). Identifies animno to be checked to pass trial. Useful in certain cases.
-trialstep.1.numofhits		=				;Optional - (integer or comma-separated integers), will default to 1 if not defined. In some instances, you might want to specify a trial step to meet a multi-hit criteria before proceeding to the next trial step.
-trialstep.1.isthrow 		= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
-trialstep.1.isnohit			= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
-trialstep.1.iscounterhit	= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
-trialstep.1.ishelper		= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
-trialstep.1.isproj			= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
-trialstep.1.specialbool 	=				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Can be used for custom games as required.
-trialstep.1.specialvar		=				;Optional - (integer or comma-separated integers). Can be used for custom games as required.
-trialstep.1.specialstr		=				;Optional - (string, or comma-separated strings). Can be used for custom games as required.
+trialstep.1.text 		    = Strong Kung Fu Palm
+trialstep.1.glyphs 		    = _QDF^Y
+
+trialstep.1.stateno 		= 1010
+; trialstep.1.anim			=
+; trialstep.1.numofhits		=
+; trialstep.1.isthrow 		=
+; trialstep.1.isnohit		=
+; trialstep.1.iscounterhit	=
+; trialstep.1.ishelper		=
+; trialstep.1.isproj		=
+; trialstep.1.specialbool 	=
+; trialstep.1.specialvar	=
+; trialstep.1.specialstr	=
+
+; TrialDef Parameter Descriptions
+
+; [TriafDef, TrialTitle] - [TrialDef] mandatory - trial title after the comma is optional.
+
+; trial.dummymode - optional - valid options are stand (default), crouch, jump, wjump. Defaults to stand if unspecified.
+
+; trial.guardmode - optional - valid options are none, auto. Defaults to none if unspecified.
+
+; trial.dummybuttonjam - optional - valid options are none, a, b, c, x, y, z, start, d, w. Defaults to none if unspecified.
+
+; dummymode, guardmode, and dummybuttonjam are defined once per trial. The other parameters can be defined for each trial step - notice the syntax, where X is the trial number.
+
+; trial.X.text - optional - (string). Name for trial step (only displayed in vertical trials layout).
+
+; trial.X.glyphs - optional - (string, see Glyph documentation [https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-info#movelists] for syntax). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts.
+
+; trialstep.X.stateno - mandatory - (integer or comma-separated integers). State to be checked to pass trial. This is the state whether it's the main character, a helper, or even a projectile.
+
+; trialstep.X.anim - optional - (integer or comma-separated integers). Identifies animno to be checked to pass trial. Useful in certain cases.
+
+; trialstep.X.numofhits - optional - (integer or comma-separated integers), will default to 1 if not defined. In some instances, you might want to specify a trial step to meet a multi-hit criteria before proceeding to the next trial step.
+
+; trialstep.X.isthrow - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
+
+; trialstep.X.isnohit - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
+
+; trialstep.X.iscounterhit - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
+
+; trialstep.X.ishelper - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
+
+; trialstep.X.isproj - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
+
+; trialstep.X.specialbool - optional - (true or false, or comma-separated true/false), will default to false if not defined. Can be used for custom games as required.
+
+; trialstep.X.specialval - optional - (integer or comma-separated integers). Can be used for custom games as required.
+
+; trialstep.X.specialstr - optional - (string, or comma-separated strings). Can be used for custom games as required.
 
 ;---------------------------------------------
 
@@ -208,9 +251,13 @@ trialstep.2.stateno 	= 210
 ; Condensed steps can be very practical for multi-state moves where the trial step should only clear if all of the states are met, without having to create multiple trial steps.
 
 trialstep.1.text 		= Standing Light to Strong Punch Chain		
-trialstep.1.glyphs 		= ^X_,^Y			; When desired, you can collapsed multiple steps into a single one but using comma separated values in the following parameters:
-trialstep.1.stateno 	= 200, 210		; stateno, animno, numofhits, isthrow, iscounterhit, isnohit, ishelper, isproj, specialbool, specialvar, specialstr
-trialstep.1.numofhits	= 1, 1			; If one parameter on the trial step is defined using comma separated values, all parameters on that trial step must be defined similarly.
+trialstep.1.glyphs 		= ^X_,^Y			
+trialstep.1.stateno 	= 200, 210		
+trialstep.1.numofhits	= 1, 1
+
+; When desired, you can collapsed multiple steps into a single one but using comma separated values in the following parameters:
+; stateno, animno, numofhits, isthrow, iscounterhit, isnohit, ishelper, isproj, specialbool, specialvar, specialstr
+; If one parameter on the trial step is defined using comma separated values, all parameters on that trial step must be defined similarly.
 
 ;---------------------------------------------
 
@@ -276,7 +323,6 @@ trialstep.5.numofhits   = 3
 Finally, you'll want to modify the character's definition file so that Ikemen knows to read the trials data for that character. In the character's definition file (i.e. `kfmZ.def` for kfmZ), under `[Files]`, add the line `trials = trials.def`.
 
 ```
-; Files for the player
 [Files]
 cmd         = kfm.cmd           ;Command set
 cns         = kfm.const         ;Constants

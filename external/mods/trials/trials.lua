@@ -11,285 +11,10 @@
 -- https://github.com/K4thos/Ikemen_GO/wiki/Miscellaneous-Info#lua_modules
 -- This mode is detectable by GameMode trigger as trials.
 -- Only characters with a trials.def in their character folder will have
--- trials available for them. Documentation on how to create a trials.def 
--- can be found in this file.
+-- trials available for them; the character's def file also needs to be 
+-- modified to point to that trials.def. Documentation on how to use trials
+-- mode is in README.md.
 -------------------------------------------------------------------------
---[[
-; system.def customization
-;
-; Using this external module allows full customization of the trials mode
-; in system.def, with sprites in system.sff OR in trials.sff, if so 
-; desired. If you are using trials.sff, make sure you point to it in the
-; system.def's [Files] section as "trialsbgdef = trials.sff"
-
-[Trials Info] ;VERTICAL EXAMPLE
-	pos 				= 100,250				;Coords to show
-	spacing 			= 0,20					;Spacing between trial steps
-	window				= 100,250, 1180,550 	;X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
-
-	resetonsuccess		= 0 	;set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
-	trialslayout 		= 0		;set to 0 for vertical, 1 for horizontal--affects scrolling logic, as stated above, also enables dynamic step width
-
-	; Overall background element for all trial steps
-	;bg.layerno 		= 2
-	;bg.offset 			= 0,0
-	;bg.anim 			= 1
-	;bg.scale 			= 1.5,1.5
-	;bg.spr 			= 399,0
-
-	; Trial text that displays current trial number and total number of trials
-	trialcounter.offset 		= 486,-206
-	trialcounter.font 			= 4,0,-1
-	trialcounter.font.scale		= 1,1
-	;trialcounter.font.height	=
-	trialcounter.text			= "Trial %s of %t"
-
-	; Trial stopwatch can display the total time spent in the trial mode, as well as the time spent in the current trial
-	totaltrialtimer.offset 			= 686,-186
-	totaltrialtimer.font 			= 4,0,-1
-	totaltrialtimer.font.scale		= 1,1
-	;totaltrialtimer.font.height	=
-	totaltrialtimer.text			= "Total Trial Time: %s"
-	currenttrialtimer.offset 		= 686,-216
-	currenttrialtimer.font 			= 4,0,-1
-	currenttrialtimer.font.scale		= 1,1
-	;currenttrialtimer.font.height	=
-	currenttrialtimer.text			= "Current Trial Time: %s"
-
-	; Text and background element for all upcoming trial steps
-	upcomingstep.text.offset 		= 0,0
-	upcomingstep.text.font 			= 2,0,1
-	upcomingstep.text.font.scale	= 1,1
-	;upcomingstep.text.font.height	=
-	upcomingstep.bg.offset 			= -10,-6
-	;upcomingstep.bg.anim 			= 609
-	upcomingstep.bg.spr 			= 701,1
-	;upcomingstep.bg.scale			= 1,1
-	;upcomingstep.bg.displaytime	= -1
-
-	; Text and background element for current trial step
-	currentstep.text.offset 		= 0,0
-	currentstep.text.font 			= 2,0,1
-	currentstep.text.font.scale 	= 1,1
-	;currentstep.text.font.height	=
-	currentstep.bg.offset 			= -10,-6
-	;currentstep.bg.anim 			= -1
-	currentstep.bg.spr 				= 701,0
-	currentstep.bg.scale 			= 1,1
-	currentstep.bg.facing			= 1
-	;currentstep.bg.displaytime		= -1
-
-	; Text and background element for all completed trial steps
-	completedstep.text.offset		= 0,0
-	completedstep.text.font 		= 2,0,1
-	completedstep.text.font.scale 	= 1,1
-	;completedstep.text.font.height = 
-	completedstep.bg.offset 		= -10,-6
-	completedstep.bg.spr 			= 701,2
-	;completedstep.bg.anim 			= 2
-	;completedstep.bg.scale 		= 1,1
-
-	; Glyphs information
-	glyphs.offset		= 144,5
-	glyphs.scale		= 2,2
-	glyphs.spacing		= 0,0
-	glyphs.align		= -1
-
-	; Success positioning, sound, text, and animation (bg and front elements)
-	; Displayed after each completed trial except the final one
-	success.pos					= 300,250
-	success.snd					= 600,0 
-	;success.text.text			=
-	;success.text.offset 		= 0,0
-	;success.text.font 			= 4,0,1
-	;success.text.font.scale 	= 
-	;success.text.font.height	=
-	success.bg.offset 			= 0,0
-	success.bg.anim 			= 650
-	;success.bg.scale 			= 1,1
-	;success.bg.spr 			= 701,0
-	;success.bg.displaytime		= -1
-	success.front.offset 		= 0,0
-	success.front.anim 			= 651
-	;success.front.scale 		= 1,1
-	;success.front.spr 			= 701,0
-	;success.front.displaytime	= -1
-
-	; All Clear positioning, sound, text, and animation (bg and front elements)
-	; Displayed after completing the final trial
-	allclear.pos				= 300,250
-	allclear.snd				= 900,0
-	;allclear.text.text			=
-	;allclear.text.offset 		= 0,0
-	;allclear.text.font 		= 4,0,1
-	;allclear.text.font.scale 	= 
-	;allclear.text.font.height	=
-	allclear.bg.offset 			= 0,0
-	allclear.bg.anim 			= 650
-	;allclear.bg.scale 			= 1,1
-	;allclear.bg.spr 			= 701,0
-	allclear.front.offset 		= 0,0
-	allclear.front.anim 		= 652
-	;allclear.front.scale 		= 1,1
-	;allclear.front.spr 		= 701,0
-	
-	; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features/#submenus
-	menu.itemname.back 						= "Continue"
-	menu.itemname.menutrials 				= "Trials Menu"
-	menu.itemname.menutrials.trialslist 	= "Trials List"
-	menu.itemname.menutrials.back 		= "Back"
-	menu.itemname.menuinput 				= "Button Config"
-	menu.itemname.menuinput.keyboard 		= "Key Config"
-	menu.itemname.menuinput.gamepad 		= "Joystick Config"
-	menu.itemname.menuinput.empty 			= ""
-	menu.itemname.menuinput.inputdefault 	= "Default"
-	menu.itemname.menuinput.back 			= "Back"
-	menu.itemname.commandlist 				= "Command List"
-	menu.itemname.characterchange 			= "Character Change"
-	menu.itemname.exit 						= "Exit"
-]]
-
------------------------------------------------------------------
-
---[[
-; Creating Trials
-; 
-; The trials.def needs to be identified in the character's main 
-; .def under the [Files] section as follows:
-; trials = trials.def 	;Ikemen feature: Trials Mode Definition
-;
-; Below you'll find a trials.def example for kfmZ. All "Optional" 
-; definitions can be left blank or unspecified. The first trial
-; is fully populated with commenting. Follow-up trials are written 
-; without Optional parameter definitions if they are not required.
-; In the example below, note the syntax. Each trial is preceeded
-; by a [TrialDef] section header, which can also contain an optional
-; Trial Title. Dummy actions for the trial can optionally be specified.
-; The trial steps are written out as 
-; 'trialstep.TRIALSTEPNUMBER.parameter'.
-
-
-; KFMZ TRIALS LIST ---------------------------
-
-[TrialDef, KFM's First Trial] 				;Mandatory - [TriafDef] is required, the trial title after the comma is optional.
-trial.dummymode			    = stand			;Optional - valid options are stand (default), crouch, jump, wjump. Defaults to stand if unspecified.
-trial.guardmode			    = none			;Optional - valid options are none, auto. Defaults to none if unspecified.
-trial.dummybuttonjam 	    = none			;Optional - valid options are none, a, b, c, x, y, z, start, d, w. Defaults to none if unspecified.
-
-trialstep.1.text 		    = Strong Kung Fu Palm	;Optional - (string). Name for trial step (only displayed in vertical trials layout). I recommend always defining this.
-trialstep.1.glyphs 		    = _QDF^Y  	            ;Optional - (string, see Glyph docs). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts. I recommend always defining this.
-
-trialstep.1.stateno 		= 1010			;Mandatory - (integer or comma-separated integers). State to be checked to pass trial. This is the state whether it's the main character, a helper, or even a projectile.
-trialstep.1.anim			=				;Optional - (integer or comma-separated integers). Identifies animno to be checked to pass trial. Useful in certain cases.
-trialstep.1.numofhits		=				;Optional - (integer or comma-separated integers), will default to 1 if not defined. In some instances, you might want to specify a trial step to meet a multi-hit criteria before proceeding to the next trial step.
-trialstep.1.isthrow 		= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
-trialstep.1.isnohit			= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
-trialstep.1.iscounterhit	= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
-trialstep.1.ishelper		= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
-trialstep.1.isproj			= 				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
-trialstep.1.specialbool 	=				;Optional - (true or false, or comma-separated true/false), will default to false if not defined. Can be used for custom games as required.
-trialstep.1.specialvar		=				;Optional - (integer or comma-separated integers). Can be used for custom games as required.
-trialstep.1.specialstr		=				;Optional - (string, or comma-separated strings). Can be used for custom games as required.
-
-;---------------------------------------------
-
-[TrialDef, Kung Fu Throw]
-trialstep.1.text 		= Kung Fu Throw
-trialstep.1.glyphs 		= [_B/_F]_+^Y
-trialstep.1.stateno 	= 810
-trialstep.1.isthrow		= true
-
-;---------------------------------------------
-
-[TrialDef, Kung Fu Taunt]
-trialstep.1.text 		= Kung Fu Taunt
-trialstep.1.glyphs 		= ^S
-trialstep.1.stateno 	= 195
-trialstep.1.isnohit		= true
-
-;---------------------------------------------
-
-[TrialDef, Standing Punch Chain]
-trialstep.1.text 		= Standing Light Punch
-trialstep.1.glyphs 		= ^X
-trialstep.1.stateno 	= 200
-
-trialstep.2.text 		= Standing Strong Punch
-trialstep.2.glyphs 		= ^Y
-trialstep.2.stateno 	= 210
-
-;---------------------------------------------
-
-[TrialDef, Condensed Standing Punch Chain]
-; The next two trials show examples ofcondensed trial steps which check a series of parameters sequentially by using comma separated values. In other words, think of being able to specify multiple trial steps in a single step.
-; For instance, this trial is the same as the previous, but has two steps condensed into one.
-; The next trial uses a combination of condensed steps and normal steps to provide a concise trial.
-; Condensed steps can be very practical for multi-state moves where the trial step should only clear if all of the states are met, without having to create multiple trial steps.
-
-trialstep.1.text 		= Standing Light to Strong Punch Chain		
-trialstep.1.glyphs 		= ^X_,^Y			; When desired, you can collapsed multiple steps into a single one but using comma separated values in the following parameters:
-trialstep.1.stateno 	= 200, 210		; stateno, animno, numofhits, isthrow, iscounterhit, isnohit, ishelper, isproj, specialbool, specialvar, specialstr
-trialstep.1.numofhits	= 1, 1			; If one parameter on the trial step is defined using comma separated values, all parameters on that trial step must be defined similarly.
-
-;---------------------------------------------
-
-[TrialDef, Kung Fu Juggle Combo]
-trialstep.1.text 		= Kung Fu Knee and Extra Kick
-trialstep.1.glyphs 		= _F_F_+^K_.^K
-trialstep.1.stateno 	= 1060, 1055
-
-trialstep.2.text 		= Crouching Jab
-trialstep.2.glyphs 		= _D_+^X
-trialstep.2.stateno 	= 400
-
-trialstep.3.text 		= Weak Kung Fu Palm
-trialstep.3.glyphs 		= _QCF_+^X
-trialstep.3.stateno 	= 1000
-
-;---------------------------------------------
-
-[TrialDef, Kung Fu Fist Four Piece]
-trialstep.1.text 		= Jumping Strong Punch
-trialstep.1.glyphs 		= _AIR^Y
-trialstep.1.stateno 	= 610
-
-trialstep.2.text 		= Standing Light Punch
-trialstep.2.glyphs 		= ^X
-trialstep.2.stateno 	= 200
-
-trialstep.3.text 		= Standing Strong Punch
-trialstep.3.glyphs 		= ^Y
-trialstep.3.stateno 	= 210
-
-trialstep.4.text 		= Strong Kung Fu Palm
-trialstep.4.glyphs 		= _QDF^Y
-trialstep.4.stateno 	= 1010
-
-;---------------------------------------------
-
-[TrialDef, Kung Fu Super Cancel]
-trialstep.1.text 		= Jumping Strong Kick
-trialstep.1.glyphs 		= _AIR^B
-trialstep.1.stateno 	= 640
-
-trialstep.2.text 		= Standing Light Kick
-trialstep.2.glyphs 		= ^A
-trialstep.2.stateno 	= 230
-
-trialstep.3.text 		= Standing Strong Kick
-trialstep.3.glyphs 		= ^B
-trialstep.3.stateno 	= 240
-
-trialstep.4.text 		= Fast Kung Fu Zankou
-trialstep.4.glyphs 		= _QDF^A^B
-trialstep.4.stateno 	= 1420
-
-trialstep.5.text 		= Triple Kung Fu Palm
-trialstep.5.glyphs 		= _QDF_QDF^P
-trialstep.5.stateno 	= 3000
-trialstep.5.numofhits   = 3
-
-]]
 
 --;===========================================================
 --; main.lua
@@ -327,29 +52,11 @@ if motif.select_info.title_trials_text == nil then
 end
 
 local t_base = {
-	enabled = 1,
-	sounds_enabled = 1,
-    pos = {0, 0}, --Ikemen feature
-    spacing = {0, 0}, --Ikemen feature
-    window = {0,0,0,0}, --Ikemen feature
-    resetonsuccess = 0, --Ikemen feature
-    trialslayout = 0, --Ikemen feature
-    trialcounter_offset = {0,0}, --Ikemen feature
-    trialcounter_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    trialcounter_font_scale = {1.0, 1.0}, --Ikemen feature
-    trialcounter_font_height = -1, --Ikemen feature
-    trialcounter_text = '', --Ikemen feature
-	trialcounterallclear_text = '', --Ikemen feature
-	totaltrialtimer_offset = {0,0}, --Ikemen feature
-    totaltrialtimer_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    totaltrialtimer_font_scale = {1.0, 1.0}, --Ikemen feature
-    totaltrialtimer_font_height = -1, --Ikemen feature
-    totaltrialtimer_text = '', --Ikemen feature
-    currenttrialtimer_offset = {0,0}, --Ikemen feature
-    currenttrialtimer_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    currenttrialtimer_font_scale = {1.0, 1.0}, --Ikemen feature
-    currenttrialtimer_font_height = -1, --Ikemen feature
-    currenttrialtimer_text = '', --Ikemen feature
+    trialsteps_pos = {0, 0}, --Ikemen feature
+    trialsteps_spacing = {0, 0}, --Ikemen feature
+    trialsteps_window = {0,0,0,0}, --Ikemen feature
+    trialsteps_resetonsuccess = 0, --Ikemen feature
+    trialsteps_trialslayout = 0, --Ikemen feature
     bg_anim = -1, --Ikemen feature
     bg_spr = {}, --Ikemen feature
     bg_offset = {0, 0}, --Ikemen feature
@@ -358,9 +65,9 @@ local t_base = {
     bg_displaytime = 0, --Ikemen feature
     upcomingstep_text_offset = {0,0}, --Ikemen feature
     upcomingstep_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    upcomingstep_text_font_scale = {1.0, 1.0}, --Ikemen feature
     upcomingstep_text_font_height = -1, --Ikemen feature
     upcomingstep_text_text = '', --Ikemen feature
+	upcomingstep_text_scale = {1.0, 1.0}, --Ikemen feature
     upcomingstep_bg_anim = -1, --Ikemen feature
     upcomingstep_bg_spr = {}, --Ikemen feature
     upcomingstep_bg_offset = {0, 0}, --Ikemen feature
@@ -374,9 +81,9 @@ local t_base = {
     upcomingstep_bginc_scale = {1.0, 1.0}, --Ikemen feature
     currentstep_text_offset = {0,0}, --Ikemen feature
     currentstep_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    currentstep_text_font_scale = {1.0, 1.0}, --Ikemen feature
     currentstep_text_font_height = -1, --Ikemen feature
     currentstep_text_text = '', --Ikemen feature
+	currentstep_text_scale = {1.0, 1.0}, --Ikemen feature
     currentstep_bg_anim = -1, --Ikemen feature
     currentstep_bg_spr = {}, --Ikemen feature
     currentstep_bg_offset = {0, 0}, --Ikemen feature
@@ -390,9 +97,9 @@ local t_base = {
     currentstep_bginc_scale = {1.0, 1.0}, --Ikemen feature
     completedstep_text_offset = {0,0}, --Ikemen feature
     completedstep_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    completedstep_text_font_scale = {1.0, 1.0}, --Ikemen feature
     completedstep_text_font_height = -1, --Ikemen feature
     completedstep_text_text = '', --Ikemen feature
+	completedstep_text_scale = {1.0, 1.0}, --Ikemen feature
     completedstep_bg_anim = -1, --Ikemen feature
     completedstep_bg_spr = {}, --Ikemen feature
     completedstep_bg_offset = {0, 0}, --Ikemen feature
@@ -413,6 +120,22 @@ local t_base = {
     glyphs_scale = {1.0,1.0}, --Ikemen feature
     glyphs_spacing = {0,0}, --Ikemen feature
     glyphs_align = 1, --Ikemen feature
+	trialcounter_pos = {0,0}, --Ikemen feature
+    trialcounter_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
+    trialcounter_text_scale = {1.0, 1.0}, --Ikemen feature
+    trialcounter_font_height = -1, --Ikemen feature
+    trialcounter_text = '', --Ikemen feature
+	trialcounter_allclear_text = '', --Ikemen feature
+	totaltrialtimer_pos = {0,0}, --Ikemen feature
+    totaltrialtimer_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
+    totaltrialtimer_text_scale = {1.0, 1.0}, --Ikemen feature
+    totaltrialtimer_font_height = -1, --Ikemen feature
+    totaltrialtimer_text = '', --Ikemen feature
+    currenttrialtimer_pos = {0,0}, --Ikemen feature
+    currenttrialtimer_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
+    currenttrialtimer_text_scale = {1.0, 1.0}, --Ikemen feature
+    currenttrialtimer_font_height = -1, --Ikemen feature
+    currenttrialtimer_text = '', --Ikemen feature
     success_pos = {0, 0}, --Ikemen feature
     success_snd = {-1, 0}, --Ikemen feature
     success_bg_anim = -1, --Ikemen feature
@@ -430,9 +153,9 @@ local t_base = {
 	success_text_displaytime = -1, --Ikemen feature
     success_text_offset = {0,0}, --Ikemen feature
     success_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    success_text_font_scale = {1.0, 1.0}, --Ikemen feature
     success_text_font_height = -1, --Ikemen feature
     success_text_text = '', --Ikemen feature
+	success_text_scale = {1.0, 1.0}, --Ikemen feature
     allclear_pos = {0, 0}, --Ikemen feature
     allclear_snd = {-1, 0}, --Ikemen feature
     allclear_bg_anim = -1, --Ikemen feature
@@ -450,9 +173,9 @@ local t_base = {
 	allclear_text_displaytime = -1, --Ikemen feature
     allclear_text_offset = {0,0}, --Ikemen feature
     allclear_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    allclear_text_font_scale = {1.0, 1.0}, --Ikemen feature
     allclear_text_font_height = -1, --Ikemen feature
     allclear_text_text = '', --Ikemen feature
+	allclear_text_scale = {1.0, 1.0}, --Ikemen feature
 }
 
 -- Merge trials data into table
@@ -486,7 +209,7 @@ motif.trialsbgdef.bg = bgNew(motif.trialsbgdef.spr_data, motif.def, 'trialsbg')
 --trials spr/anim data
 local tr_pos = motif.trials_info
 for _, v in ipairs({
-	{s = 'bg_',							x = tr_pos.pos[1] + tr_pos.bg_offset[1],						y = tr_pos.pos[2] + tr_pos.bg_offset[2],						},
+	{s = 'bg_',							x = tr_pos.trialsteps_pos[1] + tr_pos.bg_offset[1],				y = tr_pos.trialsteps_pos[2] + tr_pos.bg_offset[2],						},
 	{s = 'success_bg_',    				x = tr_pos.success_pos[1] + tr_pos.success_bg_offset[1],		y = tr_pos.success_pos[2] + tr_pos.success_bg_offset[2],		},
 	{s = 'allclear_bg_',	   			x = tr_pos.allclear_pos[1] + tr_pos.allclear_bg_offset[1],		y = tr_pos.allclear_pos[2] + tr_pos.allclear_bg_offset[2],		},
 	{s = 'success_front_',    			x = tr_pos.success_pos[1] + tr_pos.success_front_offset[1],		y = tr_pos.success_pos[2] + tr_pos.success_front_offset[2],		},
@@ -695,7 +418,7 @@ function start.f_trialsBuilder()
 				local font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font[7]]
 				for m in pairs(start.trialsdata.trial[i].trialstep[j].glyphline.glyph) do
 					if motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]] ~= nil then
-						if motif.trials_info.trialslayout == 0 then
+						if motif.trials_info.trialsteps_trialslayout == 0 then
 							if motif.trials_info.glyphs_align == 0 then --center align
 								alignOffset = motif.trials_info.glyphs_offset[1] * 0.5
 							elseif motif.trials_info.glyphs_align == -1 then --right align
@@ -708,9 +431,9 @@ function start.f_trialsBuilder()
 						end
 						local scaleX = motif.trials_info.glyphs_scale[1]
 						local scaleY = motif.trials_info.glyphs_scale[2]
-						if motif.trials_info.trialslayout == 0 then						
-							scaleX = font_def.Size[2] * motif.trials_info.currentstep_text_font_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[1]
-							scaleY = font_def.Size[2] * motif.trials_info.currentstep_text_font_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[2]
+						if motif.trials_info.trialsteps_trialslayout == 0 then						
+							scaleX = font_def.Size[2] * motif.trials_info.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[1]
+							scaleY = font_def.Size[2] * motif.trials_info.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[2]
 						end
 						if motif.trials_info.glyphs_align == -1 then
 							alignOffset = alignOffset - motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX
@@ -718,8 +441,8 @@ function start.f_trialsBuilder()
 						start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[m] = alignOffset
 						start.trialsdata.trial[i].trialstep[j].glyphline.scale[m] = {scaleX, scaleY}
 						start.trialsdata.trial[i].trialstep[j].glyphline.pos[m] = {
-							math.floor(motif.trials_info.pos[1] + motif.trials_info.glyphs_offset[1] + alignOffset + lengthOffset),
-							motif.trials_info.pos[2] + motif.trials_info.glyphs_offset[2]
+							math.floor(motif.trials_info.trialsteps_pos[1] + motif.trials_info.glyphs_offset[1] + alignOffset + lengthOffset),
+							motif.trials_info.trialsteps_pos[2] + motif.trials_info.glyphs_offset[2]
 						}
 						start.trialsdata.trial[i].trialstep[j].glyphline.width[m] = math.floor(motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX + motif.trials_info.glyphs_spacing[1])
 						if motif.trials_info.glyphs_align == 1 then
@@ -749,14 +472,14 @@ function start.f_trialsBuilder()
 			trialcounter = main.f_createTextImg(motif.trials_info, 'trialcounter'),
 			totaltrialtimer = main.f_createTextImg(motif.trials_info, 'totaltrialtimer'),
 			currenttrialtimer = main.f_createTextImg(motif.trials_info, 'currenttrialtimer'),
-			windowXrange = motif.trials_info.window[3] - motif.trials_info.window[1],
-			windowYrange = motif.trials_info.window[4] - motif.trials_info.window[2],
+			windowXrange = motif.trials_info.trialsteps_window[3] - motif.trials_info.trialsteps_window[1],
+			windowYrange = motif.trials_info.trialsteps_window[4] - motif.trials_info.trialsteps_window[2],
 		}
-		start.trialsdata.draw.success_text:update({x = motif.trials_info.pos[1]+motif.trials_info.success_text_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.success_text_offset[2],})
-		start.trialsdata.draw.allclear_text:update({x = motif.trials_info.pos[1]+motif.trials_info.allclear_text_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.allclear_text_offset[2],})
-		start.trialsdata.draw.trialcounter:update({x = motif.trials_info.pos[1]+motif.trials_info.trialcounter_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.trialcounter_offset[2],})
-		start.trialsdata.draw.totaltrialtimer:update({x = motif.trials_info.pos[1]+motif.trials_info.totaltrialtimer_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.totaltrialtimer_offset[2],})
-		start.trialsdata.draw.currenttrialtimer:update({x = motif.trials_info.pos[1]+motif.trials_info.currenttrialtimer_offset[1], y = motif.trials_info.pos[2]+motif.trials_info.currenttrialtimer_offset[2],})
+		start.trialsdata.draw.success_text:update({x = motif.trials_info.success_pos[1]+motif.trials_info.success_text_offset[1], y = motif.trials_info.success_pos[2]+motif.trials_info.success_text_offset[2],})
+		start.trialsdata.draw.allclear_text:update({x = motif.trials_info.allclear_pos[1]+motif.trials_info.allclear_text_offset[1], y = motif.trials_info.allclear_pos[2]+motif.trials_info.allclear_text_offset[2],})
+		start.trialsdata.draw.trialcounter:update({x = motif.trials_info.trialcounter_pos[1], y = motif.trials_info.trialcounter_pos[2],})
+		start.trialsdata.draw.totaltrialtimer:update({x = motif.trials_info.totaltrialtimer_pos[1], y = motif.trials_info.totaltrialtimer_pos[2],})
+		start.trialsdata.draw.currenttrialtimer:update({x = motif.trials_info.currenttrialtimer_pos[1], y = motif.trials_info.currenttrialtimer_pos[2],})
 		for i = 1, start.trialsdata.maxsteps, 1 do
 			start.trialsdata.draw.upcomingtextline[i] = main.f_createTextImg(motif.trials_info, 'upcomingstep_text')
 			start.trialsdata.draw.currenttextline[i] = main.f_createTextImg(motif.trials_info, 'currentstep_text')
@@ -883,17 +606,17 @@ function start.f_trialsDrawer()
 			
 			--For vertical trial layouts, determine if all assets will be drawn within the trials window range, or if scrolling needs to be enabled. For horizontal layouts, we will figure it out
 			--when we determine glyph and incrementor widths (see notes below). We do this step outside of the draw loop to speed things up.
-			if start.trialsdata.trial[ct].drawsteps*motif.trials_info.spacing[2] > start.trialsdata.draw.windowYrange and motif.trials_info.trialslayout == 0 then
+			if start.trialsdata.trial[ct].drawsteps*motif.trials_info.trialsteps_spacing[2] > start.trialsdata.draw.windowYrange and motif.trials_info.trialsteps_trialslayout == 0 then
 				startonstep = math.max(cts-2, 1)
-				if (drawtothisstep - startonstep)*motif.trials_info.spacing[2] > start.trialsdata.draw.windowYrange then
-					drawtothisstep = math.min(startonstep+math.floor(start.trialsdata.draw.windowYrange/motif.trials_info.spacing[2]),start.trialsdata.trial[ct].drawsteps)
+				if (drawtothisstep - startonstep)*motif.trials_info.trialsteps_spacing[2] > start.trialsdata.draw.windowYrange then
+					drawtothisstep = math.min(startonstep+math.floor(start.trialsdata.draw.windowYrange/motif.trials_info.trialsteps_spacing[2]),start.trialsdata.trial[ct].drawsteps)
 				end
 			end
 
 			-- how to account for hidden steps here?
 			--This is the draw loop
 			for i = startonstep, drawtothisstep, 1 do
-				local tempoffset = {motif.trials_info.spacing[1]*(i-startonstep),motif.trials_info.spacing[2]*(i-startonstep)}
+				local tempoffset = {motif.trials_info.trialsteps_spacing[1]*(i-startonstep),motif.trials_info.trialsteps_spacing[2]*(i-startonstep)}
 				sub = 'current'
 				if i < cts then
 					sub = 'completed'
@@ -907,23 +630,23 @@ function start.f_trialsDrawer()
 				local padding = 0
 				local totaloffset = 0
 				local bgincwidth = 0 --only used for horizontal layouts
-				if motif.trials_info.trialslayout == 0 then
+				if motif.trials_info.trialsteps_trialslayout == 0 then
 					--Vertical layouts are the simplest - they have a constant width sprite or anim that the text is drawn on top of, and the glyphs are displayed wherever specified. 
 					--The vertical layouts do NOT support incrementors (see notes below for horizontal layout).
 					animSetPos(
 						motif.trials_info[sub .. 'step_bg_data'], 
-						motif.trials_info.pos[1] + motif.trials_info[sub .. 'step_bg_offset'][1] + tempoffset[1], 
-						motif.trials_info.pos[2] + motif.trials_info[sub .. 'step_bg_offset'][2] + tempoffset[2]
+						motif.trials_info.trialsteps_pos[1] + motif.trials_info[sub .. 'step_bg_offset'][1] + tempoffset[1], 
+						motif.trials_info.trialsteps_pos[2] + motif.trials_info[sub .. 'step_bg_offset'][2] + tempoffset[2]
 					)
 					animUpdate(motif.trials_info[sub .. 'step_bg_data'])
 					animDraw(motif.trials_info[sub .. 'step_bg_data'])
 					start.trialsdata.draw[sub .. 'textline'][i]:update({
-						x = motif.trials_info.pos[1]+motif.trials_info.upcomingstep_text_offset[1]+motif.trials_info.spacing[1]*(i-startonstep), 
-						y = motif.trials_info.pos[2]+motif.trials_info.upcomingstep_text_offset[2]+motif.trials_info.spacing[2]*(i-startonstep),
+						x = motif.trials_info.trialsteps_pos[1]+motif.trials_info.upcomingstep_text_offset[1]+motif.trials_info.trialsteps_spacing[1]*(i-startonstep), 
+						y = motif.trials_info.trialsteps_pos[2]+motif.trials_info.upcomingstep_text_offset[2]+motif.trials_info.trialsteps_spacing[2]*(i-startonstep),
 						text = start.trialsdata.trial[ct].trialstep[i].text
 					})
 					start.trialsdata.draw[sub .. 'textline'][i]:draw()
-				elseif motif.trials_info.trialslayout == 1 then
+				elseif motif.trials_info.trialsteps_trialslayout == 1 then
 					--Horizontal layouts are much more complicated. Text is not drawn in horizontal mode, instead we only display the glyphs. A small sprite is dynamically tiled to the width of the 
 					--glyphs, and an optional background element called an incrementor (bginc) can be used to link the pieces together (think of an arrow where the body of the arrow is where the 
 					--glyphs are being drawn and that's the dynamically sized part, and the head of the arrow is the incrementor which is a fixed width sprite). There's quite a bit more work that 
@@ -934,25 +657,25 @@ function start.f_trialsDrawer()
 					if start.trialsdata.bgelemdata[sub .. 'bgincwidth'] ~= nil then bgincwidth = math.floor(start.trialsdata.bgelemdata[sub .. 'bgincwidth'].Size[1]) end
 					if start.trialsdata.bgelemdata[sub .. 'bgsize'] ~= nil then bgsize = start.trialsdata.bgelemdata[sub .. 'bgsize'].Size end
 					totaloffset = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[#start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset]
-					padding = motif.trials_info.spacing[1]
+					padding = motif.trials_info.trialsteps_spacing[1]
 					accwidth = accwidth + totaloffset + padding + bgincwidth + padding
-					if accwidth - motif.trials_info.spacing[1] > start.trialsdata.draw.windowXrange then
+					if accwidth - motif.trials_info.trialsteps_spacing[1] > start.trialsdata.draw.windowXrange then
 						accwidth = 0
 						accwidth = accwidth + totaloffset + padding + bgincwidth + padding
 						addrow = addrow + 1
 					end
-					tempoffset[2] = motif.trials_info.spacing[2]*(addrow)
+					tempoffset[2] = motif.trials_info.trialsteps_spacing[2]*(addrow)
 					local gpoffset = 0
 					for m in pairs(start.trialsdata.trial[ct].glyphline[i].glyph) do
 						if m > 1 then gpoffset = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[m-1] end
-						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1] = motif.trials_info.pos[1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[m] + (accwidth-totaloffset-bgincwidth-padding) + gpoffset-- + start.trialsdata.glyphline[ct][i][m].lengthOffset --+ motif.trials_info.spacing[1]*(i-1)),
+						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1] = motif.trials_info.trialsteps_pos[1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[m] + (accwidth-totaloffset-bgincwidth-padding) + gpoffset-- + start.trialsdata.glyphline[ct][i][m].lengthOffset --+ motif.trials_info.spacing[1]*(i-1)),
 					end
 					bgtargetscale = {
 						(padding + totaloffset + padding)/bgsize[1],
 						1
 					}
 					bgtargetpos = {
-						motif.trials_info.pos[1] + motif.trials_info[sub .. 'step_bg_offset'][1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[1] + (accwidth-totaloffset-bgincwidth-2*padding), -- + start.trialsdata.glyphline[ct][i][m].lengthOffset),
+						motif.trials_info.trialsteps_pos[1] + motif.trials_info[sub .. 'step_bg_offset'][1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[1] + (accwidth-totaloffset-bgincwidth-2*padding), -- + start.trialsdata.glyphline[ct][i][m].lengthOffset),
 						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[1][2] + motif.trials_info[sub .. 'step_bg_offset'][2] + tempoffset[2]
 					}
 					animSetScale(motif.trials_info[sub .. 'step_bg_data'], bgtargetscale[1], bgtargetscale[2])
@@ -964,7 +687,7 @@ function start.f_trialsDrawer()
 						if i == cts - 1 then suffix = 'step_bginctocts_' end -- -1 added for cts
 						animSetPos(
 							motif.trials_info[sub .. suffix .. 'data'], 
-							motif.trials_info.pos[1] + motif.trials_info[sub .. suffix .. 'offset'][1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[1] + (accwidth-bgincwidth), -- + start.trialsdata.glyphline[ct][i][m].lengthOffset),
+							motif.trials_info.trialsteps_pos[1] + motif.trials_info[sub .. suffix .. 'offset'][1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[1] + (accwidth-bgincwidth), -- + start.trialsdata.glyphline[ct][i][m].lengthOffset),
 							start.trialsdata.trial[ct].trialstep[i].glyphline.pos[1][2] + motif.trials_info[sub .. suffix .. 'offset'][2] + tempoffset[2]
 						)
 						animUpdate(motif.trials_info[sub .. suffix .. 'data'])
@@ -985,7 +708,7 @@ function start.f_trialsDrawer()
 				main.f_createTextImg(motif.trials_info, 'allclear_text')
 			end
 			start.trialsdata.draw.success = 0
-			start.trialsdata.draw.trialcounter:update({text = motif.trials_info.trialcounterallclear_text})
+			start.trialsdata.draw.trialcounter:update({text = motif.trials_info.trialcounter_allclear_text})
 			start.trialsdata.draw.trialcounter:draw()
 
 			local totaltimertext = motif.trials_info.totaltrialtimer_text
@@ -1094,7 +817,7 @@ function start.f_trialsChecker()
 	--If the trial was completed successfully, draw the trials success
 	if start.trialsdata.draw.success > 0 then
 		start.f_trialsSuccess('success', ct)
-		if start.trialsdata.draw.success == 0 and motif.trials_info.resetonsuccess == 1 then
+		if start.trialsdata.draw.success == 0 and motif.trials_info.trialsteps_resetonsuccess == 1 then
 			main.f_bgReset(motif.trialsbgdef.bg)
 			main.f_fadeReset('fadein', motif.trials_info)
 			-- this doesn't work the way i'm intending it to
