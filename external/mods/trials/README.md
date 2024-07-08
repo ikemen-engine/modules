@@ -21,130 +21,147 @@ Using this external module allows full customization of the trials mode in syste
 The universal trials mode supports both vertical trials readouts, and horizontal readouts as seen in KOF XIV, among other games. The sample `system.def` included in this file can be configured to support either layouts, but as shown, it is configured to work exclusively with default assets (only uses fonts and stock glyphs, for instance).
 
 ```
-[Trials Info]
-    pos 	= 100,250
-    spacing = 0,20
-    window	= 100,250, 1180,550 	
-    ; pos - local coordinates for all Trials items
-    ; spacing - spacing between trial steps
-    ; window - X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
+[Trials Info] ;VERTICAL EXAMPLE
+	trialsteps.pos 				= 40,40
+	trialsteps.spacing 			= 0,7
+	trialsteps.window			= 40,40, 320,240
+	trialsteps.resetonsuccess	= 0
+	trialsteps.trialslayout 	= 0
+	; trialsteps.pos: local origin from which trial steps are drawn. Other elements have their own origin specifications.
+    ; trialsteps.spacing: spacing between trial steps.
+    ; trialsteps.window: X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
+	; trialsteps.resetonsuccess: set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
+    ; trialsteps.trialslayout: "vertical" or "horizontal" are the only valid values. Defaults to "vertical" if not specified. Affects scrolling logic, as stated above, also enables dynamic step width
 
-    resetonsuccess		= 0
-    trialslayout 		= 0
-    ; resetonsuccess - set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
-    ; trialslayout - set to 0 for vertical, 1 for horizontal--affects scrolling logic, as stated above, also enables dynamic step width
+	upcomingstep.text.offset		= 0,0
+	upcomingstep.text.font			= 1, 0, 1, 255, 255, 255
+	upcomingstep.text.scale			= 1,1
+	;upcomingstep.text.font.height	=
+	;upcomingstep.bg.offset 		= -10,-6
+	;upcomingstep.bg.anim			= 609
+	;upcomingstep.bg.spr			= 701,1
+	;upcomingstep.bg.scale			= 1,1
+	;upcomingstep.bg.displaytime	= -1
+	; upcomingstep: text and background elements, shown for all upcoming trial steps
 
-    ; Trial text that displays current trial number and total number of trials
-    trialcounter.offset 		= 486,-206
-    trialcounter.font 			= 4,0,-1
-    trialcounter.font.scale		= 1,1
-    ;trialcounter.font.height	=
-    trialcounter.text			= "Trial %s of %t"
+	currentstep.text.offset 		= 0,0
+	currentstep.text.font 			= 1, 0, 1, 255, 255, 0
+	currentstep.text.scale 			= 1,1
+	;currentstep.text.font.height	=
+	;currentstep.bg.offset 			= -10,-6
+	;currentstep.bg.anim 			= -1
+	;currentstep.bg.spr 			= 701,0
+	;currentstep.bg.scale			= 1,1
+	;currentstep.bg.facing			= 1
+	;currentstep.bg.displaytime		= -1
+	; currentstep: text and background elements, shown for current trial step
 
-    ; Trial stopwatch can display the total time spent in the trial mode, as well as the time spent in the current trial
-    totaltrialtimer.offset 			= 686,-186
-    totaltrialtimer.font 			= 4,0,-1
-    totaltrialtimer.font.scale		= 1,1
-    ;totaltrialtimer.font.height	=
-    totaltrialtimer.text			= "Total Trial Time: %s"
+	completedstep.text.offset		= 0,0
+	completedstep.text.font 		= 1, 0, 1, 100, 100, 100
+	completedstep.text.scale		= 1,1
+	;completedstep.text.font.height = 
+	;completedstep.bg.offset 		= -10,-6
+	;completedstep.bg.spr 			= 701,2
+	;completedstep.bg.anim 			= 2
+	;completedstep.bg.scale 		= 1,1
+	;completedstep.bg.facing		= 1
+	;completedstep.bg.displaytime	= -1
+	; completedstep: text and background elements, shown for completed trial steps
 
-    currenttrialtimer.offset 		= 686,-216
-    currenttrialtimer.font 			= 4,0,-1
-    currenttrialtimer.font.scale		= 1,1
-    ;currenttrialtimer.font.height	=
-    currenttrialtimer.text			= "Current Trial Time: %s"
+	glyphs.offset	= 80,2
+	glyphs.scale	= 1,1
+	glyphs.spacing	= 0,0
+	glyphs.align	= 1
+	; glyphs: defines glyphs offset from respective trial step, as well as scale and alignment
 
-    ; Text and background element for all upcoming trial steps
-    upcomingstep.text.offset 		= 0,0
-    upcomingstep.text.font 			= 2,0,1
-    upcomingstep.text.font.scale	= 1,1
-    ;upcomingstep.text.font.height	=
-    upcomingstep.bg.offset 			= -10,-6
-    ;upcomingstep.bg.anim 			= 609
-    upcomingstep.bg.spr 			= 701,1
-    ;upcomingstep.bg.scale			= 1,1
-    ;upcomingstep.bg.displaytime	= -1
+	;bg.layerno = 2
+	;bg.offset 	= 0,0
+	;bg.anim 	= 1
+	;bg.scale 	= 1.5,1.5
+	;bg.spr 	= 399,0
+	; bg: A background element can be specified to be displayed during all trials.
 
-    ; Text and background element for current trial step
-    currentstep.text.offset 		= 0,0
-    currentstep.text.font 			= 2,0,1
-    currentstep.text.font.scale 	= 1,1
-    ;currentstep.text.font.height	=
-    currentstep.bg.offset 			= -10,-6
-    ;currentstep.bg.anim 			= -1
-    currentstep.bg.spr 				= 701,0
-    currentstep.bg.scale 			= 1,1
-    currentstep.bg.facing			= 1
-    ;currentstep.bg.displaytime		= -1
+	trialcounter.pos			= 10,235
+	trialcounter.font			= 1,0,1
+	trialcounter.text.scale		= 1,1
+	;trialcounter.font.height	=
+	trialcounter.text			= "Trial %s of %t"
+  	trialcounter.allclear.text 	= "All Trials Complete"
+	; trialcounter: text element, displays current trial number and total number of trials
 
-    ; Text and background element for all completed trial steps
-    completedstep.text.offset		= 0,0
-    completedstep.text.font 		= 2,0,1
-    completedstep.text.font.scale 	= 1,1
-    ;completedstep.text.font.height = 
-    completedstep.bg.offset 		= -10,-6
-    completedstep.bg.spr 			= 701,2
-    ;completedstep.bg.anim 			= 2
-    ;completedstep.bg.scale 		= 1,1
+	totaltrialtimer.pos			= 310,228
+	totaltrialtimer.font		= 1,0,-1
+	totaltrialtimer.text.scale	= 1,1
+	;totaltrialtimer.font.height=
+	totaltrialtimer.text		= "Trial Timer: %s"
+	; totaltrialtimer: text element, stopwatch can display the total time spent in the trial mode
 
-    ; Glyphs information
-    glyphs.offset		= 144,5
-    glyphs.scale		= 2,2
-    glyphs.spacing		= 0,0
-    glyphs.align		= -1
+	currenttrialtimer.pos			= 310,235
+	currenttrialtimer.font			= 1,0,-1
+	currenttrialtimer.text.scale	= 1,1
+	;currenttrialtimer.font.height	=
+	currenttrialtimer.text			= "Current Trial: %s"
+	; currenttrialtimer: text element, stopwatch that shows time spent on current trial step
 
-    ; Success positioning, sound, text, and animation (bg and front elements)
-    ; Displayed after each completed trial except the final one
-    success.pos					= 300,250
-    success.snd					= 600,0 
-    ;success.text.text			=
-    ;success.text.offset 		= 0,0
-    ;success.text.font 			= 4,0,1
-    ;success.text.font.scale 	= 
-    ;success.text.font.height	=
-    success.bg.offset 			= 0,0
-    success.bg.anim 			= 650
-    ;success.bg.scale 			= 1,1
-    ;success.bg.spr 			= 701,0
-    ;success.bg.displaytime		= -1
-    success.front.offset 		= 0,0
-    success.front.anim 			= 651
-    ;success.front.scale 		= 1,1
-    ;success.front.spr 			= 701,0
-    ;success.front.displaytime	= -1
+	success.pos					= 120,80
+	success.snd					= 600,0 
+	success.text.text			= "SUCCESS!"
+	success.text.offset 		= 0,0
+	success.text.font			= 2,0,0, 255, 100, 100
+  	success.text.displaytime	= 70
+	success.text.scale 			= 5,5
+	;success.text.font.height	=
+	;success.bg.offset 			= 0,0
+	;success.bg.anim 			= 650
+	;success.bg.scale 			= 1,1
+	;success.bg.spr 			= 701,0
+	;success.bg.displaytime		= -1
+	;success.front.offset 		= 0,0
+	;success.front.anim 		= 651
+	;success.front.scale 		= 1,1
+	;success.front.spr 			= 701,0
+	;success.front.displaytime	= -1
+	; success: positioning, sound, text, and animation (bg and front elements) upon trial success.
+	; Displayed after each completed trial except the final one.
 
-    ; All Clear positioning, sound, text, and animation (bg and front elements)
-    ; Displayed after completing the final trial
-    allclear.pos				= 300,250
-    allclear.snd				= 900,0
-    ;allclear.text.text			=
-    ;allclear.text.offset 		= 0,0
-    ;allclear.text.font 		= 4,0,1
-    ;allclear.text.font.scale 	= 
-    ;allclear.text.font.height	=
-    allclear.bg.offset 			= 0,0
-    allclear.bg.anim 			= 650
-    ;allclear.bg.scale 			= 1,1
-    ;allclear.bg.spr 			= 701,0
-    allclear.front.offset 		= 0,0
-    allclear.front.anim 		= 652
-    ;allclear.front.scale 		= 1,1
-    ;allclear.front.spr 		= 701,0
+	allclear.pos				= 120,80
+	allclear.snd				= 900,0
+	allclear.text.text			= "ALL CLEAR!"
+	allclear.text.offset 		= 0,0
+	allclear.text.font 			= 2,0,1, 255, 100, 100
+  	allclear.text.displaytime	= 70
+	;allclear.text.scale		= 2,2
+	;allclear.text.font.height	=
+	;allclear.bg.offset 		= 0,0
+	;allclear.bg.anim 			= 650
+	;allclear.bg.scale 			= 1,1
+	;allclear.bg.spr 			= 701,0
+	;allclear.front.offset 		= 0,0
+	;allclear.front.anim 		= 652
+	;allclear.front.scale 		= 1,1
+	;allclear.front.spr 		= 701,0
+	; allclear: positioning, sound, text, and animation (bg and front elements) upon final trial success.
+	; Displayed after completing the final trial.
+	
+	; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features/#submenus
+	; If custom menu is not declared, following menu is loaded by default:
+	;menu.itemname.back 					= "Continue"
+	;menu.itemname.menutrials 				= "Trials Menu"
+	;menu.itemname.menutrials.trialslist 	= "Trials List"
+	;menu.itemname.menutraining.back 		= "Back"
+	;menu.itemname.menuinput 				= "Button Config"
+	;menu.itemname.menuinput.keyboard 		= "Key Config"
+	;menu.itemname.menuinput.gamepad 		= "Joystick Config"
+	;menu.itemname.menuinput.empty 			= ""
+	;menu.itemname.menuinput.inputdefault 	= "Default"
+	;menu.itemname.menuinput.back 			= "Back"
+	;menu.itemname.commandlist 				= "Command List"
+	;menu.itemname.characterchange 			= "Character Change"
+	;menu.itemname.exit 					= "Exit"
 
-    ; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features/#submenus
-    menu.itemname.back 						= "Continue"
-    menu.itemname.menutrials 				= "Trials Menu"
-    menu.itemname.menutrials.trialslist 	= "Trials List"
-    menu.itemname.menutrials.back 		= "Back"
-    menu.itemname.menuinput 				= "Button Config"
-    menu.itemname.menuinput.keyboard 		= "Key Config"
-    menu.itemname.menuinput.gamepad 		= "Joystick Config"
-    menu.itemname.menuinput.empty 			= ""
-    menu.itemname.menuinput.inputdefault 	= "Default"
-    menu.itemname.menuinput.back 			= "Back"
-    menu.itemname.commandlist 				= "Command List"
-    menu.itemname.characterchange 			= "Character Change"
-    menu.itemname.exit 						= "Exit"
+[TrialsBgDef] ;Ikemen feature
+	spr 			= ""
+	bgclearcolor 	= 0, 0, 0
 ```
 
 ## Creating a Character's Trials Definition File
@@ -182,37 +199,22 @@ trialstep.1.stateno 		= 1010
 ; [TriafDef, TrialTitle] - [TrialDef] mandatory - trial title after the comma is optional.
 
 ; trial.dummymode - optional - valid options are stand (default), crouch, jump, wjump. Defaults to stand if unspecified.
-
 ; trial.guardmode - optional - valid options are none, auto. Defaults to none if unspecified.
-
 ; trial.dummybuttonjam - optional - valid options are none, a, b, c, x, y, z, start, d, w. Defaults to none if unspecified.
-
 ; dummymode, guardmode, and dummybuttonjam are defined once per trial. The other parameters can be defined for each trial step - notice the syntax, where X is the trial number.
 
-; trial.X.text - optional - (string). Name for trial step (only displayed in vertical trials layout).
-
+; trial.X.text - optional - (string). Text for trial step (only displayed in vertical trials layout).
 ; trial.X.glyphs - optional - (string, see Glyph documentation [https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-info#movelists] for syntax). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts.
-
 ; trialstep.X.stateno - mandatory - (integer or comma-separated integers). State to be checked to pass trial. This is the state whether it's the main character, a helper, or even a projectile.
-
 ; trialstep.X.anim - optional - (integer or comma-separated integers). Identifies animno to be checked to pass trial. Useful in certain cases.
-
 ; trialstep.X.numofhits - optional - (integer or comma-separated integers), will default to 1 if not defined. In some instances, you might want to specify a trial step to meet a multi-hit criteria before proceeding to the next trial step.
-
 ; trialstep.X.isthrow - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a throw. Should be 'true' is trial step is a throw.
-
 ; trialstep.X.isnohit - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step does not hit the opponent, or does not increase the combo counter.
-
 ; trialstep.X.iscounterhit - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
-
 ; trialstep.X.ishelper - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
-
 ; trialstep.X.isproj - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
-
 ; trialstep.X.specialbool - optional - (true or false, or comma-separated true/false), will default to false if not defined. Can be used for custom games as required.
-
 ; trialstep.X.specialval - optional - (integer or comma-separated integers). Can be used for custom games as required.
-
 ; trialstep.X.specialstr - optional - (string, or comma-separated strings). Can be used for custom games as required.
 
 ;---------------------------------------------
@@ -251,7 +253,7 @@ trialstep.2.stateno 	= 210
 ; Condensed steps can be very practical for multi-state moves where the trial step should only clear if all of the states are met, without having to create multiple trial steps.
 
 trialstep.1.text 		= Standing Light to Strong Punch Chain		
-trialstep.1.glyphs 		= ^X_,^Y			
+trialstep.1.glyphs 		= ^X_-^Y			
 trialstep.1.stateno 	= 200, 210		
 trialstep.1.numofhits	= 1, 1
 
@@ -324,17 +326,5 @@ Finally, you'll want to modify the character's definition file so that Ikemen kn
 
 ```
 [Files]
-cmd         = kfm.cmd           ;Command set
-cns         = kfm.const         ;Constants
-st          = kfm.zss           ;States
-st2         = hits.zss
-st3         = command.zss
-st4         = AI.zss
-stcommon    = common1.cns.zss   ;Common states (from data/ or motif)
-sprite      = kfmZ.sff          ;Sprite
-anim        = kfm.air           ;Animation
-sound       = kfm.snd           ;Sound
-ai          = kfm.ai            ;AI hints data (not used)
-movelist    = movelist.dat      ;Ikemen feature: Movelist
-trials      = trials.def        ;Ikemen feature: Trials mode data
+trials = trials.def        ;Ikemen feature: Trials mode data
 ```

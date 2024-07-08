@@ -52,130 +52,131 @@ if motif.select_info.title_trials_text == nil then
 end
 
 local t_base = {
-    trialsteps_pos = {0, 0}, --Ikemen feature
-    trialsteps_spacing = {0, 0}, --Ikemen feature
-    trialsteps_window = {0,0,0,0}, --Ikemen feature
-    trialsteps_resetonsuccess = 0, --Ikemen feature
-    trialsteps_trialslayout = 0, --Ikemen feature
-    bg_anim = -1, --Ikemen feature
-    bg_spr = {}, --Ikemen feature
-    bg_offset = {0, 0}, --Ikemen feature
-    bg_facing = 1, --Ikemen feature
-    bg_scale = {1.0, 1.0}, --Ikemen feature
-    bg_displaytime = 0, --Ikemen feature
-    upcomingstep_text_offset = {0,0}, --Ikemen feature
-    upcomingstep_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    upcomingstep_text_font_height = -1, --Ikemen feature
-    upcomingstep_text_text = '', --Ikemen feature
-	upcomingstep_text_scale = {1.0, 1.0}, --Ikemen feature
-    upcomingstep_bg_anim = -1, --Ikemen feature
-    upcomingstep_bg_spr = {}, --Ikemen feature
-    upcomingstep_bg_offset = {0, 0}, --Ikemen feature
-    upcomingstep_bg_facing = 1, --Ikemen feature
-    upcomingstep_bg_scale = {1.0, 1.0}, --Ikemen feature
-    upcomingstep_bg_displaytime = -1, --Ikemen feature
-    upcomingstep_bginc_anim = -1, --Ikemen feature
-    upcomingstep_bginc_spr = {}, --Ikemen feature
-    upcomingstep_bginc_offset = {0, 0}, --Ikemen feature
-    upcomingstep_bginc_facing = 1, --Ikemen feature
-    upcomingstep_bginc_scale = {1.0, 1.0}, --Ikemen feature
-    currentstep_text_offset = {0,0}, --Ikemen feature
-    currentstep_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    currentstep_text_font_height = -1, --Ikemen feature
-    currentstep_text_text = '', --Ikemen feature
-	currentstep_text_scale = {1.0, 1.0}, --Ikemen feature
-    currentstep_bg_anim = -1, --Ikemen feature
-    currentstep_bg_spr = {}, --Ikemen feature
-    currentstep_bg_offset = {0, 0}, --Ikemen feature
-    currentstep_bg_facing = 1, --Ikemen feature
-    currentstep_bg_scale = {1.0, 1.0}, --Ikemen feature
-    currentstep_bg_displaytime = -1, --Ikemen feature
-    currentstep_bginc_anim = -1, --Ikemen feature
-    currentstep_bginc_spr = {}, --Ikemen feature
-    currentstep_bginc_offset = {0, 0}, --Ikemen feature
-    currentstep_bginc_facing = 1, --Ikemen feature
-    currentstep_bginc_scale = {1.0, 1.0}, --Ikemen feature
-    completedstep_text_offset = {0,0}, --Ikemen feature
-    completedstep_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    completedstep_text_font_height = -1, --Ikemen feature
-    completedstep_text_text = '', --Ikemen feature
-	completedstep_text_scale = {1.0, 1.0}, --Ikemen feature
-    completedstep_bg_anim = -1, --Ikemen feature
-    completedstep_bg_spr = {}, --Ikemen feature
-    completedstep_bg_offset = {0, 0}, --Ikemen feature
-    completedstep_bg_facing = 1, --Ikemen feature
-    completedstep_bg_scale = {1.0, 1.0}, --Ikemen feature
-    completedstep_bg_displaytime = -1, --Ikemen feature
-    completedstep_bginc_anim = -1, --Ikemen feature
-    completedstep_bginc_spr = {}, --Ikemen feature
-    completedstep_bginc_offset = {0, 0}, --Ikemen feature
-    completedstep_bginc_facing = 1, --Ikemen feature
-    completedstep_bginc_scale = {1.0, 1.0}, --Ikemen feature
-    completedstep_bginctocts_anim = -1, --Ikemen feature
-    completedstep_bginctocts_spr = {}, --Ikemen feature
-    completedstep_bginctocts_offset = {0, 0}, --Ikemen feature
-    completedstep_bginctocts_facing = 1, --Ikemen feature
-    completedstep_bginctocts_scale = {1.0, 1.0}, --Ikemen feature
-    glyphs_offset = {0, 0}, --Ikemen feature
-    glyphs_scale = {1.0,1.0}, --Ikemen feature
-    glyphs_spacing = {0,0}, --Ikemen feature
-    glyphs_align = 1, --Ikemen feature
-	trialcounter_pos = {0,0}, --Ikemen feature
-    trialcounter_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    trialcounter_text_scale = {1.0, 1.0}, --Ikemen feature
-    trialcounter_font_height = -1, --Ikemen feature
-    trialcounter_text = '', --Ikemen feature
-	trialcounter_allclear_text = '', --Ikemen feature
-	totaltrialtimer_pos = {0,0}, --Ikemen feature
-    totaltrialtimer_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    totaltrialtimer_text_scale = {1.0, 1.0}, --Ikemen feature
-    totaltrialtimer_font_height = -1, --Ikemen feature
-    totaltrialtimer_text = '', --Ikemen feature
-    currenttrialtimer_pos = {0,0}, --Ikemen feature
-    currenttrialtimer_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    currenttrialtimer_text_scale = {1.0, 1.0}, --Ikemen feature
-    currenttrialtimer_font_height = -1, --Ikemen feature
-    currenttrialtimer_text = '', --Ikemen feature
-    success_pos = {0, 0}, --Ikemen feature
-    success_snd = {-1, 0}, --Ikemen feature
-    success_bg_anim = -1, --Ikemen feature
-    success_bg_spr = {}, --Ikemen feature
-    success_bg_offset = {0, 0}, --Ikemen feature
-    success_bg_facing = 1, --Ikemen feature
-    success_bg_scale = {1.0, 1.0}, --Ikemen feature
-    success_bg_displaytime = -1, --Ikemen feature
-    success_front_anim = -1, --Ikemen feature
-    success_front_spr = {}, --Ikemen feature
-    success_front_offset = {0, 0}, --Ikemen feature
-    success_front_facing = 1, --Ikemen feature
-    success_front_scale = {1.0, 1.0}, --Ikemen feature
-    success_front_displaytime = -1, --Ikemen feature
-	success_text_displaytime = -1, --Ikemen feature
-    success_text_offset = {0,0}, --Ikemen feature
-    success_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    success_text_font_height = -1, --Ikemen feature
-    success_text_text = '', --Ikemen feature
-	success_text_scale = {1.0, 1.0}, --Ikemen feature
-    allclear_pos = {0, 0}, --Ikemen feature
-    allclear_snd = {-1, 0}, --Ikemen feature
-    allclear_bg_anim = -1, --Ikemen feature
-    allclear_bg_spr = {}, --Ikemen feature
-    allclear_bg_offset = {0, 0}, --Ikemen feature
-    allclear_bg_facing = 1, --Ikemen feature
-    allclear_bg_scale = {1.0, 1.0}, --Ikemen feature
-    allclear_bg_displaytime = -1, --Ikemen feature
-    allclear_front_anim = -1, --Ikemen feature
-    allclear_front_spr = {}, --Ikemen feature
-    allclear_front_offset = {0, 0}, --Ikemen feature
-    allclear_front_facing = 1, --Ikemen feature
-    allclear_front_scale = {1.0, 1.0}, --Ikemen feature
-    allclear_front_displaytime = -1, --Ikemen feature
-	allclear_text_displaytime = -1, --Ikemen feature
-    allclear_text_offset = {0,0}, --Ikemen feature
-    allclear_text_font = {'f-4x6.def', 0, 1, 255, 255, 255}, --Ikemen feature
-    allclear_text_font_height = -1, --Ikemen feature
-    allclear_text_text = '', --Ikemen feature
-	allclear_text_scale = {1.0, 1.0}, --Ikemen feature
+    trialsteps_pos = {0, 0}, 
+    trialsteps_spacing = {0, 0}, 
+    trialsteps_window = {0,0,0,0}, 
+    trialsteps_resetonsuccess = 0, 
+    trialsteps_trialslayout = "vertical", 
+    bg_anim = -1, 
+    bg_spr = {}, 
+    bg_offset = {0, 0}, 
+    bg_facing = 1, 
+    bg_scale = {1.0, 1.0}, 
+    bg_displaytime = 0, 
+    upcomingstep_text_offset = {0,0}, 
+    upcomingstep_text_font = {}, 
+    upcomingstep_text_font_height = -1, 
+    upcomingstep_text_text = '', 
+	upcomingstep_text_scale = {1.0, 1.0}, 
+    upcomingstep_bg_anim = -1, 
+    upcomingstep_bg_spr = {}, 
+    upcomingstep_bg_offset = {0, 0}, 
+    upcomingstep_bg_facing = 1, 
+    upcomingstep_bg_scale = {1.0, 1.0}, 
+    upcomingstep_bg_displaytime = -1, 
+    upcomingstep_bginc_anim = -1, 
+    upcomingstep_bginc_spr = {}, 
+    upcomingstep_bginc_offset = {0, 0}, 
+    upcomingstep_bginc_facing = 1, 
+    upcomingstep_bginc_scale = {1.0, 1.0}, 
+    currentstep_text_offset = {0,0}, 
+    currentstep_text_font = {}, 
+    currentstep_text_font_height = -1, 
+    currentstep_text_text = '', 
+	currentstep_text_scale = {1.0, 1.0}, 
+    currentstep_bg_anim = -1, 
+    currentstep_bg_spr = {}, 
+    currentstep_bg_offset = {0, 0}, 
+    currentstep_bg_facing = 1, 
+    currentstep_bg_scale = {1.0, 1.0}, 
+    currentstep_bg_displaytime = -1, 
+    currentstep_bginc_anim = -1, 
+    currentstep_bginc_spr = {}, 
+    currentstep_bginc_offset = {0, 0}, 
+    currentstep_bginc_facing = 1, 
+    currentstep_bginc_scale = {1.0, 1.0}, 
+    completedstep_text_offset = {0,0}, 
+    completedstep_text_font = {}, 
+    completedstep_text_font_height = -1, 
+    completedstep_text_text = '', 
+	completedstep_text_scale = {1.0, 1.0}, 
+    completedstep_bg_anim = -1, 
+    completedstep_bg_spr = {}, 
+    completedstep_bg_offset = {0, 0}, 
+    completedstep_bg_facing = 1, 
+    completedstep_bg_scale = {1.0, 1.0}, 
+    completedstep_bg_displaytime = -1, 
+    completedstep_bginc_anim = -1, 
+    completedstep_bginc_spr = {}, 
+    completedstep_bginc_offset = {0, 0}, 
+    completedstep_bginc_facing = 1, 
+    completedstep_bginc_scale = {1.0, 1.0}, 
+    completedstep_bginctocts_anim = -1, 
+    completedstep_bginctocts_spr = {}, 
+    completedstep_bginctocts_offset = {0, 0}, 
+    completedstep_bginctocts_facing = 1, 
+    completedstep_bginctocts_scale = {1.0, 1.0}, 
+    glyphs_offset = {0, 0}, 
+    glyphs_scale = {1.0,1.0}, 
+    glyphs_spacing = {0,0}, 
+    glyphs_align = 1, 
+	glyphs_scalewithtext = "false", 
+	trialcounter_pos = {0,0}, 
+    trialcounter_font = {}, 
+    trialcounter_text_scale = {1.0, 1.0}, 
+    trialcounter_font_height = -1, 
+    trialcounter_text = '', 
+	trialcounter_allclear_text = '', 
+	totaltrialtimer_pos = {0,0}, 
+    totaltrialtimer_font = {}, 
+    totaltrialtimer_text_scale = {1.0, 1.0}, 
+    totaltrialtimer_font_height = -1, 
+    totaltrialtimer_text = '', 
+    currenttrialtimer_pos = {0,0}, 
+    currenttrialtimer_font = {}, 
+    currenttrialtimer_text_scale = {1.0, 1.0}, 
+    currenttrialtimer_font_height = -1, 
+    currenttrialtimer_text = '', 
+    success_pos = {0, 0}, 
+    success_snd = {-1, 0}, 
+    success_bg_anim = -1, 
+    success_bg_spr = {}, 
+    success_bg_offset = {0, 0}, 
+    success_bg_facing = 1, 
+    success_bg_scale = {1.0, 1.0}, 
+    success_bg_displaytime = -1, 
+    success_front_anim = -1, 
+    success_front_spr = {}, 
+    success_front_offset = {0, 0}, 
+    success_front_facing = 1, 
+    success_front_scale = {1.0, 1.0}, 
+    success_front_displaytime = -1, 
+	success_text_displaytime = -1, 
+    success_text_offset = {0,0}, 
+    success_text_font = {}, 
+    success_text_font_height = -1, 
+    success_text_text = '', 
+	success_text_scale = {1.0, 1.0}, 
+    allclear_pos = {0, 0}, 
+    allclear_snd = {-1, 0}, 
+    allclear_bg_anim = -1, 
+    allclear_bg_spr = {}, 
+    allclear_bg_offset = {0, 0}, 
+    allclear_bg_facing = 1, 
+    allclear_bg_scale = {1.0, 1.0}, 
+    allclear_bg_displaytime = -1, 
+    allclear_front_anim = -1, 
+    allclear_front_spr = {}, 
+    allclear_front_offset = {0, 0}, 
+    allclear_front_facing = 1, 
+    allclear_front_scale = {1.0, 1.0}, 
+    allclear_front_displaytime = -1, 
+	allclear_text_displaytime = -1, 
+    allclear_text_offset = {0,0}, 
+    allclear_text_font = {}, 
+    allclear_text_font_height = -1, 
+    allclear_text_text = '', 
+	allclear_text_scale = {1.0, 1.0}, 
 }
 
 -- Merge trials data into table
@@ -186,8 +187,8 @@ motif.trials_info = main.f_tableMerge(t_base, motif.trials_info)
 
 if motif.trialsbgdef == nil then
     motif.trialsbgdef = {
-        spr = '', --Ikemen feature
-        bgclearcolor = {0, 0, 0}, --Ikemen feature
+        spr = '', 
+        bgclearcolor = {0, 0, 0}, 
     }
 end
 
@@ -414,11 +415,17 @@ function start.f_trialsBuilder()
 				local alignOffset = 0
 				local align = 1
 				local width = 0
+				local font_def = 0
+				
+				if motif.trials_info.currentstep_text_font[7] == nil and motif.trials_info.glyphs_scalewithtext == "true" then
+					font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font_height]
+				elseif motif.trials_info.glyphs_scalewithtext == "true" then
+					font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font[7]]
+				end
 
-				local font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font[7]]
 				for m in pairs(start.trialsdata.trial[i].trialstep[j].glyphline.glyph) do
 					if motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]] ~= nil then
-						if motif.trials_info.trialsteps_trialslayout == 0 then
+						if motif.trials_info.trialsteps_trialslayout == "vertical" then
 							if motif.trials_info.glyphs_align == 0 then --center align
 								alignOffset = motif.trials_info.glyphs_offset[1] * 0.5
 							elseif motif.trials_info.glyphs_align == -1 then --right align
@@ -431,10 +438,12 @@ function start.f_trialsBuilder()
 						end
 						local scaleX = motif.trials_info.glyphs_scale[1]
 						local scaleY = motif.trials_info.glyphs_scale[2]
-						if motif.trials_info.trialsteps_trialslayout == 0 then						
+
+						if motif.trials_info.trialsteps_trialslayout == "vertical" and motif.trials_info.glyphs_scalewithtext == "true" then						
 							scaleX = font_def.Size[2] * motif.trials_info.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[1]
 							scaleY = font_def.Size[2] * motif.trials_info.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[2]
 						end
+
 						if motif.trials_info.glyphs_align == -1 then
 							alignOffset = alignOffset - motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX
 						end
@@ -606,7 +615,7 @@ function start.f_trialsDrawer()
 			
 			--For vertical trial layouts, determine if all assets will be drawn within the trials window range, or if scrolling needs to be enabled. For horizontal layouts, we will figure it out
 			--when we determine glyph and incrementor widths (see notes below). We do this step outside of the draw loop to speed things up.
-			if start.trialsdata.trial[ct].drawsteps*motif.trials_info.trialsteps_spacing[2] > start.trialsdata.draw.windowYrange and motif.trials_info.trialsteps_trialslayout == 0 then
+			if start.trialsdata.trial[ct].drawsteps*motif.trials_info.trialsteps_spacing[2] > start.trialsdata.draw.windowYrange and motif.trials_info.trialsteps_trialslayout == "vertical" then
 				startonstep = math.max(cts-2, 1)
 				if (drawtothisstep - startonstep)*motif.trials_info.trialsteps_spacing[2] > start.trialsdata.draw.windowYrange then
 					drawtothisstep = math.min(startonstep+math.floor(start.trialsdata.draw.windowYrange/motif.trials_info.trialsteps_spacing[2]),start.trialsdata.trial[ct].drawsteps)
@@ -630,7 +639,7 @@ function start.f_trialsDrawer()
 				local padding = 0
 				local totaloffset = 0
 				local bgincwidth = 0 --only used for horizontal layouts
-				if motif.trials_info.trialsteps_trialslayout == 0 then
+				if motif.trials_info.trialsteps_trialslayout == "vertical" then
 					--Vertical layouts are the simplest - they have a constant width sprite or anim that the text is drawn on top of, and the glyphs are displayed wherever specified. 
 					--The vertical layouts do NOT support incrementors (see notes below for horizontal layout).
 					animSetPos(
@@ -646,7 +655,7 @@ function start.f_trialsDrawer()
 						text = start.trialsdata.trial[ct].trialstep[i].text
 					})
 					start.trialsdata.draw[sub .. 'textline'][i]:draw()
-				elseif motif.trials_info.trialsteps_trialslayout == 1 then
+				elseif motif.trials_info.trialsteps_trialslayout == "horizontal" then
 					--Horizontal layouts are much more complicated. Text is not drawn in horizontal mode, instead we only display the glyphs. A small sprite is dynamically tiled to the width of the 
 					--glyphs, and an optional background element called an incrementor (bginc) can be used to link the pieces together (think of an arrow where the body of the arrow is where the 
 					--glyphs are being drawn and that's the dynamically sized part, and the head of the arrow is the incrementor which is a fixed width sprite). There's quite a bit more work that 
@@ -666,7 +675,7 @@ function start.f_trialsDrawer()
 					end
 					tempoffset[2] = motif.trials_info.trialsteps_spacing[2]*(addrow)
 					local gpoffset = 0
-					for m in pairs(start.trialsdata.trial[ct].glyphline[i].glyph) do
+					for m in pairs(start.trialsdata.trial[ct].trialstep[i].glyphline.glyph) do
 						if m > 1 then gpoffset = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[m-1] end
 						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1] = motif.trials_info.trialsteps_pos[1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[m] + (accwidth-totaloffset-bgincwidth-padding) + gpoffset-- + start.trialsdata.glyphline[ct][i][m].lengthOffset --+ motif.trials_info.spacing[1]*(i-1)),
 					end
