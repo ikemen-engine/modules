@@ -502,12 +502,11 @@ function start.f_trialsBuilder()
 			trialcounter = main.f_createTextImg(motif.trials_info, 'trialcounter'),
 			totaltrialtimer = main.f_createTextImg(motif.trials_info, 'totaltrialtimer'),
 			currenttrialtimer = main.f_createTextImg(motif.trials_info, 'currenttrialtimer'),
+			trialtitle = main.f_createTextImg(motif.trials_info, 'trialtitle_text'),
 			windowXrange = motif.trials_info.trialsteps_window[3] - motif.trials_info.trialsteps_window[1],
 			windowYrange = motif.trials_info.trialsteps_window[4] - motif.trials_info.trialsteps_window[2],
 		}
-		
-
-
+		start.trialsdata.draw.trialtitle = main.f_createTextImg(motif.trials_info, 'trialtitle_text')
 		start.trialsdata.draw.success_text:update({x = motif.trials_info.success_pos[1]+motif.trials_info.success_text_offset[1], y = motif.trials_info.success_pos[2]+motif.trials_info.success_text_offset[2],})
 		start.trialsdata.draw.allclear_text:update({x = motif.trials_info.allclear_pos[1]+motif.trials_info.allclear_text_offset[1], y = motif.trials_info.allclear_pos[2]+motif.trials_info.allclear_text_offset[2],})
 		start.trialsdata.draw.trialcounter:update({x = motif.trials_info.trialcounter_pos[1], y = motif.trials_info.trialcounter_pos[2],})
@@ -866,6 +865,7 @@ function start.f_trialsChecker()
 			main.f_fadeReset('fadein', motif.trials_info)
 			-- this doesn't work the way i'm intending it to
 			--roundReset()
+			isasserted("nointroreset")
 		end
 	end
 end
