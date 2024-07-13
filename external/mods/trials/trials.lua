@@ -55,7 +55,7 @@ local t_base = {
     trialsteps_pos = {0, 0}, 
     trialsteps_spacing = {0, 0}, 
     trialsteps_window = {0,0,0,0}, 
-    trialsteps_resetonsuccess = 0, 
+    trialsteps_resetonsuccess = "false", 
     trialsteps_trialslayout = "vertical", 
     bg_anim = -1, 
     bg_spr = {}, 
@@ -301,6 +301,7 @@ function start.f_trialsBuilder()
 			starttick = tickcount(),
 			elapsedtime = 0,
 			trial = {},
+			reset = {0,0,0},
 		}
 		--Populate background elements information
 		start.trialsdata.bgelemdata = {
@@ -417,6 +418,7 @@ function start.f_trialsBuilder()
 				local width = 0
 				local font_def = 0
 				
+				--Some fonts won't give us the data we need to scale glyphs from, but sometimes that doesn't matter anyway
 				if motif.trials_info.currentstep_text_font[7] == nil and motif.trials_info.glyphs_scalewithtext == "true" then
 					font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font_height]
 				elseif motif.trials_info.glyphs_scalewithtext == "true" then
@@ -436,6 +438,7 @@ function start.f_trialsBuilder()
 								align = motif.trials_info.glyphs_align
 							end
 						end
+
 						local scaleX = motif.trials_info.glyphs_scale[1]
 						local scaleY = motif.trials_info.glyphs_scale[2]
 
@@ -569,6 +572,15 @@ end
 
 function start.f_trialsDrawer()
 	if start.trialsInit and roundstate() == 2 and not start.trialsdata.active then
+		print("we are here")
+		if start.trialsdata.reset[1] == 1 then
+			print("now here")
+			start.trialsdata.currenttrial = start.trialsdata.reset[1]
+			start.trialsdata.reset[1] = 0
+			start.trialsdata.reset[2] = 0
+		else
+			
+		end
 		start.f_trialsSetup()
 		start.trialsdata.active = true
 	end
@@ -826,10 +838,13 @@ function start.f_trialsChecker()
 	--If the trial was completed successfully, draw the trials success
 	if start.trialsdata.draw.success > 0 then
 		start.f_trialsSuccess('success', ct)
-		if start.trialsdata.draw.success == 0 and motif.trials_info.trialsteps_resetonsuccess == 1 then
+		if start.trialsdata.draw.success == 0 and motif.trials_info.trialsteps_resetonsuccess == "true" then
+			start.trialsdata.reset[1] = 1
+			start.trialsdata.reset[2] = start.trialsdata.currenttrial + 1
 			main.f_bgReset(motif.trialsbgdef.bg)
 			main.f_fadeReset('fadein', motif.trials_info)
 			-- this doesn't work the way i'm intending it to
+			--roundReset()
 		end
 	end
 end
