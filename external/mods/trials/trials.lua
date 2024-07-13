@@ -55,7 +55,7 @@ local t_base = {
     trialsteps_pos = {0, 0}, 
     trialsteps_spacing = {0, 0}, 
     trialsteps_window = {0,0,0,0}, 
-    trialsteps_resetonsuccess = 0, 
+    trialsteps_resetonsuccess = "false", 
     trialsteps_trialslayout = "vertical", 
     bg_anim = -1, 
     bg_spr = {}, 
@@ -63,6 +63,23 @@ local t_base = {
     bg_facing = 1, 
     bg_scale = {1.0, 1.0}, 
     bg_displaytime = 0, 
+	trialtitle_text_offset = {0,0}, 
+    trialtitle_text_font = {}, 
+    trialtitle_text_font_height = -1, 
+    trialtitle_text_text = '', 
+	trialtitle_text_scale = {1.0, 1.0}, 
+    trialtitle_bg_anim = -1, 
+    trialtitle_bg_spr = {}, 
+    trialtitle_bg_offset = {0, 0}, 
+    trialtitle_bg_facing = 1, 
+    trialtitle_bg_scale = {1.0, 1.0}, 
+    trialtitle_bg_displaytime = -1, 
+	trialtitle_front_anim = -1, 
+    trialtitle_front_spr = {}, 
+    trialtitle_front_offset = {0, 0}, 
+    trialtitle_front_facing = 1, 
+    trialtitle_front_scale = {1.0, 1.0}, 
+    trialtitle_front_displaytime = -1, 
     upcomingstep_text_offset = {0,0}, 
     upcomingstep_text_font = {}, 
     upcomingstep_text_font_height = -1, 
@@ -210,19 +227,20 @@ motif.trialsbgdef.bg = bgNew(motif.trialsbgdef.spr_data, motif.def, 'trialsbg')
 --trials spr/anim data
 local tr_pos = motif.trials_info
 for _, v in ipairs({
-	{s = 'bg_',							x = tr_pos.trialsteps_pos[1] + tr_pos.bg_offset[1],				y = tr_pos.trialsteps_pos[2] + tr_pos.bg_offset[2],						},
-	{s = 'success_bg_',    				x = tr_pos.success_pos[1] + tr_pos.success_bg_offset[1],		y = tr_pos.success_pos[2] + tr_pos.success_bg_offset[2],		},
-	{s = 'allclear_bg_',	   			x = tr_pos.allclear_pos[1] + tr_pos.allclear_bg_offset[1],		y = tr_pos.allclear_pos[2] + tr_pos.allclear_bg_offset[2],		},
-	{s = 'success_front_',    			x = tr_pos.success_pos[1] + tr_pos.success_front_offset[1],		y = tr_pos.success_pos[2] + tr_pos.success_front_offset[2],		},
-	{s = 'allclear_front_',   			x = tr_pos.allclear_pos[1] + tr_pos.allclear_front_offset[1],	y = tr_pos.allclear_pos[2] + tr_pos.allclear_front_offset[2],	},
-	{s = 'upcomingstep_bg_',			x = 0,															y = 0,															},
-	{s = 'upcomingstep_bginc_',			x = 0,															y = 0,															},
-	{s = 'currentstep_bg_',				x = 0,															y = 0,															},
-	{s = 'currentstep_bginc_',			x = 0,															y = 0,															},
-	{s = 'completedstep_bg_',			x = 0,															y = 0,															},
-	{s = 'completedstep_bginc_',		x = 0,															y = 0,															},
-	{s = 'completedstep_bginctocts_',	x = 0,															y = 0,															},
-
+	{s = 'bg_',							x = tr_pos.trialsteps_pos[1] + tr_pos.bg_offset[1],					y = tr_pos.trialsteps_pos[2] + tr_pos.bg_offset[2],					},
+	{s = 'success_bg_',    				x = tr_pos.success_pos[1] + tr_pos.success_bg_offset[1],			y = tr_pos.success_pos[2] + tr_pos.success_bg_offset[2],			},
+	{s = 'allclear_bg_',	   			x = tr_pos.allclear_pos[1] + tr_pos.allclear_bg_offset[1],			y = tr_pos.allclear_pos[2] + tr_pos.allclear_bg_offset[2],			},
+	{s = 'success_front_',    			x = tr_pos.success_pos[1] + tr_pos.success_front_offset[1],			y = tr_pos.success_pos[2] + tr_pos.success_front_offset[2],			},
+	{s = 'allclear_front_',   			x = tr_pos.allclear_pos[1] + tr_pos.allclear_front_offset[1],		y = tr_pos.allclear_pos[2] + tr_pos.allclear_front_offset[2],		},
+	{s = 'upcomingstep_bg_',			x = 0,																y = 0,																},
+	{s = 'upcomingstep_bginc_',			x = 0,																y = 0,																},
+	{s = 'currentstep_bg_',				x = 0,																y = 0,																},
+	{s = 'currentstep_bginc_',			x = 0,																y = 0,																},
+	{s = 'completedstep_bg_',			x = 0,																y = 0,																},
+	{s = 'completedstep_bginc_',		x = 0,																y = 0,																},
+	{s = 'completedstep_bginctocts_',	x = 0,																y = 0,																},
+	{s = 'trialtitle_bg_',    			x = tr_pos.trialtitle_pos[1] + tr_pos.trialtitle_bg_offset[1],		y = tr_pos.trialtitle_pos[2] + tr_pos.trialtitle_bg_offset[2],		},
+	{s = 'trialtitle_front_',    		x = tr_pos.trialtitle_pos[1] + tr_pos.trialtitle_front_offset[1],	y = tr_pos.trialtitle_pos[2] + tr_pos.trialtitle_front_offset[2],	},
 }) do
 	if motif.files.trials ~= nil and motif.files.trials ~= '' then
 	 	motif.files.trials_data = sffNew(searchFile(motif.files.trials, {motif.fileDir, '', 'data/'}))
@@ -301,6 +319,7 @@ function start.f_trialsBuilder()
 			starttick = tickcount(),
 			elapsedtime = 0,
 			trial = {},
+			reset = {0,0,0},
 		}
 		--Populate background elements information
 		start.trialsdata.bgelemdata = {
@@ -417,6 +436,7 @@ function start.f_trialsBuilder()
 				local width = 0
 				local font_def = 0
 				
+				--Some fonts won't give us the data we need to scale glyphs from, but sometimes that doesn't matter anyway
 				if motif.trials_info.currentstep_text_font[7] == nil and motif.trials_info.glyphs_scalewithtext == "true" then
 					font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font_height]
 				elseif motif.trials_info.glyphs_scalewithtext == "true" then
@@ -436,6 +456,7 @@ function start.f_trialsBuilder()
 								align = motif.trials_info.glyphs_align
 							end
 						end
+
 						local scaleX = motif.trials_info.glyphs_scale[1]
 						local scaleY = motif.trials_info.glyphs_scale[2]
 
@@ -484,6 +505,9 @@ function start.f_trialsBuilder()
 			windowXrange = motif.trials_info.trialsteps_window[3] - motif.trials_info.trialsteps_window[1],
 			windowYrange = motif.trials_info.trialsteps_window[4] - motif.trials_info.trialsteps_window[2],
 		}
+		
+
+
 		start.trialsdata.draw.success_text:update({x = motif.trials_info.success_pos[1]+motif.trials_info.success_text_offset[1], y = motif.trials_info.success_pos[2]+motif.trials_info.success_text_offset[2],})
 		start.trialsdata.draw.allclear_text:update({x = motif.trials_info.allclear_pos[1]+motif.trials_info.allclear_text_offset[1], y = motif.trials_info.allclear_pos[2]+motif.trials_info.allclear_text_offset[2],})
 		start.trialsdata.draw.trialcounter:update({x = motif.trials_info.trialcounter_pos[1], y = motif.trials_info.trialcounter_pos[2],})
@@ -569,6 +593,15 @@ end
 
 function start.f_trialsDrawer()
 	if start.trialsInit and roundstate() == 2 and not start.trialsdata.active then
+		print("we are here")
+		if start.trialsdata.reset[1] == 1 then
+			print("now here")
+			start.trialsdata.currenttrial = start.trialsdata.reset[1]
+			start.trialsdata.reset[1] = 0
+			start.trialsdata.reset[2] = 0
+		else
+			
+		end
 		start.f_trialsSetup()
 		start.trialsdata.active = true
 	end
@@ -826,7 +859,9 @@ function start.f_trialsChecker()
 	--If the trial was completed successfully, draw the trials success
 	if start.trialsdata.draw.success > 0 then
 		start.f_trialsSuccess('success', ct)
-		if start.trialsdata.draw.success == 0 and motif.trials_info.trialsteps_resetonsuccess == 1 then
+		if start.trialsdata.draw.success == 0 and motif.trials_info.trialsteps_resetonsuccess == "true" then
+			start.trialsdata.reset[1] = 1
+			start.trialsdata.reset[2] = start.trialsdata.currenttrial + 1
 			main.f_bgReset(motif.trialsbgdef.bg)
 			main.f_fadeReset('fadein', motif.trials_info)
 			-- this doesn't work the way i'm intending it to

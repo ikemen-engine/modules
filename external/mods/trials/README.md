@@ -18,109 +18,124 @@ The Trials mode
 ## system.def Template and Customization
 Using this external module allows full customization of the trials mode in system.def, with sprites in system.sff OR in `trials.sff`, if so desired. If you are using `trials.sff`, make sure you point to it in the system.def's [Files] section as `trialsbgdef = trials.sff`.
 
-The universal trials mode supports both vertical trials readouts, and horizontal readouts as seen in KOF XIV, among other games. The sample `system.def` included in this file can be configured to support either layouts, but as shown, it is configured to work exclusively with default assets (only uses fonts and stock glyphs, for instance).
+The universal trials mode supports both vertical trials readouts, and horizontal readouts as seen in KOF XIV, among other games. The sample `system.def` included in this file can be configured to support either layouts, but as shown, it is configured to work exclusively with default assets (only uses fonts and stock glyphs, for instance). Below you'll find a brief summary of screenpack features supported by trials mode. For more detail, please consult the example `system.def` templates provided in this file for both vertical and horizontal layouts.
+
+- A window must be specified in which the trial steps are drawn. This feature is especially important for long trial lists that need to scroll (for vertical layouts) or have line returns and potentially scrolling (for horizontal layouts).
+- The trial title name can optionally be displayed. Text and two background elements (bg and front) can be specified.
+- Trial steps come in three flavors: upcoming, current, and completed. Text and background elements can be specified for each type. 
+	- For horizontal layouts, the background elements are handled differently. Background elements are tiled dynamically to fit the width and height of the glyphs for that step. Additionally, each trial step type has an "incrementor" background element. This incrementor is displayed between trial steps (for instance, as an arrow). Upcoming and current step both have incrementors, while completed steps have incrementors to other completed step, as well as an incrementor to the current step (since they could be colored differently, for instance).
+	- Note that trial step text is not displayed in horizontal layouts.
+- A static or animated background can be displayed behind all trial steps. This background is independent of all trial step backgrounds, and is only displayed when a trial is active.
+- Glyphs can be automatically scaled according to the font used (especially useful for vertical layouts).
+	- Glyphs are optional for vertical layouts, but they are mandatory for horizontal layouts as text is not displayed in horizontal layouts.
+- For Success and All Clear events, text and sound elements, as well as two background elements (bg and front) can be specified.
+- Two timers are available: one keeps track of the entire time spent on the trials, while the other keeps track of the time spent on the current trial. Display of the timers is optional.
+- A text string that shows the current trial can optionally be displayed.
+
+
 
 ```
 [Trials Info] ;VERTICAL EXAMPLE
-	trialsteps.pos 				= 40,40
-	trialsteps.spacing 			= 0,7
+	trialsteps.pos 				= 42,40
+	trialsteps.spacing 			= 0,11
 	trialsteps.window			= 40,40, 320,240
-	trialsteps.resetonsuccess	= 0
-	trialsteps.trialslayout 	= 0
+	trialsteps.resetonsuccess	= "false"
+	trialsteps.trialslayout 	= "vertical"
 	; trialsteps.pos: local origin from which trial steps are drawn. Other elements have their own origin specifications.
     ; trialsteps.spacing: spacing between trial steps.
     ; trialsteps.window: X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
-	; trialsteps.resetonsuccess: set to 1 to reset character position after each trial success (except the final one)--currently doesn't work
+	; trialsteps.resetonsuccess: set to "true" to reset character position after each trial success (except the final one)--currently doesn't work
     ; trialsteps.trialslayout: "vertical" or "horizontal" are the only valid values. Defaults to "vertical" if not specified. Affects scrolling logic, as stated above, also enables dynamic step width
 
 	upcomingstep.text.offset		= 0,0
 	upcomingstep.text.font			= 1, 0, 1, 255, 255, 255
 	upcomingstep.text.scale			= 1,1
-	;upcomingstep.text.font.height	=
-	;upcomingstep.bg.offset 		= -10,-6
-	;upcomingstep.bg.anim			= 609
-	;upcomingstep.bg.spr			= 701,1
-	;upcomingstep.bg.scale			= 1,1
-	;upcomingstep.bg.displaytime	= -1
+	; upcomingstep.text.font.height	=
+	; upcomingstep.bg.offset 		= -10,-6
+	; upcomingstep.bg.anim			= 609
+	; upcomingstep.bg.spr			= 701,1
+	; upcomingstep.bg.scale			= 1,1
+	; upcomingstep.bg.displaytime	= -1
 	; upcomingstep: text and background elements, shown for all upcoming trial steps
 
 	currentstep.text.offset 		= 0,0
 	currentstep.text.font 			= 1, 0, 1, 255, 255, 0
 	currentstep.text.scale 			= 1,1
-	;currentstep.text.font.height	=
-	;currentstep.bg.offset 			= -10,-6
-	;currentstep.bg.anim 			= -1
-	;currentstep.bg.spr 			= 701,0
-	;currentstep.bg.scale			= 1,1
-	;currentstep.bg.facing			= 1
-	;currentstep.bg.displaytime		= -1
+	; currentstep.text.font.height	=
+	currentstep.bg.offset 			= -2,0
+	; currentstep.bg.anim 			= -1
+	currentstep.bg.spr 				= 190,0
+	currentstep.bg.scale			= .8,.8
+	currentstep.bg.facing			= -1
+	; currentstep.bg.displaytime		= -1
 	; currentstep: text and background elements, shown for current trial step
 
 	completedstep.text.offset		= 0,0
 	completedstep.text.font 		= 1, 0, 1, 100, 100, 100
 	completedstep.text.scale		= 1,1
-	;completedstep.text.font.height = 
-	;completedstep.bg.offset 		= -10,-6
-	;completedstep.bg.spr 			= 701,2
-	;completedstep.bg.anim 			= 2
-	;completedstep.bg.scale 		= 1,1
-	;completedstep.bg.facing		= 1
-	;completedstep.bg.displaytime	= -1
+	; completedstep.text.font.height = 
+	; completedstep.bg.offset 		= -10,-6
+	; completedstep.bg.spr 			= 701,2
+	; completedstep.bg.anim 			= 2
+	; completedstep.bg.scale 		= 1,1
+	; completedstep.bg.facing		= 1
+	; completedstep.bg.displaytime	= -1
 	; completedstep: text and background elements, shown for completed trial steps
 
-	glyphs.offset	= 80,2
-	glyphs.scale	= 1,1
-	glyphs.spacing	= 0,0
-	glyphs.align	= 1
+	glyphs.offset			= 100,2
+	glyphs.scale			= 0.125,0.125
+	glyphs.scalewithtext 	= "false" 	; Scales glyph height with respect to the font height. Only works for vertical trial layouts.
+	glyphs.spacing			= 0,0
+	glyphs.align			= 1
 	; glyphs: defines glyphs offset from respective trial step, as well as scale and alignment
 
-	;bg.layerno = 2
-	;bg.offset 	= 0,0
-	;bg.anim 	= 1
-	;bg.scale 	= 1.5,1.5
-	;bg.spr 	= 399,0
+	; bg.layerno = 2
+	; bg.offset 	= 0,0
+	; bg.anim 	= 1
+	; bg.scale 	= 1.5,1.5
+	; bg.spr 	= 399,0
 	; bg: A background element can be specified to be displayed during all trials.
 
 	trialcounter.pos			= 10,235
 	trialcounter.font			= 1,0,1
 	trialcounter.text.scale		= 1,1
-	;trialcounter.font.height	=
+	; trialcounter.font.height	=
 	trialcounter.text			= "Trial %s of %t"
-  	trialcounter.allclear.text 	= "All Trials Complete"
+  	trialcounter.allclear.text 	= "All Trials Clear"
 	; trialcounter: text element, displays current trial number and total number of trials
 
 	totaltrialtimer.pos			= 310,228
 	totaltrialtimer.font		= 1,0,-1
 	totaltrialtimer.text.scale	= 1,1
-	;totaltrialtimer.font.height=
+	; totaltrialtimer.font.height=
 	totaltrialtimer.text		= "Trial Timer: %s"
 	; totaltrialtimer: text element, stopwatch can display the total time spent in the trial mode
 
 	currenttrialtimer.pos			= 310,235
 	currenttrialtimer.font			= 1,0,-1
 	currenttrialtimer.text.scale	= 1,1
-	;currenttrialtimer.font.height	=
+	; currenttrialtimer.font.height	=
 	currenttrialtimer.text			= "Current Trial: %s"
 	; currenttrialtimer: text element, stopwatch that shows time spent on current trial step
 
-	success.pos					= 120,80
+	success.pos					= 160,120
 	success.snd					= 600,0 
 	success.text.text			= "SUCCESS!"
 	success.text.offset 		= 0,0
 	success.text.font			= 2,0,0, 255, 100, 100
   	success.text.displaytime	= 70
-	success.text.scale 			= 5,5
-	;success.text.font.height	=
-	;success.bg.offset 			= 0,0
-	;success.bg.anim 			= 650
-	;success.bg.scale 			= 1,1
-	;success.bg.spr 			= 701,0
-	;success.bg.displaytime		= -1
-	;success.front.offset 		= 0,0
-	;success.front.anim 		= 651
-	;success.front.scale 		= 1,1
-	;success.front.spr 			= 701,0
-	;success.front.displaytime	= -1
+	success.text.scale 			= 4,4
+	; success.text.font.height	=
+	; success.bg.offset 			= 0,0
+	; success.bg.anim 			= 650
+	; success.bg.scale 			= 1,1
+	; success.bg.spr 			= 701,0
+	; success.bg.displaytime		= -1
+	; success.front.offset 		= 0,0
+	; success.front.anim 		= 651
+	; success.front.scale 		= 1,1
+	; success.front.spr 			= 701,0
+	; success.front.displaytime	= -1
 	; success: positioning, sound, text, and animation (bg and front elements) upon trial success.
 	; Displayed after each completed trial except the final one.
 
@@ -130,16 +145,16 @@ The universal trials mode supports both vertical trials readouts, and horizontal
 	allclear.text.offset 		= 0,0
 	allclear.text.font 			= 2,0,1, 255, 100, 100
   	allclear.text.displaytime	= 70
-	;allclear.text.scale		= 2,2
-	;allclear.text.font.height	=
-	;allclear.bg.offset 		= 0,0
-	;allclear.bg.anim 			= 650
-	;allclear.bg.scale 			= 1,1
-	;allclear.bg.spr 			= 701,0
-	;allclear.front.offset 		= 0,0
-	;allclear.front.anim 		= 652
-	;allclear.front.scale 		= 1,1
-	;allclear.front.spr 		= 701,0
+	allclear.text.scale			= 4,4
+	; allclear.text.font.height	=
+	; allclear.bg.offset 		= 0,0
+	; allclear.bg.anim 			= 650
+	; allclear.bg.scale 			= 1,1
+	; allclear.bg.spr 			= 701,0
+	; allclear.front.offset 		= 0,0
+	; allclear.front.anim 		= 652
+	; allclear.front.scale 		= 1,1
+	; allclear.front.spr 		= 701,0
 	; allclear: positioning, sound, text, and animation (bg and front elements) upon final trial success.
 	; Displayed after completing the final trial.
 	
