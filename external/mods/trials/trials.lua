@@ -865,6 +865,7 @@ function start.f_trialsChecker()
 			main.f_bgReset(motif.trialsbgdef.bg)
 			main.f_fadeReset('fadein', motif.trials_info)
 			-- this doesn't work the way i'm intending it to
+			--roundReset()
 		end
 	end
 end
