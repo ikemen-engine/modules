@@ -502,16 +502,19 @@ function start.f_trialsBuilder()
 			trialcounter = main.f_createTextImg(motif.trials_info, 'trialcounter'),
 			totaltrialtimer = main.f_createTextImg(motif.trials_info, 'totaltrialtimer'),
 			currenttrialtimer = main.f_createTextImg(motif.trials_info, 'currenttrialtimer'),
-			trialtitle = main.f_createTextImg(motif.trials_info, 'trialtitle_text'),
+			trialtitle = math.max(animGetLength(motif.trials_info.trialtitle_front_data), animGetLength(motif.trials_info.trialtitle_bg_data)),
+			trialtitle_text = main.f_createTextImg(motif.trials_info, 'trialtitle_text'),
 			windowXrange = motif.trials_info.trialsteps_window[3] - motif.trials_info.trialsteps_window[1],
 			windowYrange = motif.trials_info.trialsteps_window[4] - motif.trials_info.trialsteps_window[2],
 		}
-		start.trialsdata.draw.trialtitle = main.f_createTextImg(motif.trials_info, 'trialtitle_text')
-		start.trialsdata.draw.success_text:update({x = motif.trials_info.success_pos[1]+motif.trials_info.success_text_offset[1], y = motif.trials_info.success_pos[2]+motif.trials_info.success_text_offset[2],})
+
+		start.trialsdata.draw.success_text:update({x = motif.trials_info.success_pos[1], y = motif.trials_info.success_pos[2]+motif.trials_info.success_text_offset[2],})
 		start.trialsdata.draw.allclear_text:update({x = motif.trials_info.allclear_pos[1]+motif.trials_info.allclear_text_offset[1], y = motif.trials_info.allclear_pos[2]+motif.trials_info.allclear_text_offset[2],})
 		start.trialsdata.draw.trialcounter:update({x = motif.trials_info.trialcounter_pos[1], y = motif.trials_info.trialcounter_pos[2],})
 		start.trialsdata.draw.totaltrialtimer:update({x = motif.trials_info.totaltrialtimer_pos[1], y = motif.trials_info.totaltrialtimer_pos[2],})
 		start.trialsdata.draw.currenttrialtimer:update({x = motif.trials_info.currenttrialtimer_pos[1], y = motif.trials_info.currenttrialtimer_pos[2],})
+		start.trialsdata.draw.trialtitle_text:update({x = motif.trials_info.trialtitle_pos[1]+motif.trials_info.trialtitle_text_offset[1], y = motif.trials_info.trialtitle_pos[2]+motif.trials_info.trialtitle_text_offset[2],})
+
 		for i = 1, start.trialsdata.maxsteps, 1 do
 			start.trialsdata.draw.upcomingtextline[i] = main.f_createTextImg(motif.trials_info, 'upcomingstep_text')
 			start.trialsdata.draw.currenttextline[i] = main.f_createTextImg(motif.trials_info, 'currentstep_text')
@@ -620,9 +623,7 @@ function start.f_trialsDrawer()
 			trtext = trtext:gsub('%%s', tostring(ct)):gsub('%%t', tostring(start.trialsdata.numoftrials))
 			start.trialsdata.draw.trialcounter:update({text = trtext})
 			start.trialsdata.draw.trialcounter:draw()
-			animUpdate(motif.trials_info.bg_data)
-			animDraw(motif.trials_info.bg_data)
-
+			
 			--Logic for the stopwatches: total time spent in trial, and time spent on this current trial
 			local totaltimertext = motif.trials_info.totaltrialtimer_text
 			start.trialsdata.elapsedtime = tickcount() - start.trialsdata.starttick
@@ -630,8 +631,6 @@ function start.f_trialsDrawer()
 			totaltimertext = totaltimertext:gsub('%%s', m .. ":" .. s .. ":" .. x)
 			start.trialsdata.draw.totaltrialtimer:update({text = totaltimertext})
 			start.trialsdata.draw.totaltrialtimer:draw()
-			animUpdate(motif.trials_info.bg_data)
-			animDraw(motif.trials_info.bg_data)
 
 			local currenttimertext = motif.trials_info.currenttrialtimer_text
 			start.trialsdata.trial[ct].elapsedtime = tickcount() - start.trialsdata.trial[ct].starttick
@@ -639,8 +638,13 @@ function start.f_trialsDrawer()
 			currenttimertext = currenttimertext:gsub('%%s', m .. ":" .. s .. ":" .. x)
 			start.trialsdata.draw.currenttrialtimer:update({text = currenttimertext})
 			start.trialsdata.draw.currenttrialtimer:draw()
-			animUpdate(motif.trials_info.bg_data)
-			animDraw(motif.trials_info.bg_data)
+
+			start.trialsdata.draw.trialtitle_text:update({text = start.trialsdata.trial[ct].name})
+			start.trialsdata.draw.trialtitle_text:draw()
+			animUpdate(motif.trials_info.trialtitle_bg_data)
+			animDraw(motif.trials_info.trialtitle_bg_data)
+			animUpdate(motif.trials_info.trialtitle_front_data)
+			animDraw(motif.trials_info.trialtitle_front_data)
 
 			local startonstep = 1
 			local drawtothisstep = start.trialsdata.trial[ct].drawsteps
@@ -654,7 +658,6 @@ function start.f_trialsDrawer()
 				end
 			end
 
-			-- how to account for hidden steps here?
 			--This is the draw loop
 			for i = startonstep, drawtothisstep, 1 do
 				local tempoffset = {motif.trials_info.trialsteps_spacing[1]*(i-startonstep),motif.trials_info.trialsteps_spacing[2]*(i-startonstep)}

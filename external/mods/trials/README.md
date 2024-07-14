@@ -8,22 +8,25 @@ This external module offers a universal solution for Trials Mode. This markdown 
 ## Installation
 1. Extract archive content into "./external/mods/trials" directory
 2. Add DEF code to your screenpack's `system.def`. Use the sample DEF code additions from this file to your `system.def`.
-3. Add sprites to system.sff, or alternatively, create a `trials.sff`.
-4. Add sounds to system.snd.
+3. Add sprites to system.sff, or alternatively, create a `trials.sff`, as required.
+4. Add sounds to system.snd, as required.
 5. Create new trials for your favorite characters and share them with others! As a starting point, you can use the templates found in this file to create a `trials.def` file and edit `kfmZ.def`, both in "./chars/kfmZ". You can follow the instructions in the template to create trials for any character you would like. I also have created some trials and am sharing them on Github.
 
 ## General info
-The Trials mode 
+The Trials mode provides new screenpack features and engine features so that creators can create trials for their character creations, and fully customize the way the trials are presented.
 
 ## system.def Template and Customization
 Using this external module allows full customization of the trials mode in system.def, with sprites in system.sff OR in `trials.sff`, if so desired. If you are using `trials.sff`, make sure you point to it in the system.def's [Files] section as `trialsbgdef = trials.sff`.
 
 The universal trials mode supports both vertical trials readouts, and horizontal readouts as seen in KOF XIV, among other games. The sample `system.def` included in this file can be configured to support either layouts, but as shown, it is configured to work exclusively with default assets (only uses fonts and stock glyphs, for instance). Below you'll find a brief summary of screenpack features supported by trials mode. For more detail, please consult the example `system.def` templates provided in this file for both vertical and horizontal layouts.
 
-- A window must be specified in which the trial steps are drawn. This feature is especially important for long trial lists that need to scroll (for vertical layouts) or have line returns and potentially scrolling (for horizontal layouts).
+You can make the trials mode look as fancy or as basic as you want. The default trials mode example shipped with this module leverage "stock" Ikemen fonts and sprites in the most minimal way possible.
+
+- A window must be specified in which the trial steps are drawn. This feature enables long trial lists that need to scroll (for vertical layouts) or have line returns and potentially scrolling (for horizontal layouts).
 - The trial title name can optionally be displayed. Text and two background elements (bg and front) can be specified.
 - Trial steps come in three flavors: upcoming, current, and completed. Text and background elements can be specified for each type. 
-	- For horizontal layouts, the background elements are handled differently. Background elements are tiled dynamically to fit the width and height of the glyphs for that step. Additionally, each trial step type has an "incrementor" background element. This incrementor is displayed between trial steps (for instance, as an arrow). Upcoming and current step both have incrementors, while completed steps have incrementors to other completed step, as well as an incrementor to the current step (since they could be colored differently, for instance).
+	- For horizontal layouts, the background elements are handled differently. Background elements are tiled dynamically to fit the width and height of the glyphs and desired padding around the glyph for that step.
+    - Additionally, each trial step type has an "incrementor" background element. This incrementor is displayed between trial steps (for instance, as an arrow). Upcoming and current step both have incrementors, while completed steps have incrementors to other completed step, as well as an incrementor to the current step (since they could be formatted differently, for instance).
 	- Note that trial step text is not displayed in horizontal layouts.
 - A static or animated background can be displayed behind all trial steps. This background is independent of all trial step backgrounds, and is only displayed when a trial is active.
 - Glyphs can be automatically scaled according to the font used (especially useful for vertical layouts).
@@ -31,8 +34,6 @@ The universal trials mode supports both vertical trials readouts, and horizontal
 - For Success and All Clear events, text and sound elements, as well as two background elements (bg and front) can be specified.
 - Two timers are available: one keeps track of the entire time spent on the trials, while the other keeps track of the time spent on the current trial. Display of the timers is optional.
 - A text string that shows the current trial can optionally be displayed.
-
-
 
 ```
 [Trials Info] ;VERTICAL EXAMPLE
@@ -262,8 +263,8 @@ trialstep.2.stateno 	= 210
 ;---------------------------------------------
 
 [TrialDef, Condensed Standing Punch Chain]
-; The next two trials show examples ofcondensed trial steps which check a series of parameters sequentially by using comma separated values. In other words, think of being able to specify multiple trial steps in a single step.
-; For instance, this trial is the same as the previous, but has two steps condensed into one.
+; The next two trials show examples of condensed trial steps which check a series of parameters sequentially by using comma separated values as part of a single trial step. In other words, think of being able to specify multiple trial steps in a single step.
+; For instance, this trial is the same as the previous, but the two steps are condensed into one.
 ; The next trial uses a combination of condensed steps and normal steps to provide a concise trial.
 ; Condensed steps can be very practical for multi-state moves where the trial step should only clear if all of the states are met, without having to create multiple trial steps.
 
