@@ -595,9 +595,7 @@ end
 
 function start.f_trialsDrawer()
 	if start.trialsInit and roundstate() == 2 and not start.trialsdata.active then
-		print("we are here")
 		if start.trialsdata.reset[1] == 1 then
-			print("now here")
 			start.trialsdata.currenttrial = start.trialsdata.reset[1]
 			start.trialsdata.reset[1] = 0
 			start.trialsdata.reset[2] = 0
@@ -746,11 +744,11 @@ function start.f_trialsDrawer()
 			end
 		elseif ct > start.trialsdata.numoftrials then
 			-- All trials have been completed, draw the all clear and freeze the timer
-			start.trialsdata.allclear = true
 			if start.trialsdata.draw.allclear ~= 0 then
 				start.f_trialsSuccess('allclear', ct-1)
 				main.f_createTextImg(motif.trials_info, 'allclear_text')
 			end
+			start.trialsdata.allclear = true
 			start.trialsdata.draw.success = 0
 			start.trialsdata.draw.trialcounter:update({text = motif.trials_info.trialcounter_allclear_text})
 			start.trialsdata.draw.trialcounter:draw()
@@ -878,7 +876,10 @@ function start.f_trialsSuccess(successstring, index)
 	charMapSet(2, '_iksys_trainingDummyMode', 0)
 	charMapSet(2, '_iksys_trainingGuardMode', 0)
 	charMapSet(2, '_iksys_trainingButtonJam', 0)
-	sndPlay(motif.files.snd_data, motif.trials_info[successstring .. '_snd'][1], motif.trials_info[successstring .. '_snd'][2])
+	if start.trialsdata.trial[index].complete ==  false or (successstring == "allclear" and start.trialsdata.allclear == false) then
+		-- Play sound only once
+		sndPlay(motif.files.snd_data, motif.trials_info[successstring .. '_snd'][1], motif.trials_info[successstring .. '_snd'][2])
+	end
 	animUpdate(motif.trials_info[successstring .. '_bg_data'])
 	animDraw(motif.trials_info[successstring .. '_bg_data'])
 	animUpdate(motif.trials_info[successstring .. '_front_data'])
