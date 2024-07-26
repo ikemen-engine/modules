@@ -103,7 +103,9 @@ You can make the trials mode look as fancy or as basic as you want. The default 
 	; trialcounter.font.height	=
 	trialcounter.text			= "Trial %s of %t"
   	trialcounter.allclear.text 	= "All Trials Clear"
+	trialcounter.notrialsdata.text = "No Trials Data Found"
 	; trialcounter: text element, displays current trial number and total number of trials
+	; Can display a different string when all trials are clear, or when no trials data is found when loading the character
 
 	totaltrialtimer.pos			= 310,228
 	totaltrialtimer.font		= 1,0,-1

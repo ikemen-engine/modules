@@ -143,7 +143,8 @@ local t_base = {
     trialcounter_text_scale = {1.0, 1.0}, 
     trialcounter_font_height = -1, 
     trialcounter_text = '', 
-	trialcounter_allclear_text = '', 
+	trialcounter_allclear_text = '',
+	trialcounter_notrialsdata_text = 'No Trials Data Found',
 	totaltrialtimer_pos = {0,0}, 
     totaltrialtimer_font = {}, 
     totaltrialtimer_text_scale = {1.0, 1.0}, 
@@ -193,7 +194,7 @@ local t_base = {
     allclear_text_font = {}, 
     allclear_text_font_height = -1, 
     allclear_text_text = '', 
-	allclear_text_scale = {1.0, 1.0}, 
+	allclear_text_scale = {1.0, 1.0},
 }
 
 -- Merge trials data into table
@@ -985,6 +986,10 @@ function start.f_trialsMode()
 			start.f_trialsDrawer()
 			start.f_trialsChecker()
 		end
+	else
+		trialcounter = main.f_createTextImg(motif.trials_info, 'trialcounter')
+		trialcounter:update({x = motif.trials_info.trialcounter_pos[1], y = motif.trials_info.trialcounter_pos[2], text = motif.trials_info.trialcounter_notrialsdata_text})
+		trialcounter:draw()
 	end	
 end
 
