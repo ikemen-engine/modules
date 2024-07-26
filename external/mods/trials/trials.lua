@@ -988,6 +988,10 @@ function start.f_trialsMode()
 			start.f_trialsChecker()
 		end
 	else
+		player(2)
+		setAILevel(0)
+		player(1)
+		charMapSet(2, '_iksys_trainingDummyControl', 0)
 		trialcounter = main.f_createTextImg(motif.trials_info, 'trialcounter')
 		trialcounter:update({x = motif.trials_info.trialcounter_pos[1], y = motif.trials_info.trialcounter_pos[2], text = motif.trials_info.trialcounter_notrialsdata_text})
 		trialcounter:draw()
