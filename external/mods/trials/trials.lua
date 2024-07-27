@@ -322,6 +322,9 @@ function start.f_trialsBuilder()
 			trial = {},
 			reset = {0,0,0},
 		}
+
+		print("numoftrials init = " .. start.trialsdata.numoftrials)
+
 		--Populate background elements information
 		start.trialsdata.bgelemdata = {
 			currentbgsize = animGetSpriteInfo(motif.trials_info.currentstep_bg_data),
@@ -335,160 +338,182 @@ function start.f_trialsBuilder()
 		--Obtain all of the trials information, to include the offset positions based on whether the display layout is horizontal or vertical
 		for i = 1, start.trialsdata.numoftrials, 1 do
 
-			start.trialsdata.trial[i] = {
-				name = gettrialinfo('trialname',i-1),
-				numsteps = gettrialinfo('trialnumofsteps',i-1),
-				drawsteps = gettrialinfo('trialnumofsteps',i-1),
-				dummymode = gettrialinfo('trialdummymode',i-1),
-				guardmode = gettrialinfo('trialguardmode',i-1),
-				buttonjam = gettrialinfo('trialdummybuttonjam',i-1),
-				active = false,
-				complete = false,
-				elapsedtime = 0,
-				starttick = tickcount(),
-				trialstep = {},
-			}
-
-			if start.trialsdata.trial[i].numsteps > start.trialsdata.maxsteps then
-				start.trialsdata.maxsteps = start.trialsdata.trial[i].numsteps
+			tempvarvalpairs = gettrialinfo('trialvarvalpairs',i-1)
+			varvalpairs = {}
+			for singleton in tempvarvalpairs:gmatch('[^,%s]+') do
+				varvalpairs[#varvalpairs+1] = tonumber(singleton)
 			end
 
-			for j = 1, start.trialsdata.trial[i].numsteps, 1 do
-				start.trialsdata.trial[i].trialstep[j] = {
-					numofmicrosteps = gettrialinfo('trialstepmicrosteps',i-1,j-1),
-					text = gettrialinfo('trialsteptext',i-1,j-1),
-					glyphs = gettrialinfo('trialstepglyphs',i-1,j-1),
-					stateno = {},
-					animno = {},
-					numofhits = {},
-					stephitscount = {},
-					combocountonstep = {},
-					isthrow = {},
-					isnohit = {},
-					ishelper = {},
-					isproj = {},
-					specialbool = {},
-					specialstr = {},
-					specialval = {},
-					iscounterhit = {},
-					glyphline = {
-						glyph = {},
-						pos = {},
-						width = {},
-						alignOffset = {},
-						lengthOffset = {},
-						scale = {},
-					},
+			valvarcheck = true
+
+			if varvalpairs[1] ~= -1 then
+				for ii = 1, #varvalpairs, 2 do
+					player(1)
+					if var(varvalpairs[ii]) ~= varvalpairs[ii+1] then
+						valvarcheck = false
+					end
+				end
+			end
+			
+			if valvarcheck then 
+				start.trialsdata.trial[i] = {
+					name = gettrialinfo('trialname',i-1),
+					numsteps = gettrialinfo('trialnumofsteps',i-1),
+					drawsteps = gettrialinfo('trialnumofsteps',i-1),
+					dummymode = gettrialinfo('trialdummymode',i-1),
+					guardmode = gettrialinfo('trialguardmode',i-1),
+					buttonjam = gettrialinfo('trialdummybuttonjam',i-1),
+					active = false,
+					complete = false,
+					elapsedtime = 0,
+					starttick = tickcount(),
+					trialstep = {},
 				}
 
-				for ii = 1, start.trialsdata.trial[i].trialstep[j].numofmicrosteps, 1 do
-					table.insert(start.trialsdata.trial[i].trialstep[j].stateno, gettrialinfo('trialstepstateno',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].animno, gettrialinfo('trialstepanimno',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].numofhits, gettrialinfo('trialstepnumofhits',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].stephitscount, 0)
-					table.insert(start.trialsdata.trial[i].trialstep[j].combocountonstep, 0)
-					table.insert(start.trialsdata.trial[i].trialstep[j].isthrow, gettrialinfo('trialstepisthrow',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].isnohit, gettrialinfo('trialstepisnohit',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].ishelper, gettrialinfo('trialstepishelper',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].isproj, gettrialinfo('trialstepisproj',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].specialbool, gettrialinfo('trialstepspecialbool',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].specialstr, gettrialinfo('trialstepspecialstr',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].specialval, gettrialinfo('trialstepspecialval',i-1,j-1,ii-1))
-					table.insert(start.trialsdata.trial[i].trialstep[j].iscounterhit, gettrialinfo('trialstepiscounterhit',i-1,j-1,ii-1))
-				end
-				
-				local movelistline = start.trialsdata.trial[i].trialstep[j].glyphs
-				for k, v in main.f_sortKeys(motif.glyphs, function(t, a, b) return string.len(a) > string.len(b) end) do
-					movelistline = movelistline:gsub(main.f_escapePattern(k), '<' .. numberToRune(v[1] + 0xe000) .. '>')
-				end
-				movelistline = movelistline:gsub('%s+$', '')
-				for moves in movelistline:gmatch('(	*[^	]+)') do
-					moves = moves .. '<#>'
-					tempglyphs = {}
-					for m1, m2 in moves:gmatch('(.-)<([^%g <>]+)>') do
-						if not m2:match('^#[A-Za-z0-9]+$') and not m2:match('^/$') and not m2:match('^#$') then
-							tempglyphs[#tempglyphs+1] = m2
-						end
-					end
-					if motif.trials_info.glyphs_align == -1 then
-						for ii = #tempglyphs, 1, -1 do
-							start.trialsdata.trial[i].trialstep[j].glyphline.glyph[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = tempglyphs[ii]
-							start.trialsdata.trial[i].trialstep[j].glyphline.pos[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = {0,0}
-							start.trialsdata.trial[i].trialstep[j].glyphline.width[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
-							start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
-							start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
-							start.trialsdata.trial[i].trialstep[j].glyphline.scale[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = {1,1}
-						end
-					else
-						for ii = 1, #tempglyphs do
-							start.trialsdata.trial[i].trialstep[j].glyphline.glyph[ii] = tempglyphs[ii]
-							start.trialsdata.trial[i].trialstep[j].glyphline.pos[ii] = {0,0}
-							start.trialsdata.trial[i].trialstep[j].glyphline.width[ii] = 0
-							start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[ii] = 0
-							start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[ii] = 0
-							start.trialsdata.trial[i].trialstep[j].glyphline.scale[ii] = {1,1}
-						end
-					end
-				end
-				--This glyphs section is more or less wholesale borrowed from the movelist section with minor tweaks
-				local lengthOffset = 0
-				local alignOffset = 0
-				local align = 1
-				local width = 0
-				local font_def = 0
-				
-				--Some fonts won't give us the data we need to scale glyphs from, but sometimes that doesn't matter anyway
-				if motif.trials_info.currentstep_text_font[7] == nil and motif.trials_info.glyphs_scalewithtext == "true" then
-					font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font_height]
-				elseif motif.trials_info.glyphs_scalewithtext == "true" then
-					font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font[7]]
+				if start.trialsdata.trial[i].numsteps > start.trialsdata.maxsteps then
+					start.trialsdata.maxsteps = start.trialsdata.trial[i].numsteps
 				end
 
-				for m in pairs(start.trialsdata.trial[i].trialstep[j].glyphline.glyph) do
-					if motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]] ~= nil then
-						if motif.trials_info.trialsteps_trialslayout == "vertical" then
-							if motif.trials_info.glyphs_align == 0 then --center align
-								alignOffset = motif.trials_info.glyphs_offset[1] * 0.5
-							elseif motif.trials_info.glyphs_align == -1 then --right align
-								alignOffset = motif.trials_info.glyphs_offset[1]
-							end
-							if motif.trials_info.glyphs_align ~= align then
-								lengthOffset = 0
-								align = motif.trials_info.glyphs_align
+				for j = 1, start.trialsdata.trial[i].numsteps, 1 do
+					start.trialsdata.trial[i].trialstep[j] = {
+						numofmicrosteps = gettrialinfo('trialstepmicrosteps',i-1,j-1),
+						text = gettrialinfo('trialsteptext',i-1,j-1),
+						glyphs = gettrialinfo('trialstepglyphs',i-1,j-1),
+						stateno = {},
+						animno = {},
+						numofhits = {},
+						stephitscount = {},
+						combocountonstep = {},
+						isthrow = {},
+						isnohit = {},
+						ishelper = {},
+						isproj = {},
+						specialbool = {},
+						specialstr = {},
+						specialval = {},
+						iscounterhit = {},
+						glyphline = {
+							glyph = {},
+							pos = {},
+							width = {},
+							alignOffset = {},
+							lengthOffset = {},
+							scale = {},
+						},
+					}
+
+					for ii = 1, start.trialsdata.trial[i].trialstep[j].numofmicrosteps, 1 do
+						table.insert(start.trialsdata.trial[i].trialstep[j].stateno, gettrialinfo('trialstepstateno',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].animno, gettrialinfo('trialstepanimno',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].numofhits, gettrialinfo('trialstepnumofhits',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].stephitscount, 0)
+						table.insert(start.trialsdata.trial[i].trialstep[j].combocountonstep, 0)
+						table.insert(start.trialsdata.trial[i].trialstep[j].isthrow, gettrialinfo('trialstepisthrow',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].isnohit, gettrialinfo('trialstepisnohit',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].ishelper, gettrialinfo('trialstepishelper',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].isproj, gettrialinfo('trialstepisproj',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].specialbool, gettrialinfo('trialstepspecialbool',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].specialstr, gettrialinfo('trialstepspecialstr',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].specialval, gettrialinfo('trialstepspecialval',i-1,j-1,ii-1))
+						table.insert(start.trialsdata.trial[i].trialstep[j].iscounterhit, gettrialinfo('trialstepiscounterhit',i-1,j-1,ii-1))
+					end
+					
+					local movelistline = start.trialsdata.trial[i].trialstep[j].glyphs
+					for k, v in main.f_sortKeys(motif.glyphs, function(t, a, b) return string.len(a) > string.len(b) end) do
+						movelistline = movelistline:gsub(main.f_escapePattern(k), '<' .. numberToRune(v[1] + 0xe000) .. '>')
+					end
+					movelistline = movelistline:gsub('%s+$', '')
+					for moves in movelistline:gmatch('(	*[^	]+)') do
+						moves = moves .. '<#>'
+						tempglyphs = {}
+						for m1, m2 in moves:gmatch('(.-)<([^%g <>]+)>') do
+							if not m2:match('^#[A-Za-z0-9]+$') and not m2:match('^/$') and not m2:match('^#$') then
+								tempglyphs[#tempglyphs+1] = m2
 							end
 						end
-
-						local scaleX = motif.trials_info.glyphs_scale[1]
-						local scaleY = motif.trials_info.glyphs_scale[2]
-
-						if motif.trials_info.trialsteps_trialslayout == "vertical" and motif.trials_info.glyphs_scalewithtext == "true" then						
-							scaleX = font_def.Size[2] * motif.trials_info.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[1]
-							scaleY = font_def.Size[2] * motif.trials_info.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[2]
-						end
-
 						if motif.trials_info.glyphs_align == -1 then
-							alignOffset = alignOffset - motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX
-						end
-						start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[m] = alignOffset
-						start.trialsdata.trial[i].trialstep[j].glyphline.scale[m] = {scaleX, scaleY}
-						start.trialsdata.trial[i].trialstep[j].glyphline.pos[m] = {
-							math.floor(motif.trials_info.trialsteps_pos[1] + motif.trials_info.glyphs_offset[1] + alignOffset + lengthOffset),
-							motif.trials_info.trialsteps_pos[2] + motif.trials_info.glyphs_offset[2]
-						}
-						start.trialsdata.trial[i].trialstep[j].glyphline.width[m] = math.floor(motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX + motif.trials_info.glyphs_spacing[1])
-						if motif.trials_info.glyphs_align == 1 then
-							lengthOffset = lengthOffset + start.trialsdata.trial[i].trialstep[j].glyphline.width[m]
-						elseif motif.trials_info.glyphs_align == -1 then
-							lengthOffset = lengthOffset - start.trialsdata.trial[i].trialstep[j].glyphline.width[m]
+							for ii = #tempglyphs, 1, -1 do
+								start.trialsdata.trial[i].trialstep[j].glyphline.glyph[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = tempglyphs[ii]
+								start.trialsdata.trial[i].trialstep[j].glyphline.pos[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = {0,0}
+								start.trialsdata.trial[i].trialstep[j].glyphline.width[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
+								start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
+								start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
+								start.trialsdata.trial[i].trialstep[j].glyphline.scale[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = {1,1}
+							end
 						else
-							lengthOffset = lengthOffset + start.trialsdata.trial[i].trialstep[j].glyphline.width[m] / 2
+							for ii = 1, #tempglyphs do
+								start.trialsdata.trial[i].trialstep[j].glyphline.glyph[ii] = tempglyphs[ii]
+								start.trialsdata.trial[i].trialstep[j].glyphline.pos[ii] = {0,0}
+								start.trialsdata.trial[i].trialstep[j].glyphline.width[ii] = 0
+								start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[ii] = 0
+								start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[ii] = 0
+								start.trialsdata.trial[i].trialstep[j].glyphline.scale[ii] = {1,1}
+							end
 						end
-						start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[m] = lengthOffset
+					end
+					--This glyphs section is more or less wholesale borrowed from the movelist section with minor tweaks
+					local lengthOffset = 0
+					local alignOffset = 0
+					local align = 1
+					local width = 0
+					local font_def = 0
+					
+					--Some fonts won't give us the data we need to scale glyphs from, but sometimes that doesn't matter anyway
+					if motif.trials_info.currentstep_text_font[7] == nil and motif.trials_info.glyphs_scalewithtext == "true" then
+						font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font_height]
+					elseif motif.trials_info.glyphs_scalewithtext == "true" then
+						font_def = main.font_def[motif.trials_info.currentstep_text_font[1] .. motif.trials_info.currentstep_text_font[7]]
+					end
+
+					for m in pairs(start.trialsdata.trial[i].trialstep[j].glyphline.glyph) do
+						if motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]] ~= nil then
+							if motif.trials_info.trialsteps_trialslayout == "vertical" then
+								if motif.trials_info.glyphs_align == 0 then --center align
+									alignOffset = motif.trials_info.glyphs_offset[1] * 0.5
+								elseif motif.trials_info.glyphs_align == -1 then --right align
+									alignOffset = motif.trials_info.glyphs_offset[1]
+								end
+								if motif.trials_info.glyphs_align ~= align then
+									lengthOffset = 0
+									align = motif.trials_info.glyphs_align
+								end
+							end
+
+							local scaleX = motif.trials_info.glyphs_scale[1]
+							local scaleY = motif.trials_info.glyphs_scale[2]
+
+							if motif.trials_info.trialsteps_trialslayout == "vertical" and motif.trials_info.glyphs_scalewithtext == "true" then						
+								scaleX = font_def.Size[2] * motif.trials_info.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[1]
+								scaleY = font_def.Size[2] * motif.trials_info.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_info.glyphs_scale[2]
+							end
+
+							if motif.trials_info.glyphs_align == -1 then
+								alignOffset = alignOffset - motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX
+							end
+							start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[m] = alignOffset
+							start.trialsdata.trial[i].trialstep[j].glyphline.scale[m] = {scaleX, scaleY}
+							start.trialsdata.trial[i].trialstep[j].glyphline.pos[m] = {
+								math.floor(motif.trials_info.trialsteps_pos[1] + motif.trials_info.glyphs_offset[1] + alignOffset + lengthOffset),
+								motif.trials_info.trialsteps_pos[2] + motif.trials_info.glyphs_offset[2]
+							}
+							start.trialsdata.trial[i].trialstep[j].glyphline.width[m] = math.floor(motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[1] * scaleX + motif.trials_info.glyphs_spacing[1])
+							if motif.trials_info.glyphs_align == 1 then
+								lengthOffset = lengthOffset + start.trialsdata.trial[i].trialstep[j].glyphline.width[m]
+							elseif motif.trials_info.glyphs_align == -1 then
+								lengthOffset = lengthOffset - start.trialsdata.trial[i].trialstep[j].glyphline.width[m]
+							else
+								lengthOffset = lengthOffset + start.trialsdata.trial[i].trialstep[j].glyphline.width[m] / 2
+							end
+							start.trialsdata.trial[i].trialstep[j].glyphline.lengthOffset[m] = lengthOffset
+						end
 					end
 				end
-			end
-			if start.trialsdata.trial[i].drawsteps > start.trialsdata.maxsteps then
-				start.trialsdata.maxsteps = start.trialsdata.trial[i].drawsteps
+				if start.trialsdata.trial[i].drawsteps > start.trialsdata.maxsteps then
+					start.trialsdata.maxsteps = start.trialsdata.trial[i].drawsteps
+				end
+			else
+				start.trialsdata.numoftrials = start.trialsdata.numoftrials - 1
+				print("numoftrials now = " .. start.trialsdata.numoftrials)
 			end
 		end
 		--Pre-populate the draw table

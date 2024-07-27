@@ -10,7 +10,8 @@ This external module offers a universal solution for Trials Mode. This markdown 
 2. Add DEF code to your screenpack's `system.def`. Use the sample DEF code additions from this file to your `system.def`.
 3. Add sprites to system.sff, or alternatively, create a `trials.sff`, as required.
 4. Add sounds to system.snd, as required.
-5. Create new trials for your favorite characters and share them with others! As a starting point, you can use the templates found in this file to create a `trials.def` file and edit `kfmZ.def`, both in "./chars/kfmZ". You can follow the instructions in the template to create trials for any character you would like. I also have created some trials and am sharing them on Github.
+5. Create new trials for your character(s). As a starting point, you can use the templates found in this file to create a `trials.def` file and edit `kfmZ.def`, both in "./chars/kfmZ". You can follow the instructions in the template to create trials for any character you would like. I also have created some trials and am sharing them on Github.
+6. Share your trials definition files with others!
 
 ## General info
 The Trials mode provides new screenpack features and engine features so that creators can create trials for their character creations, and fully customize the way the trials are presented.
@@ -196,6 +197,7 @@ A sample `trials.def` for kfmZ is provided below. The trials are presented to th
 trial.dummymode			    = stand
 trial.guardmode			    = none
 trial.dummybuttonjam 	    = none
+; trial.valvarmonitor		= 
 
 trialstep.1.text 		    = Strong Kung Fu Palm
 trialstep.1.glyphs 		    = _QDF^Y
@@ -213,16 +215,17 @@ trialstep.1.stateno 		= 1010
 ; trialstep.1.specialstr	=
 
 ; TrialDef Parameter Descriptions
-
+; ===============================
 ; [TriafDef, TrialTitle] - [TrialDef] mandatory - trial title after the comma is optional.
 
 ; trial.dummymode - optional - valid options are stand (default), crouch, jump, wjump. Defaults to stand if unspecified.
 ; trial.guardmode - optional - valid options are none, auto. Defaults to none if unspecified.
 ; trial.dummybuttonjam - optional - valid options are none, a, b, c, x, y, z, start, d, w. Defaults to none if unspecified.
 ; dummymode, guardmode, and dummybuttonjam are defined once per trial. The other parameters can be defined for each trial step - notice the syntax, where X is the trial number.
+; trial.valvarmonitor - optional - (pairs of comma-separated integers, can specify 0..n pairs). Used to determine whether a trial should be displayed based on the specified variable and variable value pair(s) in this field. Useful if a trial should only be displayed when character has a specific variable/value pair set, such as being in a specific groove or mode.
 
-; trial.X.text - optional - (string). Text for trial step (only displayed in vertical trials layout).
-; trial.X.glyphs - optional - (string, see Glyph documentation [https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-info#movelists] for syntax). same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts.
+; trialstep.X.text - optional - (string). Text for trial step (only displayed in vertical trials layout).
+; trialstep.X.glyphs - optional - (string, see Glyph documentation [https://github.com/ikemen-engine/Ikemen-GO/wiki/Miscellaneous-info#movelists] for syntax). Same syntax as movelist glyphs. Glyphs are displayed in vertical and horizontal trials layouts.
 ; trialstep.X.stateno - mandatory - (integer or comma-separated integers). State to be checked to pass trial. This is the state whether it's the main character, a helper, or even a projectile.
 ; trialstep.X.anim - optional - (integer or comma-separated integers). Identifies animno to be checked to pass trial. Useful in certain cases.
 ; trialstep.X.numofhits - optional - (integer or comma-separated integers), will default to 1 if not defined. In some instances, you might want to specify a trial step to meet a multi-hit criteria before proceeding to the next trial step.
