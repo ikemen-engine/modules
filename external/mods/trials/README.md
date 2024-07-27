@@ -122,6 +122,26 @@ You can make the trials mode look as fancy or as basic as you want. The default 
 	currenttrialtimer.text			= "Current Trial: %s"
 	; currenttrialtimer: text element, stopwatch that shows time spent on current trial step
 
+	trialtitle.pos					= 42,40
+	trialtitle.text.offset 			= 0,-17
+	trialtitle.text.font 			= 1,0,1
+	; trialtitle.text.text			= "Trial: %s"
+	; trialtitle.text.scale 		= 
+	; trialtitle.text.font.height	=
+	; trialtitle.bg.offset 			= -11,-11
+	; trialtitle.bg.anim 			= 301
+	; trialtitle.bg.scale 			= 1,1
+	; trialtitle.bg.spr 			= 701,4
+	; trialtitle.bg.displaytime		= -1
+	; trialtitle.front.offset 		= 0,0
+	; trialtitle.front.anim 		= 651
+	; trialtitle.front.scale 		= 1,1
+	; trialtitle.front.spr 			= 701,0
+	; trialtitle.front.displaytime	= -1
+	; --- NOTES
+	; trialtitle: positioning, text, and animation (bg and front elements) for trial title.
+	; Displayed while trial is active.
+
 	success.pos					= 160,120
 	success.snd					= 600,0 
 	success.text.text			= "SUCCESS!"
