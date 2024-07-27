@@ -63,6 +63,7 @@ local t_base = {
     bg_facing = 1, 
     bg_scale = {1.0, 1.0}, 
     bg_displaytime = 0, 
+	trialtitle_pos = {0,0},
 	trialtitle_text_offset = {0,0}, 
     trialtitle_text_font = {}, 
     trialtitle_text_font_height = -1, 
