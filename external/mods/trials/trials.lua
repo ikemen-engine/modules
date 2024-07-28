@@ -318,6 +318,8 @@ function start.f_trialsBuilder()
 			currenttrial = 1,
 			currenttrialstep = 1,
 			currenttrialmicrostep = 1,
+			pauseuntilnexthit = false,
+			combocounter = 0,
 			maxsteps = 0,
 			starttick = tickcount(),
 			elapsedtime = 0,
@@ -401,6 +403,7 @@ function start.f_trialsBuilder()
 					specialstr = {},
 					specialval = {},
 					iscounterhit = {},
+					validuntilnexthit = {},
 					glyphline = {
 						glyph = {},
 						pos = {},
@@ -425,8 +428,9 @@ function start.f_trialsBuilder()
 					table.insert(start.trialsdata.trial[i].trialstep[j].specialstr, gettrialinfo('trialstepspecialstr',k-1,j-1,ii-1))
 					table.insert(start.trialsdata.trial[i].trialstep[j].specialval, gettrialinfo('trialstepspecialval',k-1,j-1,ii-1))
 					table.insert(start.trialsdata.trial[i].trialstep[j].iscounterhit, gettrialinfo('trialstepiscounterhit',k-1,j-1,ii-1))
+					table.insert(start.trialsdata.trial[i].trialstep[j].validuntilnexthit, gettrialinfo('trialstepvaliduntilnexthit',k-1,j-1,ii-1))
 				end
-				
+								
 				local movelistline = start.trialsdata.trial[i].trialstep[j].glyphs
 				for kk, v in main.f_sortKeys(motif.glyphs, function(t, a, b) return string.len(a) > string.len(b) end) do
 					movelistline = movelistline:gsub(main.f_escapePattern(kk), '<' .. numberToRune(v[1] + 0xe000) .. '>')
@@ -833,43 +837,47 @@ function start.f_trialsChecker()
 			projcheck = true
 		end
 
-		maincharcheck = (stateno() == start.trialsdata.trial[ct].trialstep[cts].stateno[ctms] and not(start.trialsdata.trial[ct].trialstep[cts].isproj[ctms]) and not(start.trialsdata.trial[ct].trialstep[cts].ishelper[ctms]) and (anim() == start.trialsdata.trial[ct].trialstep[cts].animno[ctms] or start.trialsdata.trial[ct].trialstep[cts].animno[ctms] == -1) and ((hitpausetime() > 1 and movehit()) or start.trialsdata.trial[ct].trialstep[cts].isthrow[ctms] or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]))
+		maincharcheck = (stateno() == start.trialsdata.trial[ct].trialstep[cts].stateno[ctms] and not(start.trialsdata.trial[ct].trialstep[cts].isproj[ctms]) and not(start.trialsdata.trial[ct].trialstep[cts].ishelper[ctms]) and (anim() == start.trialsdata.trial[ct].trialstep[cts].animno[ctms] or start.trialsdata.trial[ct].trialstep[cts].animno[ctms] == -1) and ((hitpausetime() > 1 and movehit() and combocount() > start.trialsdata.combocounter) or start.trialsdata.trial[ct].trialstep[cts].isthrow[ctms] or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]))
 
 		if maincharcheck or projcheck or helpercheck then
-			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 then
+			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] >= 1 then
 				if start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] == 0 then
 					start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = combocount()
 				end	
 				if combocount() - start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] == start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] then
 					start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + 1
 				end
-			elseif start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 then
-				start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 1
 			elseif start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 0 then
 				start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
 			end
-
+			
 			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] then
 				nctms = ctms + 1
 				-- First, check that the microstep has passed
 				if nctms >= 1 and ((combocount() > 0 and (start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms] and movecountered() > 0) or not start.trialsdata.trial[ct].trialstep[cts].iscounterhit[ctms]) or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then
 					if nctms >= 1 and ((start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] > 1 and combocount() == start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] + start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] - 1) or start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] == 1 or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) then 
 						start.trialsdata.currenttrialmicrostep = nctms
-					elseif combocount() == 0 and not start.trialsdata.trial[ct].isnohit[cts] then
+						start.trialsdata.pauseuntilnexthit = start.trialsdata.trial[ct].trialstep[cts].validuntilnexthit[ctms]
+						start.trialsdata.combocounter = combocount()
+					elseif ((combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) and not start.trialsdata.pauseuntilnexthit) or (start.trialsdata.pauseuntilnexthit and combocount() > start.trialsdata.combocounter) then
 						start.trialsdata.currenttrialstep = 1
 						start.trialsdata.currenttrialmicrostep = 1
 						start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
 						start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
+						start.trialsdata.combocounter = 0
 					end
 				end
 				-- Next, if microstep is exceeded, go to next trial step
 				if start.trialsdata.currenttrialmicrostep > start.trialsdata.trial[ct].trialstep[cts].numofmicrosteps then
 					start.trialsdata.currenttrialmicrostep = 1
 					start.trialsdata.currenttrialstep = cts + 1
+					start.trialsdata.combocounter = combocount()
+					start.trialsdata.pauseuntilnexthit = start.trialsdata.trial[ct].trialstep[cts].validuntilnexthit[ctms]
 					if start.trialsdata.currenttrialstep > start.trialsdata.trial[ct].numsteps then
 						-- If trial step was last, go to next trial and display success banner
 						start.trialsdata.currenttrial = ct + 1
 						start.trialsdata.currenttrialstep = 1
+						start.trialsdata.combocounter = 0
 						if ct < start.trialsdata.numoftrials then 
 							if (motif.trials_info.success_front_displaytime == -1) and (motif.trials_info.success_bg_displaytime == -1) then
 								start.trialsdata.draw.success = math.max(animGetLength(motif.trials_info.success_front_data), animGetLength(motif.trials_info.success_bg_data), motif.trials_info.success_text_displaytime) 
@@ -880,11 +888,13 @@ function start.f_trialsChecker()
 					end
 				end
 			end
-		elseif combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms] then
+		elseif ((combocount() == 0 and not start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]) and not start.trialsdata.pauseuntilnexthit) or (start.trialsdata.pauseuntilnexthit and combocount() > start.trialsdata.combocounter) then
 			start.trialsdata.currenttrialstep = 1
 			start.trialsdata.currenttrialmicrostep = 1
+			start.trialsdata.combocounter = 0
 			start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] = 0
 			start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = 0
+			start.trialsdata.pauseuntilnexthit = false
 		end
 	end
 	--If the trial was completed successfully, draw the trials success

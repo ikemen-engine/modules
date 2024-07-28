@@ -230,6 +230,7 @@ trialstep.1.stateno 		= 1010
 ; trialstep.1.iscounterhit	=
 ; trialstep.1.ishelper		=
 ; trialstep.1.isproj		=
+; trialstep.1.validuntilnexthit = 
 ; trialstep.1.specialbool 	=
 ; trialstep.1.specialvar	=
 ; trialstep.1.specialstr	=
@@ -254,6 +255,7 @@ trialstep.1.stateno 		= 1010
 ; trialstep.X.iscounterhit - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step should be a counter hit. Typically does not work with helpers or projectiles.
 ; trialstep.X.ishelper - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a helper. Should be 'true' is trial step is a hit from a helper.
 ; trialstep.X.isproj - optional - (true or false, or comma-separated true/false), will default to false if not defined. Identifies whether the trial step is a projectile. Should be 'true' is trial step is a hit from a projectile.
+; trialstep.X.validuntilnexthit - optional (true or false, or comma-separate true/false), will default to false if not defined. Makes the trials checking logic pause until the next hit is registered.
 ; trialstep.X.specialbool - optional - (true or false, or comma-separated true/false), will default to false if not defined. Can be used for custom games as required.
 ; trialstep.X.specialval - optional - (integer or comma-separated integers). Can be used for custom games as required.
 ; trialstep.X.specialstr - optional - (string, or comma-separated strings). Can be used for custom games as required.
