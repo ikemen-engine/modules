@@ -338,16 +338,13 @@ function start.f_trialsBuilder()
 		}
 
 		-- thin out trials data according to varvalpairs
-		
 		for i = 1, start.trialsdata.numoftrials, 1 do
 			local tempvarvalpairs = gettrialinfo('trialvarvalpairs',i-1)
 			local varvalpairs = {}
+			valvarcheck = true
 			for singleton in tempvarvalpairs:gmatch('[^,%s]+') do
 				varvalpairs[#varvalpairs+1] = tonumber(singleton)
 			end
-
-			valvarcheck = true
-
 			if varvalpairs[1] ~= -1 then
 				for ii = 1, #varvalpairs, 2 do
 					player(1)
@@ -356,7 +353,6 @@ function start.f_trialsBuilder()
 					end
 				end
 			end
-
 			if valvarcheck then
 				start.trialsdata.trialsindex[#start.trialsdata.trialsindex+1] = i
 			else
@@ -399,11 +395,13 @@ function start.f_trialsBuilder()
 					isnohit = {},
 					ishelper = {},
 					isproj = {},
+					iscounterhit = {},
+					validuntilnexthit = {},
+					validforvar = {},
+					validforval = {},
 					specialbool = {},
 					specialstr = {},
 					specialval = {},
-					iscounterhit = {},
-					validuntilnexthit = {},
 					glyphline = {
 						glyph = {},
 						pos = {},
@@ -414,6 +412,18 @@ function start.f_trialsBuilder()
 					},
 				}
 
+				--var-val pairs for each trialstep
+				local tempstepvarvalpairs = gettrialinfo('trialstepvarvalpairs',k-1,j-1)
+				local stepvarvalpairs = {}
+				for singleton in tempstepvarvalpairs:gmatch('[^,%s]+') do
+					stepvarvalpairs[#stepvarvalpairs+1] = tonumber(singleton)
+				end
+				for ii = 1, #stepvarvalpairs, 2 do
+					table.insert(start.trialsdata.trial[i].trialstep[j].validforvar,stepvarvalpairs[ii])
+					table.insert(start.trialsdata.trial[i].trialstep[j].validforval,stepvarvalpairs[ii+1])
+				end
+
+				--all microstep data
 				for ii = 1, start.trialsdata.trial[i].trialstep[j].numofmicrosteps, 1 do
 					table.insert(start.trialsdata.trial[i].trialstep[j].stateno, gettrialinfo('trialstepstateno',k-1,j-1,ii-1))
 					table.insert(start.trialsdata.trial[i].trialstep[j].animno, gettrialinfo('trialstepanimno',k-1,j-1,ii-1))
@@ -838,6 +848,15 @@ function start.f_trialsChecker()
 		end
 
 		maincharcheck = (stateno() == start.trialsdata.trial[ct].trialstep[cts].stateno[ctms] and not(start.trialsdata.trial[ct].trialstep[cts].isproj[ctms]) and not(start.trialsdata.trial[ct].trialstep[cts].ishelper[ctms]) and (anim() == start.trialsdata.trial[ct].trialstep[cts].animno[ctms] or start.trialsdata.trial[ct].trialstep[cts].animno[ctms] == -1) and ((hitpausetime() > 1 and movehit() and combocount() > start.trialsdata.combocounter) or start.trialsdata.trial[ct].trialstep[cts].isthrow[ctms] or start.trialsdata.trial[ct].trialstep[cts].isnohit[ctms]))
+
+		--Check val-var pairs if specified
+		if start.trialsdata.trial[ct].trialstep[cts].validforvar[1] ~= -1 and maincharcheck then
+			for i = 1, #start.trialsdata.trial[ct].trialstep[cts].validforvar, 1 do
+				if maincharcheck then
+					maincharcheck = var(start.trialsdata.trial[ct].trialstep[cts].validforvar[i]) == start.trialsdata.trial[ct].trialstep[cts].validforval[i]
+				end
+			end
+		end
 
 		if maincharcheck or projcheck or helpercheck then
 			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] >= 1 then
