@@ -22,7 +22,7 @@
 
 local function f_timeConvert(value)
 	-- converts ticks to time
-	local totalSec = value / 60
+	local totalSec = value / config.GameFramerate
 	local h = tostring(math.floor(totalSec / 3600))
 	local m = tostring(math.floor((totalSec / 3600 - h) * 60))
 	local s = tostring(math.floor(((totalSec / 3600 - h) * 60 - m) * 60))
@@ -460,11 +460,17 @@ end
 
 -- Find trials files and appeind t_selChars table
 for row = 1, #main.t_selChars, 1 do
-	if main.t_selChars[row].dir ~= nil then
-		main.t_selChars[row].trials = searchFile("trials.def", {main.t_selChars[row].dir})
-		if main.t_selChars[row].trials == "trials.def" then 
-			main.t_selChars[row].trials = ""
+	if main.t_selChars[row].def ~= nil then
+		main.t_selChars[row].trials = ""
+		local deffile = io.open(main.t_selChars[row].def, "r")
+		for line in deffile:lines() do
+			line = line:gsub('%s*;.*$', '')
+			lcline = string.lower(line)
+			if lcline:match('trials') then
+				main.t_selChars[row].trials = main.t_selChars[row].dir .. "/" .. f_trimafterchar(line, "=")
+			end
 		end
+		deffile:close()
 	end
 end
 
@@ -784,37 +790,14 @@ function start.f_trialsBuilder()
 		start.trialsdata.draw.currenttextline[i] = main.f_createTextImg(motif.trials_mode, 'currentstep_text')
 		start.trialsdata.draw.completedtextline[i] = main.f_createTextImg(motif.trials_mode, 'completedstep_text')
 	end
+
 	-- Build Options for Trials Mode Pause Menu
 	-- First, list out all of the available trials
 	menu.t_valuename.activetrial = {}
 	for i = 1, #start.trialsdata.trial, 1 do
 		table.insert(menu.t_valuename.activetrial, {itemname = i, displayname = start.trialsdata.trial[i].name})
 	end
-	-- Next, initialize menu functions
-	t_itemname = {
-		['activetrial'] = function(t, item, cursorPosY, moveTxt, section)
-			if menu.f_valueChanged(t.items[item], motif[section]) then
-				player(2)
-				setAILevel(menu.activetrial)
-			end
-			return true
-		end,
-	}
-	table.insert(menu.t_itemname, t_itemname)
-	t_vardisplay = {
-		['activetrial'] = function()
-			return menu.t_valuename.ailevel[menu.activetrial or config.Difficulty].displayname
-		end,
-	}
-	table.insert(menu.t_vardisplay, t_vardisplay)
-	-- menu.t_itemname.activetrial = function()
-	-- 	if main.f_input(main.t_players, {'pal', 's'}) then
-	-- 		sndPlay(motif.files.snd_data, motif[section].cursor_done_snd[1], motif[section].cursor_done_snd[2])
-	-- 		--menu.f_trialslistParse()
-	-- 		menu.itemname = t.items[item].itemname
-	-- 	end
-	-- 	return true
-	-- end
+
 	start.trialsdata.trialsInitialized = true
 end
 
@@ -1088,7 +1071,6 @@ function start.f_trialsChecker()
 		end
 		
 		if maincharcheck or projcheck or helpercheck then
-			print("ct, cts, ctms = " .. ct .. ", " .. cts .. ", " .. ctms)
 			if start.trialsdata.trial[ct].trialstep[cts].numofhits[ctms] >= 1 then
 				if start.trialsdata.trial[ct].trialstep[cts].stephitscount[ctms] == 0 then
 					start.trialsdata.trial[ct].trialstep[cts].combocountonstep[ctms] = combocount()
@@ -1148,7 +1130,6 @@ function start.f_trialsChecker()
 	end
 	--If the trial was completed successfully, draw the trials success
 	if start.trialsdata.draw.success > 0 then
-		print("now we are here")
 		start.f_trialsSuccess('success', ct)
 		if start.trialsdata.draw.success == 0 and motif.trials_mode.trialsteps_resetonsuccess == "true" then
 			start.trialsdata.reset[1] = 1
@@ -1187,14 +1168,10 @@ end
 
 -- Verifies if the selected character has a trials.def file
 function start.f_trialsFileCheck()
-	trialchar = 0
-	for row = 1, #main.t_selChars, 1 do
-		trialchar = trialchar + 1
-		if main.t_selChars[row].char_ref == start.p[1].t_selected[1].ref then break end
-	end
-	if main.t_selChars[trialchar].trials ~= "" then
+	trialspath = start.f_getCharData(start.p[1].t_selected[1].ref).trials
+	if trialspath ~= "" then
 		start.trialsdata = {
-			trialsFilePath = main.t_selChars[trialchar].trials,
+			trialsFilePath = trialspath,
 			trialsInitialized = false,
 			trialsPaused = false
 		}
@@ -1261,6 +1238,23 @@ table.insert(menu.t_menus, {id = 'trials', section = 'trials_info', bgdef = 'tri
 if main.t_sort.trials_info == nil or main.t_sort.trials_info.menu == nil or #main.t_sort.trials_info.menu == 0 then
 	motif.setBaseTrialsInfo()
 end
+-- Next, initialize menu functions
+t_itemname = {
+	['activetrial'] = function(t, item, cursorPosY, moveTxt, section)
+		if menu.f_valueChanged(t.items[item], motif[section]) then
+			player(2)
+			setAILevel(menu.activetrial)
+		end
+		return true
+	end,
+}
+table.insert(menu.t_itemname, t_itemname)
+t_vardisplay = {
+	['activetrial'] = function()
+		return menu.t_valuename.activetrial[menu.activetrial or 1].displayname
+	end,
+}
+table.insert(menu.t_vardisplay, t_vardisplay)
 
 --;===========================================================
 --; global.lua
