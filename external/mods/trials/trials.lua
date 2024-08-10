@@ -354,6 +354,8 @@ local t_base_info = {
 	movelist_arrow_down_facing = 1, --Ikemen feature
 	movelist_arrow_down_scale = {1.0, 1.0}, --Ikemen feature
 	menu_valuename_trialslist = "", --Ikemen feature
+	menu_valuename_trialadvancement_autoadvance = "Auto-Advance",
+	menu_valuename_trialadvancement_repeat = "Repeat",
 }
 if motif.trials_info == nil then
 	motif.trials_info = {}
@@ -425,6 +427,7 @@ function motif.setBaseTrialsInfo()
 	motif.trials_info.menu_itemname_back = "Continue"
 	motif.trials_info.menu_itemname_trials = "Trials Menu"
 	motif.trials_info.menu_itemname_trials_activetrial = "Active Trial"
+	motif.trials_info.menu_itemname_trialadvancement = "Trial Advancement"
 	motif.trials_info.menu_itemname_menuinput = "Button Config"
 	motif.trials_info.menu_itemname_menuinput_keyboard = "Key Config"
 	motif.trials_info.menu_itemname_menuinput_gamepad = "Joystick Config"
@@ -443,6 +446,7 @@ function motif.setBaseTrialsInfo()
 		"back",
 		"trials",
 		"trials_activetrial",
+		"trialadvancement",
 		"menuinput",
 		"menuinput_keyboard",
 		"menuinput_gamepad",
@@ -795,7 +799,7 @@ function start.f_trialsBuilder()
 	-- First, list out all of the available trials
 	menu.t_valuename.activetrial = {}
 	for i = 1, #start.trialsdata.trial, 1 do
-		table.insert(menu.t_valuename.activetrial, {itemname = i, displayname = start.trialsdata.trial[i].name})
+		table.insert(menu.t_valuename.activetrial, {itemname = tostring(i), displayname = start.trialsdata.trial[i].name})
 	end
 
 	start.trialsdata.trialsInitialized = true
@@ -1233,28 +1237,51 @@ function start.f_trialsMode()
 	end
 end
 
+function menu.f_settrialadvancement(value)
+
+end
+
+function menu.f_setactiveTrial(value)
+
+end
+
 -- Initialize Trials Pause Menu
 table.insert(menu.t_menus, {id = 'trials', section = 'trials_info', bgdef = 'trialsbgdef', txt_title = 'txt_title_trials', movelist = true})
 if main.t_sort.trials_info == nil or main.t_sort.trials_info.menu == nil or #main.t_sort.trials_info.menu == 0 then
 	motif.setBaseTrialsInfo()
 end
+
+menu.t_valuename.activetrial = {
+	{itemname = "1", displayname = "1"},
+}
+menu.t_valuename.trialadvancement = {
+	{itemname = "Auto-Advance", displayname = motif.trials_info.menu_valuename_trialadvancement_autoadvance},
+	{itemname = "Repeat", displayname = motif.trials_info.menu_valuename_trialadvancement_repeat}
+}
+
 -- Next, initialize menu functions
-t_itemname = {
-	['activetrial'] = function(t, item, cursorPosY, moveTxt, section)
-		if menu.f_valueChanged(t.items[item], motif[section]) then
-			player(2)
-			setAILevel(menu.activetrial)
-		end
-		return true
-	end,
-}
-table.insert(menu.t_itemname, t_itemname)
-t_vardisplay = {
-	['activetrial'] = function()
-		return menu.t_valuename.activetrial[menu.activetrial or 1].displayname
-	end,
-}
-table.insert(menu.t_vardisplay, t_vardisplay)
+
+menu.t_itemname['activetrial'] = function(t, item, cursorPosY, moveTxt, section)
+	if menu.f_valueChanged(t.items[item], motif[section]) then
+		menu.f_setactiveTrial(menu.activetrial)
+	end
+	return true
+end
+
+menu.t_vardisplay['activetrial'] = function()
+	return menu.t_valuename.activetrial[menu.activetrial or 1].displayname
+end
+
+menu.t_itemname['trialadvancement'] = function(t, item, cursorPosY, moveTxt, section)
+	if menu.f_valueChanged(t.items[item], motif[section]) then
+		menu.f_settrialadvancement(menu.trialadvancement)
+	end
+	return true
+end
+
+menu.t_vardisplay['trialadvancement'] = function()
+	return menu.t_valuename.trialadvancement[menu.trialadvancement or 1].displayname
+end
 
 --;===========================================================
 --; global.lua
