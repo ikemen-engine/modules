@@ -1,0 +1,258 @@
+# Mugen style Training Mode global code
+# maps set via Pause Menu (menu.lua)
+# _iksys_trialsDummyControl: 0 - cooperative, 1 - ai, 2 - manual
+# _iksys_trialsGuardMode: 0 - none, 1 - auto, 2 - all, 3 - random
+# _iksys_trialsFallRecovery: 0 - none, 1 - ground, 2 - air, 3 - random
+# _iksys_trialsDummyMode: 0 - stand, 1 - crouch, 2 - jump, 3 - wjump
+# _iksys_trialsDistance: 0 - any, 1 - close, 2 - medium, 3 - far
+# _iksys_trialsButtonJam: 0 - none, 1-9 - a/b/c/x/y/z/s/d/w
+
+#===============================================================================
+# Functions
+#===============================================================================
+[Function TrainingRecovery(pn)]
+# Life recovery
+if player($pn),moveType = H || player($pn),dizzy {
+	mapSet{map: "_iksys_trialsLifeTimer"; value: 0; redirectid: player($pn),id}
+} else if player($pn),map(_iksys_trialsLifeTimer) >= 60 {
+	lifeSet{value: player($pn),lifeMax; redirectid: player($pn),id}
+	redLifeSet{value: player($pn),lifeMax; redirectid: player($pn),id}
+	mapSet{map: "_iksys_trialsLifeTimer"; value: 0; redirectid: player($pn),id}
+} else {
+	mapAdd{map: "_iksys_trialsLifeTimer"; value: 1; redirectid: player($pn),id}
+}
+# Power recovery
+if player($pn),ctrl = 0 {
+	mapSet{map: "_iksys_trialsPowerTimer"; value: 0; redirectid: player($pn),id}
+} else if player($pn),map(_iksys_trialsPowerTimer) >= 60 {
+	powerSet{value: player($pn),powerMax; redirectid: player($pn),id}
+	mapSet{map: "_iksys_trialsPowerTimer"; value: 0; redirectid: player($pn),id}
+} else {
+	mapAdd{map: "_iksys_trialsPowerTimer"; value: 1; redirectid: player($pn),id}
+}
+
+#===============================================================================
+# Global states (not halted by Pause/SuperPause, no helper limitations)
+#===============================================================================
+[StateDef -4]
+
+ignoreHitPause if gameMode != "trials" || isHelper || teamSide != 2 {
+	# Do nothing, not trials more or statedef executed by helper or not P2
+} else ignoreHitPause if roundState = 0 {
+	# Round start reset
+	powerSet{value: player(1),powerMax; redirectid: player(1),id}
+	powerSet{value: player(2),powerMax; redirectid: player(2),id}
+	map(_iksys_trialsLifeTimer) := 0;
+	map(_iksys_trialsPowerTimer) := 0;
+	map(_iksys_trialsDirection) := 0;
+	map(_iksys_trialsAirJumpNum) := 0;
+} else ignoreHitPause if roundState = 2 {
+	assertSpecial{flag: globalNoKo}
+	# Life and Power recovery
+	for i = 1; player(1),numPartner + 1; 1 {
+		call TrainingRecovery($i * 2 - 1);
+	}
+	for i = 1; player(2),numPartner + 1; 1 {
+		call TrainingRecovery($i * 2);
+	}
+	# Dummy Control: Cooperative
+	if aiLevel = 0 && map(_iksys_trialsDummyControl) = 0 {
+		# Guard mode: Random
+		if map(_iksys_trialsGuardMode) = 3 {
+			if random < 500 {
+				assertSpecial{flag: autoGuard}
+			}
+		# Guard mode: All
+		} else if map(_iksys_trialsGuardMode) = 2 {
+			assertSpecial{flag: autoGuard}
+		# Guard mode: Auto
+		} else if map(_iksys_trialsGuardMode) = 1 {
+			if moveType = H || stateNo = const(StateDownedGetHit_gettingUp) {
+				map(_iksys_trialsAutoGuardTimer) := 15;
+			} else {
+				map(_iksys_trialsAutoGuardTimer) := (map(_iksys_trialsAutoGuardTimer) - 1);
+			}
+			if map(_iksys_trialsAutoGuardTimer) > 0 {
+				assertSpecial{flag: autoGuard}
+			}
+		}
+		# Distance
+		let dir = 0;
+		if map(_iksys_trialsDistance) != 0 {
+			# Close
+			if map(_iksys_trialsDistance) = 1 && p2BodyDist x > const240p(10) {
+				let dir = 1;
+				map(_iksys_trialsDirection) := 1;
+			# Medium
+			} else if map(_iksys_trialsDistance) = 2 {
+				if p2BodyDist x > const240p(130) {
+					let dir = 1;
+					map(_iksys_trialsDirection) := 1;
+				} else if p2BodyDist x < const240p(80) && backEdgeBodyDist > const240p(10) {
+					let dir = -1;
+					map(_iksys_trialsDirection) := -1;
+				}
+			# Far
+			} else if map(_iksys_trialsDistance) = 3 {
+				if p2BodyDist x < const240p(260) && backEdgeBodyDist > const240p(10) {
+					let dir = -1;
+					map(_iksys_trialsDirection) := -1;
+				}
+			# Reset to Center
+			} else if map(_iksys_trialsDistance) = 4 {
+
+			}
+		}
+		if map(_iksys_trialsDirection) != 0 {
+			# if adjusting position is no longer needed
+			if $dir = 0 {
+				# maintain assertion only if dummy and nearest P1 are moving in the same direction
+				if vel x * p2,vel x >= 0 || backEdgeBodyDist = 0 || p2,backEdgeBodyDist = 0 {
+					map(_iksys_trialsDirection) := 0;
+				}
+			}
+			# if dummy should move forward and player is not trying to move dummy back
+			if map(_iksys_trialsDirection) = 1 && command != "holdback" {
+				if facing = 1 {
+					assertInput{flag: R}
+					if numHelper {
+						for i = 1; numHelper; 1 {
+							assertInput{flag: R; redirectID: helperIndex($i), ID}
+						}
+					}
+				} else {
+					assertInput{flag: L}
+					if numHelper {
+						for i = 1; numHelper; 1 {
+							assertInput{flag: L; redirectID: helperIndex($i), ID}
+						}
+					}
+				}
+			# if dummy should move backward and player is not trying to move dummy forward
+			} else if map(_iksys_trialsDirection) = -1 && command != "holdfwd" {
+				if facing = 1 {
+					assertInput{flag: L}
+					if numHelper {
+						for i = 1; numHelper; 1 {
+							assertInput{flag: L; redirectID: helperIndex($i), ID}
+						}
+					}
+				} else {
+					assertInput{flag: R}
+					if numHelper {
+						for i = 1; numHelper; 1 {
+							assertInput{flag: R; redirectID: helperIndex($i), ID}
+						}
+					}
+				}
+			}
+		} else {
+			# Dummy mode
+			switch map(_iksys_trialsDummyMode) {
+			# Crouch
+			case 1:
+				assertInput{flag: D}
+				if numHelper {
+					for i = 1; numHelper; 1 {
+						assertInput{flag: D; redirectID: helperIndex($i), ID}
+					}
+				}
+			# Jump
+			case 2:
+				assertInput{flag: U}
+				if numHelper {
+					for i = 1; numHelper; 1 {
+						assertInput{flag: U; redirectID: helperIndex($i), ID}
+					}
+				}
+			# W Jump
+			case 3:
+				if vel y >= 0 {
+					assertInput{flag: U}
+					if numHelper {
+						for i = 1; numHelper; 1 {
+							assertInput{flag: U; redirectID: helperIndex($i), ID}
+						}
+					}
+				}
+			default:
+				# Do nothing
+			}
+			# Button jam
+			if map(_iksys_trialsButtonJam) > 0 {
+				if map(_iksys_trialsButtonJamDelay) > 0 {
+					mapAdd{map: "_iksys_trialsButtonJamDelay"; value: -1}
+				} else {
+					map(_iksys_trialsButtonJamDelay) := 11;
+					switch map(_iksys_trialsButtonJam) {
+					case 1:
+						assertInput{flag: a}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: a; redirectID: helperIndex($i), ID}
+							}
+						}
+					case 2:
+						assertInput{flag: b}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: b; redirectID: helperIndex($i), ID}
+							}
+						}
+					case 3:
+						assertInput{flag: c}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: c; redirectID: helperIndex($i), ID}
+							}
+						}
+					case 4:
+						assertInput{flag: x}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: x; redirectID: helperIndex($i), ID}
+							}
+						}
+					case 5:
+						assertInput{flag: y}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: y; redirectID: helperIndex($i), ID}
+							}
+						}
+					case 6:
+						assertInput{flag: z}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: z; redirectID: helperIndex($i), ID}
+							}
+						}
+					case 7:
+						assertInput{flag: s}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: s; redirectID: helperIndex($i), ID}
+							}
+						}
+					case 8:
+						assertInput{flag: d}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: d; redirectID: helperIndex($i), ID}
+							}
+						}
+					case 9:
+						assertInput{flag: w}
+						if numHelper {
+							for i = 1; numHelper; 1 {
+								assertInput{flag: w; redirectID: helperIndex($i), ID}
+							}
+						}
+					default:
+						map(_iksys_trialsButtonJamDelay) := 0;
+					}
+				}
+			}
+		}
+	}
+}
