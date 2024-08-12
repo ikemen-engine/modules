@@ -6,11 +6,12 @@
 # _iksys_trialsDummyMode: 0 - stand, 1 - crouch, 2 - jump, 3 - wjump
 # _iksys_trialsDistance: 0 - any, 1 - close, 2 - medium, 3 - far
 # _iksys_trialsButtonJam: 0 - none, 1-9 - a/b/c/x/y/z/s/d/w
+# _iksys_trialsPosX: value: 
 
 #===============================================================================
 # Functions
 #===============================================================================
-[Function TrainingRecovery(pn)]
+[Function TrialsRecovery(pn)]
 # Life recovery
 if player($pn),moveType = H || player($pn),dizzy {
 	mapSet{map: "_iksys_trialsLifeTimer"; value: 0; redirectid: player($pn),id}
@@ -31,6 +32,21 @@ if player($pn),ctrl = 0 {
 	mapAdd{map: "_iksys_trialsPowerTimer"; value: 1; redirectid: player($pn),id}
 }
 
+[Function TrialsInitialPosition(pn)]
+# Move player
+mapSet{map:"_iksys_trialsPosX"; value: player($pn),Pos X; redirectID: player($pn),id;}
+mapSet{map:"_iksys_trialsPosY"; value: player($pn),Pos Y; redirectID: player($pn),id;}
+
+[Function TrialsReposition()]
+#This relocates everyone
+for i = 1; PlayerCount; 1
+  {
+   if PlayerIndex($i), map(_iksys_trialsPosX) != 0 {PosSet{x:playerIndex($i), map(_iksys_trialsPosX) - CameraPos x; redirectID:PlayerIndex($i),id;}}
+   if PlayerIndex($i), map(_iksys_trialsPosY) != 0 {PosSet{y:playerIndex($i), map(_iksys_trialsPosY); redirectID:PlayerIndex($i),id;}}
+  }
+#This should reposition the camera
+Camera{Pos: 0,0;}
+
 #===============================================================================
 # Global states (not halted by Pause/SuperPause, no helper limitations)
 #===============================================================================
@@ -46,14 +62,17 @@ ignoreHitPause if gameMode != "trials" || isHelper || teamSide != 2 {
 	map(_iksys_trialsPowerTimer) := 0;
 	map(_iksys_trialsDirection) := 0;
 	map(_iksys_trialsAirJumpNum) := 0;
+	map(_iksys_trialsReposition) := 0;
+	call TrialsInitialPosition(1);
+	call TrialsInitialPosition(2);
 } else ignoreHitPause if roundState = 2 {
 	assertSpecial{flag: globalNoKo}
 	# Life and Power recovery
 	for i = 1; player(1),numPartner + 1; 1 {
-		call TrainingRecovery($i * 2 - 1);
+		call TrialsRecovery($i * 2 - 1);
 	}
 	for i = 1; player(2),numPartner + 1; 1 {
-		call TrainingRecovery($i * 2);
+		call TrialsRecovery($i * 2);
 	}
 	# Dummy Control: Cooperative
 	if aiLevel = 0 && map(_iksys_trialsDummyControl) = 0 {
@@ -253,6 +272,10 @@ ignoreHitPause if gameMode != "trials" || isHelper || teamSide != 2 {
 					}
 				}
 			}
+		}
+		if map(_iksys_trialsReposition) != 0 {
+			call TrialsReposition();
+			map(_iksys_trialsReposition) := 0;
 		}
 	}
 }

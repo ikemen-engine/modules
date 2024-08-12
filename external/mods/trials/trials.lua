@@ -111,10 +111,10 @@ if motif.select_info.title_trials_text == nil then
 end
 
 local t_base = {
-	fadein_time = 10, --Ikemen feature
+	fadein_time = 40, --Ikemen feature
 	fadein_col = {0, 0, 0}, --Ikemen feature
 	fadein_anim = -1, --Ikemen feature
-	fadeout_time = 10, --Ikemen feature
+	fadeout_time = 40, --Ikemen feature
 	fadeout_col = {0, 0, 0}, --Ikemen feature
 	fadeout_anim = -1, --Ikemen feature
     trialsteps_pos = {0, 0},
@@ -271,10 +271,10 @@ motif.trials_mode = main.f_tableMerge(t_base, motif.trials_mode)
 
 -- Initialize Trials Pause Menu data
 local t_base_info = {
-	fadein_time = 0, --Ikemen feature
+	fadein_time = 10, --Ikemen feature
 	fadein_col = {0, 0, 0}, --Ikemen feature
 	fadein_anim = -1, --Ikemen feature
-	fadeout_time = 0, --Ikemen feature
+	fadeout_time = 10, --Ikemen feature
 	fadeout_col = {0, 0, 0}, --Ikemen feature
 	fadeout_anim = -1, --Ikemen feature
 	title_offset = {159, 15}, --Ikemen feature
@@ -423,10 +423,10 @@ end
 
 -- fadein/fadeout anim data generation.
 if motif.trials_mode.fadein_anim ~= -1 then
-	motif.f_loadSprData(motif.trials_mode, {s = 'fadein_'}, motif.files.spr_data)
+	motif.f_loadSprData(motif.trials_mode, {s = 'fadein_'})
 end
 if motif.trials_mode.fadeout_anim ~= -1 then
-	motif.f_loadSprData(motif.trials_mode, {s = 'fadeout_'}, motif.files.spr_data)
+	motif.f_loadSprData(motif.trials_mode, {s = 'fadeout_'})
 end
 
 function motif.setBaseTrialsInfo()
@@ -474,7 +474,7 @@ end
 --; start.lua
 --;===========================================================
 
-function start.f_trialsData()
+function start.f_inittrialsData()
 	start.trialsdata = {
 		trialsExist = true,
 		trialsInitialized = false,
@@ -495,8 +495,22 @@ function start.f_trialsData()
 		displaytimers = {
 			totaltimer = true,
 			trialtimer = true,
+		},
+		startpos = {
+			p1x = -70,
+			p1y = 0,
+			p2x = 70,
+			p2y = 0,
 		}
 	}
+
+	player(1)
+	start.trialsdata.startpos.p1x = posX()
+	start.trialsdata.startpos.p1y = posY()
+	player(2)
+	start.trialsdata.startpos.p2x = posX()
+	start.trialsdata.startpos.p2y = posY()
+	player(1)
 
 	-- Initialize trialAdvancement based on last-left menu value
 	if menu.t_valuename.trialAdvancement[menu.trialAdvancement or 1].itemname == "Auto-Advance" then
@@ -754,7 +768,7 @@ function start.f_trialsDrawer()
 	ctms = start.trialsdata.currenttrialmicrostep
 
 	if start.trialsdata.active then
-		if ct <= #start.trialsdata.trial and start.trialsdata.draw.success == 0 then
+		if ct <= #start.trialsdata.trial and start.trialsdata.draw.success == 0 and start.trialsdata.draw.fade == 0 then
 
 			--According to motif instructions, draw trials counter on screen
 			local trtext = motif.trials_mode.trialcounter_text
@@ -933,7 +947,7 @@ end
 function start.f_trialsChecker()
 	--This function sets dummy actions according to the character trials info and validates trials attempts
 	--To help follow along, ct = current trial, cts = current trial step, ncts = next current trial step
-	if ct <= #start.trialsdata.trial and start.trialsdata.draw.success == 0 and start.trialsdata.active then
+	if ct <= #start.trialsdata.trial and start.trialsdata.draw.success == 0 and start.trialsdata.draw.fade == 0 and start.trialsdata.active then
 		local helpercheck = false
 		local projcheck = false
 		local maincharcheck = false
@@ -1072,24 +1086,21 @@ function start.f_trialsSuccess(successstring, index)
 end
 
 function start.f_trialsFade()
-	-- This function is responsible for fadein/fadeout is resetonsuccess is set to true.
+	-- This function is responsible for fadein/fadeout if resetonsuccess is set to true.
 	if start.trialsdata.draw.fadeout > 0 then
 		if not main.fadeActive then
-			main.f_fadeReset('fadeout',motif.trials_info)
-			main.f_fadeAnim(motif.trials_info)
-			main.f_refresh()
+			main.f_fadeReset('fadeout',motif.trials_mode)
 		end
+		main.f_fadeAnim(motif.trials_mode)
 		start.trialsdata.draw.fadeout = start.trialsdata.draw.fadeout - 1
-		
 	elseif start.trialsdata.draw.fadein > 0 then
-		if not main.fadeActive then
-			main.f_fadeReset('fadein',motif.trials_info)
-			main.f_fadeAnim(motif.trials_info)
-			main.f_refresh()
+		if main.fadeType == 'fadeout' then
+			charMapSet(2, '_iksys_trialsReposition', 1)
+			main.f_fadeReset('fadein',motif.trials_mode)
 		end
+		main.f_fadeAnim(motif.trials_mode)
 		start.trialsdata.draw.fadein = start.trialsdata.draw.fadein - 1
 	end
-	print(main.fadeCnt)
 	
 	start.trialsdata.draw.fade = start.trialsdata.draw.fade - 1
 end
@@ -1122,7 +1133,7 @@ function start.f_trialsMode()
 		start.trialsdata = nil
 		-- Check if there's a trials file - if so, parse it
 		if start.f_getCharData(start.p[1].t_selected[1].ref).trialsdef ~= "" then
-			start.f_trialsData()
+			start.f_inittrialsData()
 			trialsExist = true
  		else
 			trialsExist = false
@@ -1227,6 +1238,29 @@ menu.t_itemname['previoustrial'] = function(t, item, cursorPosY, moveTxt, sectio
 		start.trialsdata.trial[start.trialsdata.currenttrial].starttick = tickcount()
 	end
 	return true
+end
+
+function menu.f_trialsReset()
+	if roundstart() then
+		if roundno() == 1 then
+			for k, _ in pairs(menu.t_valuename) do
+				menu[k] = 1
+			end
+			for _, v in ipairs(menu.t_vardisplayPointers) do
+				v.vardisplay = menu.f_vardisplay(v.itemname)
+			end
+			player(2)
+			setAILevel(0)
+			charMapSet(2, '_iksys_trialsDummyControl', 0)
+			charMapSet(2, '_iksys_trialsDummyMode', 0)
+			charMapSet(2, '_iksys_trialsGuardMode', 0)
+			charMapSet(2, '_iksys_trialsFallRecovery', 0)
+			charMapSet(2, '_iksys_trialsDistance', 0)
+			charMapSet(2, '_iksys_trialsButtonJam', 0)
+			charMapSet(2, '_iksys_trialsReposition', 0)
+			player(1)
+		end
+	end
 end
 
 --;===========================================================
@@ -1383,3 +1417,4 @@ end
 --; global.lua
 --;===========================================================
 hook.add("loop#trials", "f_trialsMode", start.f_trialsMode)
+hook.add("loop#trials", "f_trialsReset", menu.f_trialsReset)
