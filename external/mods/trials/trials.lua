@@ -494,21 +494,7 @@ function start.f_inittrialsData()
 			totaltimer = true,
 			trialtimer = true,
 		},
-		startpos = {
-			p1x = -70,
-			p1y = 0,
-			p2x = 70,
-			p2y = 0,
-		}
 	}
-
-	player(1)
-	start.trialsdata.startpos.p1x = posX()
-	start.trialsdata.startpos.p1y = posY()
-	player(2)
-	start.trialsdata.startpos.p2x = posX()
-	start.trialsdata.startpos.p2y = posY()
-	player(1)
 
 	-- Initialize trialAdvancement based on last-left menu value
 	if menu.t_valuename.trialAdvancement[menu.trialAdvancement or 1].itemname == "Auto-Advance" then
@@ -1106,29 +1092,6 @@ function start.f_trialsFade()
 	start.trialsdata.draw.fade = start.trialsdata.draw.fade - 1
 end
 
--- function start.f_trialsReset()
--- 	-- This function reinitializes the trials mode when specific conditions are met
--- 	for k, _ in pairs(menu.t_valuename) do
--- 		menu[k] = 1
--- 	end
--- 	menu.ailevel = config.Difficulty
--- 	for _, v in ipairs(menu.t_vardisplayPointers) do
--- 		v.vardisplay = menu.f_vardisplay(v.itemname)
--- 	end
--- 	player(2)
--- 	setAILevel(0)
--- 	charMapSet(2, '_iksys_trialsDummyControl', 0)
--- 	charMapSet(2, '_iksys_trialsDummyMode', 0)
--- 	charMapSet(2, '_iksys_trialsGuardMode', 0)
--- 	charMapSet(2, '_iksys_trialsFallRecovery', 0)
--- 	charMapSet(2, '_iksys_trialsDistance', 0)
--- 	charMapSet(2, '_iksys_trialsButtonJam', 0)
--- 	player(1)
--- 	start.trialsdata.currenttrial = 1
--- 	start.trialsdata.currenttrialstep = 1
--- 	start.trialsdata.currenttrialmicrostep = 1
--- end
-
 function start.f_trialsMode()
 	if roundstart() then
 		start.trialsdata = nil
@@ -1165,6 +1128,7 @@ end
 --;===========================================================
 
 function menu.f_setactiveTrial(value)
+	print(value)
 	-- start.trialsdata.trial[start.trialsdata.currenttrial].active = false
 	-- start.trialsdata.currenttrial = value
 	-- start.trialsdata.currenttrialstep = 1
@@ -1179,7 +1143,7 @@ if main.t_sort.trials_info == nil or main.t_sort.trials_info.menu == nil or #mai
 end
 
 menu.t_valuename.trialsList = {
- 	{itemname = "", displayname = ""},
+ 	{itemname = "1", displayname = "Updating"},
 }
 menu.t_valuename.trialAdvancement = {
 	{itemname = "Auto-Advance", displayname = motif.trials_info.menu_valuename_trialAdvancement_autoadvance},
@@ -1207,7 +1171,7 @@ menu.t_valuename.trialAdvancement = {
 
 menu.t_itemname['trialsList'] = function(t, item, cursorPosY, moveTxt, section)
 	if menu.f_valueChanged(t.items[item], motif[section]) then
-		menu.f_setactiveTrial(menu.trialList)
+		menu.f_setactiveTrial(tonumber(menu.t_valuename.trialsList[menu.trialList or 1].itemname))
 	end
 	return true
 end
