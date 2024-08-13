@@ -111,17 +111,17 @@ if motif.select_info.title_trials_text == nil then
 end
 
 local t_base = {
+    trialsteps_pos = {0, 0},
+    trialsteps_spacing = {0, 0},
+    trialsteps_window = {0,0,0,0},
+    resetonsuccess = "false",
+    trialslayout = "vertical",
 	fadein_time = 40, --Ikemen feature
 	fadein_col = {0, 0, 0}, --Ikemen feature
 	fadein_anim = -1, --Ikemen feature
 	fadeout_time = 40, --Ikemen feature
 	fadeout_col = {0, 0, 0}, --Ikemen feature
 	fadeout_anim = -1, --Ikemen feature
-    trialsteps_pos = {0, 0},
-    trialsteps_spacing = {0, 0},
-    trialsteps_window = {0,0,0,0},
-    trialsteps_resetonsuccess = "false",
-    trialsteps_trialslayout = "vertical",
     bg_anim = -1,
     bg_spr = {},
     bg_offset = {0, 0},
@@ -431,10 +431,9 @@ end
 
 function motif.setBaseTrialsInfo()
 	motif.trials_info.menu_itemname_back = "Continue"
-	motif.trials_info.menu_itemname_empty = ""
 	motif.trials_info.menu_itemname_nexttrial = "Next Trial"
 	motif.trials_info.menu_itemname_previoustrial = "Previous Trial"
-	--motif.trials_info.menu_itemname_trialsList = "Trials List"
+	motif.trials_info.menu_itemname_trialsList = "Trials List"
 	motif.trials_info.menu_itemname_trialAdvancement = "Trial Advancement"
 	motif.trials_info.menu_itemname_empty = ""
 	motif.trials_info.menu_itemname_menuinput = "Button Config"
@@ -451,10 +450,9 @@ function motif.setBaseTrialsInfo()
 	end
 	main.t_sort.trials_info.menu = {
 		"back",
-		"empty",
 		"nexttrial",
 		"previoustrial",
-		--"trialsList",
+		"trialsList",
 		"trialAdvancement",
 		"empty",
 		"menuinput",
@@ -616,7 +614,7 @@ function start.f_trialsBuilder()
 			end
 			for m in pairs(start.trialsdata.trial[i].trialstep[j].glyphline.glyph) do
 				if motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]] ~= nil then
-					if motif.trials_mode.trialsteps_trialslayout == "vertical" then
+					if motif.trials_mode.trialslayout == "vertical" then
 						if motif.trials_mode.glyphs_align == 0 then --center align
 							alignOffset = motif.trials_mode.glyphs_offset[1] * 0.5
 						elseif motif.trials_mode.glyphs_align == -1 then --right align
@@ -629,7 +627,7 @@ function start.f_trialsBuilder()
 					end
 					local scaleX = motif.trials_mode.glyphs_scale[1]
 					local scaleY = motif.trials_mode.glyphs_scale[2]
-					if motif.trials_mode.trialsteps_trialslayout == "vertical" and motif.trials_mode.glyphs_scalewithtext == "true" then
+					if motif.trials_mode.trialslayout == "vertical" and motif.trials_mode.glyphs_scalewithtext == "true" then
 						scaleX = font_def.Size[2] * motif.trials_mode.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_mode.glyphs_scale[1]
 						scaleY = font_def.Size[2] * motif.trials_mode.currentstep_text_scale[2] / motif.glyphs_data[start.trialsdata.trial[i].trialstep[j].glyphline.glyph[m]].info.Size[2] * motif.trials_mode.glyphs_scale[2]
 					end
@@ -692,10 +690,12 @@ function start.f_trialsBuilder()
 
 	-- Build Options for Trials Mode Pause Menu
 	-- First, list out all of the available trials
-	-- menu.t_valuename.trialsList = {}
-	-- for i = 1, #start.trialsdata.trial, 1 do
-	-- 	table.insert(menu.t_valuename.trialsList, {itemname = tostring(i), displayname = start.trialsdata.trial[i].name})
-	-- end
+	menu.t_valuename.trialsList = {}
+	for i = 1, #start.trialsdata.trial, 1 do
+		table.insert(menu.t_valuename.trialsList, {itemname = tostring(i), displayname = start.trialsdata.trial[i].name})
+	end
+
+	--hook.run("menu.menu.loop")
 
 	start.trialsdata.trialsInitialized = true
 end
@@ -756,6 +756,7 @@ function start.f_trialsDrawer()
 	if paused() and not start.trialsdata.trialsPaused then
 		start.trialsdata.trialsPaused = true
 		menu.currentMenu = {menu.trials.loop, menu.trials.loop}
+		menu.f_trialsReset()
 	elseif not paused() then
 		start.trialsdata.trialsPaused = false
 	end
@@ -811,7 +812,7 @@ function start.f_trialsDrawer()
 
 			--For vertical trial layouts, determine if all assets will be drawn within the trials window range, or if scrolling needs to be enabled. For horizontal layouts, we will figure it out
 			--when we determine glyph and incrementor widths (see notes below). We do this step outside of the draw loop to speed things up.
-			if #start.trialsdata.trial[ct].trialstep*motif.trials_mode.trialsteps_spacing[2] > start.trialsdata.draw.windowYrange and motif.trials_mode.trialsteps_trialslayout == "vertical" then
+			if #start.trialsdata.trial[ct].trialstep*motif.trials_mode.trialsteps_spacing[2] > start.trialsdata.draw.windowYrange and motif.trials_mode.trialslayout == "vertical" then
 				startonstep = math.max(cts-2, 1)
 				if (drawtothisstep - startonstep)*motif.trials_mode.trialsteps_spacing[2] > start.trialsdata.draw.windowYrange then
 					drawtothisstep = math.min(startonstep+math.floor(start.trialsdata.draw.windowYrange/motif.trials_mode.trialsteps_spacing[2]),#start.trialsdata.trial[ct].trialstep)
@@ -836,7 +837,7 @@ function start.f_trialsDrawer()
 				local totaloffset = 0
 				local bgincwidth = 0 --only used for horizontal layouts
 
-				if motif.trials_mode.trialsteps_trialslayout == "vertical" then
+				if motif.trials_mode.trialslayout == "vertical" then
 					--Vertical layouts are the simplest - they have a constant width sprite or anim that the text is drawn on top of, and the glyphs are displayed wherever specified.
 					--The vertical layouts do NOT support incrementors (see notes below for horizontal layout).
 					animSetPos(
@@ -853,7 +854,7 @@ function start.f_trialsDrawer()
 					})
 					start.trialsdata.draw[sub .. 'textline'][i]:draw()
 
-				elseif motif.trials_mode.trialsteps_trialslayout == "horizontal" then
+				elseif motif.trials_mode.trialslayout == "horizontal" then
 					--Horizontal layouts are much more complicated. Text is not drawn in horizontal mode, instead we only display the glyphs. A small sprite is dynamically tiled to the width of the
 					--glyphs, and an optional background element called an incrementor (bginc) can be used to link the pieces together (think of an arrow where the body of the arrow is where the
 					--glyphs are being drawn and that's the dynamically sized part, and the head of the arrow is the incrementor which is a fixed width sprite). There's quite a bit more work that
@@ -1033,7 +1034,7 @@ function start.f_trialsChecker()
 							else
 								start.trialsdata.draw.success = math.max(motif.trials_mode.success_front_displaytime, motif.trials_mode.success_bg_displaytime, motif.trials_mode.success_text_displaytime)
 							end
-							if motif.trials_mode.trialsteps_resetonsuccess == "true" then
+							if motif.trials_mode.resetonsuccess == "true" then
 								start.trialsdata.draw.fadein = motif.trials_mode.fadein_time
 								start.trialsdata.draw.fadeout = motif.trials_mode.fadeout_time
 								start.trialsdata.draw.fade = start.trialsdata.draw.fadein + start.trialsdata.draw.fadeout
@@ -1054,7 +1055,7 @@ function start.f_trialsChecker()
 	--If the trial was completed successfully, draw the trials success
 	if start.trialsdata.draw.success > 0 then
 		start.f_trialsSuccess('success', ct)
-	elseif start.trialsdata.draw.fade > 0 and motif.trials_mode.trialsteps_resetonsuccess == "true" then
+	elseif start.trialsdata.draw.fade > 0 and motif.trials_mode.resetonsuccess == "true" then
 		start.f_trialsFade()
 	end
 end
@@ -1164,7 +1165,11 @@ end
 --;===========================================================
 
 function menu.f_setactiveTrial(value)
-
+	-- start.trialsdata.trial[start.trialsdata.currenttrial].active = false
+	-- start.trialsdata.currenttrial = value
+	-- start.trialsdata.currenttrialstep = 1
+	-- start.trialsdata.currenttrialmicrostep = 1
+	-- start.trialsdata.active = false
 end
 
 -- Initialize Trials Pause Menu
@@ -1173,9 +1178,9 @@ if main.t_sort.trials_info == nil or main.t_sort.trials_info.menu == nil or #mai
 	motif.setBaseTrialsInfo()
 end
 
--- menu.t_valuename.trialsList = {
---  	{itemname = "", displayname = ""},
--- }
+menu.t_valuename.trialsList = {
+ 	{itemname = "", displayname = ""},
+}
 menu.t_valuename.trialAdvancement = {
 	{itemname = "Auto-Advance", displayname = motif.trials_info.menu_valuename_trialAdvancement_autoadvance},
 	{itemname = "Repeat", displayname = motif.trials_info.menu_valuename_trialAdvancement_repeat}
@@ -1195,10 +1200,17 @@ menu.t_valuename.trialAdvancement = {
 -- 		end
 -- 		t.submenu[t.items[item].itemname].loop()
 
--- 		menu.f_setactiveTrial(menu.trialsList)
+-- 		--menu.f_setactiveTrial(menu.trialsList)
 -- 	end
 -- 	return true
 -- end
+
+menu.t_itemname['trialsList'] = function(t, item, cursorPosY, moveTxt, section)
+	if menu.f_valueChanged(t.items[item], motif[section]) then
+		menu.f_setactiveTrial(menu.trialList)
+	end
+	return true
+end
 
 menu.t_itemname['trialAdvancement'] = function(t, item, cursorPosY, moveTxt, section)
 	if menu.f_valueChanged(t.items[item], motif[section]) then
@@ -1243,6 +1255,7 @@ end
 function menu.f_trialsReset()
 	if roundstart() then
 		if roundno() == 1 then
+			print("in here")
 			for k, _ in pairs(menu.t_valuename) do
 				menu[k] = 1
 			end
@@ -1417,4 +1430,3 @@ end
 --; global.lua
 --;===========================================================
 hook.add("loop#trials", "f_trialsMode", start.f_trialsMode)
-hook.add("loop#trials", "f_trialsReset", menu.f_trialsReset)

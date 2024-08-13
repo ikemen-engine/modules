@@ -37,13 +37,19 @@ if player($pn),ctrl = 0 {
 for pn = 1; PlayerCount; 1 {
 	mapSet{map:"_iksys_trialsPosX"; value: player($pn),Pos x; redirectID: player($pn),id;}
 	mapSet{map:"_iksys_trialsPosY"; value: player($pn),Pos y; redirectID: player($pn),id;}
+	mapSet{map:"_iksys_trialsCameraPosX"; value: player($pn),CameraPos x; redirectID: player($pn),id;}
+	mapSet{map:"_iksys_trialsCameraPosY"; value: player($pn),CameraPos y; redirectID: player($pn),id;}
+	mapSet{map:"_iksys_trialsScreenPosX"; value: player($pn),ScreenPos x; redirectID: player($pn),id;}
+	mapSet{map:"_iksys_trialsScreenPosY"; value: player($pn),ScreenPos y; redirectID: player($pn),id;}
 }
 
 [Function TrialsReposition()]
 #This relocates everyone
 for pn = 1; PlayerCount; 1 {
-	if playerIndex($pn), map(_iksys_trialsPosX) != 0 {PosSet{x:playerIndex($pn), map(_iksys_trialsPosX); redirectID: playerIndex($pn),id;}}
-	if playerIndex($pn), map(_iksys_trialsPosY) != 0 {PosSet{y:playerIndex($pn), map(_iksys_trialsPosY); redirectID: playerIndex($pn),id;}}
+	#while CameraPos x != map(_iksys_trialsCameraPosX) && ScreenPos x != map(_iksys_trialsScreenPosX) {
+		if playerIndex($pn), map(_iksys_trialsPosX) != 0 {PosSet{x:playerIndex($pn), map(_iksys_trialsPosX) + CameraPos x; redirectID: playerIndex($pn),id;}}
+		#if playerIndex($pn), map(_iksys_trialsPosY) != 0 {PosSet{y:playerIndex($pn), map(_iksys_trialsPosY); redirectID: playerIndex($pn),id;}}
+	#}
 }
 Camera{Pos: 0,0;}
 
@@ -273,6 +279,18 @@ ignoreHitPause if gameMode != "trials" || isHelper || teamSide != 2 {
 			}
 		}
 		if map(_iksys_trialsReposition) != 0 {
+			printtoconsole{text: "Stored P1 Pos X = %f"; params: playerIndex(1), map(_iksys_trialsPosX)}
+			printtoconsole{text: "Stored P2 Pos X = %f"; params: playerIndex(2), map(_iksys_trialsPosX)}
+			printtoconsole{text: "Current P1 Pos X = %f"; params: playerIndex(1), Pos x}
+			printtoconsole{text: "Current P2 Pos X = %f"; params: playerIndex(2), Pos x}
+			printtoconsole{text: "Stored P1 CameraPos X = %f"; params: playerIndex(1), map(_iksys_trialsCameraPosX)}
+			printtoconsole{text: "Stored P2 CameraPos X = %f"; params: playerIndex(2), map(_iksys_trialsCameraPosX)}
+			printtoconsole{text: "Current P1 CameraPos X = %f"; params: playerIndex(1), CameraPos x}
+			printtoconsole{text: "Current P2 CameraPos X = %f"; params: playerIndex(2), CameraPos x}
+			printtoconsole{text: "Stored P1 ScreenPos X = %f"; params: playerIndex(1), map(_iksys_trialsScreenPosX)}
+			printtoconsole{text: "Stored P2 ScreenPos X = %f"; params: playerIndex(2), map(_iksys_trialsScreenPosX)}
+			printtoconsole{text: "Current P1 ScreenPos X = %f"; params: playerIndex(1), ScreenPos x}
+			printtoconsole{text: "Current P2 ScreenPos X = %f"; params: playerIndex(2), ScreenPos x}
 			call TrialsReposition();
 			map(_iksys_trialsReposition) := 0;
 		}
