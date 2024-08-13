@@ -32,19 +32,19 @@ if player($pn),ctrl = 0 {
 	mapAdd{map: "_iksys_trialsPowerTimer"; value: 1; redirectid: player($pn),id}
 }
 
-[Function TrialsInitialPosition(pn)]
-# Move player
-mapSet{map:"_iksys_trialsPosX"; value: player($pn),Pos X; redirectID: player($pn),id;}
-mapSet{map:"_iksys_trialsPosY"; value: player($pn),Pos Y; redirectID: player($pn),id;}
+[Function TrialsInitialPosition()]
+# Get initial positions
+for pn = 1; PlayerCount; 1 {
+	mapSet{map:"_iksys_trialsPosX"; value: player($pn),Pos x; redirectID: player($pn),id;}
+	mapSet{map:"_iksys_trialsPosY"; value: player($pn),Pos y; redirectID: player($pn),id;}
+}
 
 [Function TrialsReposition()]
 #This relocates everyone
-for i = 1; PlayerCount; 1
-  {
-   if PlayerIndex($i), map(_iksys_trialsPosX) != 0 {PosSet{x:playerIndex($i), map(_iksys_trialsPosX) - CameraPos x; redirectID:PlayerIndex($i),id;}}
-   if PlayerIndex($i), map(_iksys_trialsPosY) != 0 {PosSet{y:playerIndex($i), map(_iksys_trialsPosY); redirectID:PlayerIndex($i),id;}}
-  }
-#This should reposition the camera
+for pn = 1; PlayerCount; 1 {
+	if playerIndex($pn), map(_iksys_trialsPosX) != 0 {PosSet{x:playerIndex($pn), map(_iksys_trialsPosX); redirectID: playerIndex($pn),id;}}
+	if playerIndex($pn), map(_iksys_trialsPosY) != 0 {PosSet{y:playerIndex($pn), map(_iksys_trialsPosY); redirectID: playerIndex($pn),id;}}
+}
 Camera{Pos: 0,0;}
 
 #===============================================================================
@@ -63,8 +63,7 @@ ignoreHitPause if gameMode != "trials" || isHelper || teamSide != 2 {
 	map(_iksys_trialsDirection) := 0;
 	map(_iksys_trialsAirJumpNum) := 0;
 	map(_iksys_trialsReposition) := 0;
-	call TrialsInitialPosition(1);
-	call TrialsInitialPosition(2);
+	call TrialsInitialPosition();
 } else ignoreHitPause if roundState = 2 {
 	assertSpecial{flag: globalNoKo}
 	# Life and Power recovery
