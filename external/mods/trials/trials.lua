@@ -674,14 +674,11 @@ function start.f_trialsBuilder()
 		start.trialsdata.draw.completedtextline[i] = main.f_createTextImg(motif.trials_mode, 'completedstep_text')
 	end
 
-	-- Build Options for Trials Mode Pause Menu
-	-- First, list out all of the available trials
+	-- Build list out all of the available trials for Pause menu
 	menu.t_valuename.trialsList = {}
 	for i = 1, #start.trialsdata.trial, 1 do
 		table.insert(menu.t_valuename.trialsList, {itemname = tostring(i), displayname = start.trialsdata.trial[i].name})
 	end
-
-	--hook.run("menu.menu.loop")
 
 	start.trialsdata.trialsInitialized = true
 end
@@ -742,7 +739,6 @@ function start.f_trialsDrawer()
 	if paused() and not start.trialsdata.trialsPaused then
 		start.trialsdata.trialsPaused = true
 		menu.currentMenu = {menu.trials.loop, menu.trials.loop}
-		menu.f_trialsReset()
 	elseif not paused() then
 		start.trialsdata.trialsPaused = false
 	end
@@ -1107,6 +1103,7 @@ function start.f_trialsMode()
 	if trialsExist and roundstate() == 2 and not start.trialsdata.trialsInitialized then
 		-- Initialize the trials based on parsed file and char state at roundstate() == 2
 		start.f_trialsBuilder()
+		menu.f_trialsReset()
 	elseif trialsExist and roundstate() == 2 and start.trialsdata.trialsInitialized then
 		-- If trials initialized, draw elements and check for success!
 		start.f_trialsDrawer()
@@ -1127,15 +1124,6 @@ end
 --; menu.lua
 --;===========================================================
 
-function menu.f_setactiveTrial(value)
-	print(value)
-	-- start.trialsdata.trial[start.trialsdata.currenttrial].active = false
-	-- start.trialsdata.currenttrial = value
-	-- start.trialsdata.currenttrialstep = 1
-	-- start.trialsdata.currenttrialmicrostep = 1
-	-- start.trialsdata.active = false
-end
-
 -- Initialize Trials Pause Menu
 table.insert(menu.t_menus, {id = 'trials', section = 'trials_info', bgdef = 'trialsbgdef', txt_title = 'txt_title_trials', movelist = true})
 if main.t_sort.trials_info == nil or main.t_sort.trials_info.menu == nil or #main.t_sort.trials_info.menu == 0 then
@@ -1143,37 +1131,26 @@ if main.t_sort.trials_info == nil or main.t_sort.trials_info.menu == nil or #mai
 end
 
 menu.t_valuename.trialsList = {
- 	{itemname = "1", displayname = "Updating"},
+ 	{itemname = "0", displayname = "Select Trial"},
 }
 menu.t_valuename.trialAdvancement = {
 	{itemname = "Auto-Advance", displayname = motif.trials_info.menu_valuename_trialAdvancement_autoadvance},
 	{itemname = "Repeat", displayname = motif.trials_info.menu_valuename_trialAdvancement_repeat}
 }
 
--- Next, initialize menu functions
--- menu.t_itemname['trialsList'] = function(t, item, cursorPosY, moveTxt, section)
--- 	if main.f_input(main.t_players, {'$F', '$B', 'pal', 's'}) then
--- 		sndPlay(motif.files.snd_data, motif.option_info.cursor_move_snd[1], motif.option_info.cursor_move_snd[2])
-		
--- 		for k, v in ipairs(t.submenu[t.items[item].itemname].items) do
--- 			if start.trialsdata.currenttrial == v.itemname then
--- 				v.selected = true
--- 			else
--- 				v.selected = false
--- 			end
--- 		end
--- 		t.submenu[t.items[item].itemname].loop()
-
--- 		--menu.f_setactiveTrial(menu.trialsList)
--- 	end
--- 	return true
--- end
-
 menu.t_itemname['trialsList'] = function(t, item, cursorPosY, moveTxt, section)
 	if menu.f_valueChanged(t.items[item], motif[section]) then
-		menu.f_setactiveTrial(tonumber(menu.t_valuename.trialsList[menu.trialList or 1].itemname))
+		start.trialsdata.currenttrial = menu.trialsList
+		start.trialsdata.trial[start.trialsdata.currenttrial].complete = false
+		start.trialsdata.trial[start.trialsdata.currenttrial].active = false
+		start.trialsdata.active = false
+		start.trialsdata.displaytimers.totaltimer = false
+		start.trialsdata.trial[start.trialsdata.currenttrial].starttick = tickcount()
 	end
 	return true
+end
+menu.t_vardisplay['trialsList'] = function()
+	return menu.t_valuename.trialsList[menu.trialsList or 1].displayname
 end
 
 menu.t_itemname['trialAdvancement'] = function(t, item, cursorPosY, moveTxt, section)
@@ -1194,7 +1171,7 @@ menu.t_itemname['nexttrial'] = function(t, item, cursorPosY, moveTxt, section)
 	if main.f_input(main.t_players, {'pal', 's'}) then
 		sndPlay(motif.files.snd_data, motif[section].cursor_done_snd[1], motif[section].cursor_done_snd[2])
 		start.trialsdata.currenttrial = math.min(start.trialsdata.currenttrial + 1, #start.trialsdata.trial)
-		start.trialsdata.trial[start.trialsdata.currenttrial].complete = true
+		start.trialsdata.trial[start.trialsdata.currenttrial].complete = false
 		start.trialsdata.trial[start.trialsdata.currenttrial].active = false
 		start.trialsdata.active = false
 		start.trialsdata.displaytimers.totaltimer = false
@@ -1207,7 +1184,7 @@ menu.t_itemname['previoustrial'] = function(t, item, cursorPosY, moveTxt, sectio
 	if main.f_input(main.t_players, {'pal', 's'}) then
 		sndPlay(motif.files.snd_data, motif[section].cursor_done_snd[1], motif[section].cursor_done_snd[2])
 		start.trialsdata.currenttrial = math.max(start.trialsdata.currenttrial - 1, 1)
-		start.trialsdata.trial[start.trialsdata.currenttrial].complete = true
+		start.trialsdata.trial[start.trialsdata.currenttrial].complete = false
 		start.trialsdata.trial[start.trialsdata.currenttrial].active = false
 		start.trialsdata.active = false
 		start.trialsdata.displaytimers.totaltimer = false
@@ -1217,27 +1194,22 @@ menu.t_itemname['previoustrial'] = function(t, item, cursorPosY, moveTxt, sectio
 end
 
 function menu.f_trialsReset()
-	if roundstart() then
-		if roundno() == 1 then
-			print("in here")
-			for k, _ in pairs(menu.t_valuename) do
-				menu[k] = 1
-			end
-			for _, v in ipairs(menu.t_vardisplayPointers) do
-				v.vardisplay = menu.f_vardisplay(v.itemname)
-			end
-			player(2)
-			setAILevel(0)
-			charMapSet(2, '_iksys_trialsDummyControl', 0)
-			charMapSet(2, '_iksys_trialsDummyMode', 0)
-			charMapSet(2, '_iksys_trialsGuardMode', 0)
-			charMapSet(2, '_iksys_trialsFallRecovery', 0)
-			charMapSet(2, '_iksys_trialsDistance', 0)
-			charMapSet(2, '_iksys_trialsButtonJam', 0)
-			charMapSet(2, '_iksys_trialsReposition', 0)
-			player(1)
-		end
+	for k, _ in pairs(menu.t_valuename) do
+		menu[k] = 1
 	end
+	for _, v in ipairs(menu.t_vardisplayPointers) do
+		v.vardisplay = menu.f_vardisplay(v.itemname)
+	end
+	player(2)
+	setAILevel(0)
+	charMapSet(2, '_iksys_trialsDummyControl', 0)
+	charMapSet(2, '_iksys_trialsDummyMode', 0)
+	charMapSet(2, '_iksys_trialsGuardMode', 0)
+	charMapSet(2, '_iksys_trialsFallRecovery', 0)
+	charMapSet(2, '_iksys_trialsDistance', 0)
+	charMapSet(2, '_iksys_trialsButtonJam', 0)
+	charMapSet(2, '_iksys_trialsReposition', 0)
+	player(1)
 end
 
 --;===========================================================

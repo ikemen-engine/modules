@@ -38,7 +38,7 @@ You can make the trials mode look as fancy or as basic as you want. The default 
 - A text string that shows the current trial can optionally be displayed.
 
 ```
-[Trials Mode] ;VERTICAL EXAMPLE
+[Trials Mode]
 trialsteps.pos = 42,40
 trialsteps.spacing = 0,11
 trialsteps.window = 40,40, 320,240
@@ -70,6 +70,14 @@ upcomingstep.text.scale	= 1,1
 ; upcomingstep.bg.scale = 1,1
 ; upcomingstep.bg.displaytime = -1
 
+; upcomingstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between upcoming horizontal steps
+; ==========================
+; upcomingstep.bginc.offset = 0,-14
+; upcomingstep.bginc.anim = -1
+; upcomingstep.bginc.spr = 702,4
+; upcomingstep.bginc.scale = 1,1
+; upcomingstep.bginc.facing = 1
+
 ; currentstep: text and background elements, shown for current trial step
 ; ==========================
 currentstep.text.offset = 0,0
@@ -83,6 +91,14 @@ currentstep.bg.scale = .8,.8
 currentstep.bg.facing = -1
 ; currentstep.bg.displaytime = -1
 
+; currentstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between current horizontal steps
+; ==========================
+; currentstep.bginc.offset = 0,-14
+; currentstep.bginc.anim = -1
+; currentstep.bginc.spr = 702,2
+; currentstep.bginc.scale = 1,1
+; currentstep.bginc.facing = 1
+
 ; completedstep: text and background elements, shown for completed trial steps
 ; ==========================
 completedstep.text.offset = 0,0
@@ -95,6 +111,20 @@ completedstep.text.scale = 1,1
 ; completedstep.bg.scale = 1,1
 ; completedstep.bg.facing = 1
 ; completedstep.bg.displaytime = -1
+
+; completedstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between completed horizontal steps
+; completedstep.bginctoCTS: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between horizontal steps (latest completed step to the current trial step)
+; ==========================
+; completedstep.bginc.offset = 0,-14
+; completedstep.bginc.anim = -1
+; completedstep.bginc.spr = 702,0
+; completedstep.bginc.scale = 1,1
+; completedstep.bginc.facing = 1
+; completedstep.bginctoCTS.offset = 0,-14
+; completedstep.bginctoCTS.anim = -1
+; completedstep.bginctoCTS.spr = 702,6
+; completedstep.bginctoCTS.scale = 1,1
+; completedstep.bginctoCTS.facing = 1
 
 ; glyphs: defines glyphs offset from respective trial step, as well as scale and alignment
 ; ==========================
