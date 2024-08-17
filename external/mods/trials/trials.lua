@@ -111,11 +111,13 @@ if motif.select_info.title_trials_text == nil then
 end
 
 local t_base = {
-    trialsteps_pos = {0, 0},
-    trialsteps_spacing = {0, 0},
-    trialsteps_window = {0,0,0,0},
     resetonsuccess = "false",
     trialslayout = "vertical",
+	selscreenpalfx_add = {},
+	selscreenpalfx_mul = {},
+	selscreenpalfx_sinadd = {},
+	selscreenpalfx_invertall = 0,
+	selscreenpalfx_color = 256,
 	fadein_time = 40, --Ikemen feature
 	fadein_col = {0, 0, 0}, --Ikemen feature
 	fadein_anim = -1, --Ikemen feature
@@ -128,6 +130,9 @@ local t_base = {
     bg_facing = 1,
     bg_scale = {1.0, 1.0},
     bg_displaytime = 0,
+	trialsteps_pos = {0, 0},
+    trialsteps_spacing = {0, 0},
+    trialsteps_window = {0,0,0,0},
 	trialtitle_pos = {0,0},
 	trialtitle_text_offset = {0,0},
     trialtitle_text_font = {},
@@ -157,6 +162,16 @@ local t_base = {
     upcomingstep_bg_facing = 1,
     upcomingstep_bg_scale = {1.0, 1.0},
     upcomingstep_bg_displaytime = -1,
+	upcomingstep_bg_palfx_add = {},
+	upcomingstep_bg_palfx_mul = {},
+	upcomingstep_bg_palfx_sinadd = {},
+	upcomingstep_bg_palfx_invertall = 0,
+	upcomingstep_bg_palfx_color = 256,
+	upcomingstep_glyphs_palfx_add = {},
+	upcomingstep_glyphs_palfx_mul = {},
+	upcomingstep_glyphs_palfx_sinadd = {},
+	upcomingstep_glyphs_palfx_invertall = 0,
+	upcomingstep_glyphs_palfx_color = 256,
     upcomingstep_bginc_anim = -1,
     upcomingstep_bginc_spr = {},
     upcomingstep_bginc_offset = {0, 0},
@@ -173,6 +188,16 @@ local t_base = {
     currentstep_bg_facing = 1,
     currentstep_bg_scale = {1.0, 1.0},
     currentstep_bg_displaytime = -1,
+	currentstep_bg_palfx_add = {},
+	currentstep_bg_palfx_mul = {},
+	currentstep_bg_palfx_sinadd = {},
+	currentstep_bg_palfx_invertall = 0,
+	currentstep_bg_palfx_color = 256,
+	currentstep_glyphs_palfx_add = {},
+	currentstep_glyphs_palfx_mul = {},
+	currentstep_glyphs_palfx_sinadd = {},
+	currentstep_glyphs_palfx_invertall = 0,
+	currentstep_glyphs_palfx_color = 256,
     currentstep_bginc_anim = -1,
     currentstep_bginc_spr = {},
     currentstep_bginc_offset = {0, 0},
@@ -189,6 +214,16 @@ local t_base = {
     completedstep_bg_facing = 1,
     completedstep_bg_scale = {1.0, 1.0},
     completedstep_bg_displaytime = -1,
+	completedstep_bg_palfx_add = {},
+	completedstep_bg_palfx_mul = {},
+	completedstep_bg_palfx_sinadd = {},
+	completedstep_bg_palfx_invertall = 0,
+	completedstep_bg_palfx_color = 256,
+	completedstep_glyphs_palfx_add = {},
+	completedstep_glyphs_palfx_mul = {},
+	completedstep_glyphs_palfx_sinadd = {},
+	completedstep_glyphs_palfx_invertall = 0,
+	completedstep_glyphs_palfx_color = 256,
     completedstep_bginc_anim = -1,
     completedstep_bginc_spr = {},
     completedstep_bginc_offset = {0, 0},
@@ -569,6 +604,7 @@ function start.f_trialsBuilder()
 				if motif.trials_mode.glyphs_align == -1 then
 					for ii = #tempglyphs, 1, -1 do
 						start.trialsdata.trial[i].trialstep[j].glyphline.glyph[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = tempglyphs[ii]
+						start.trialsdata.trial[i].trialstep[j].glyphline.glyphdata[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = motif.glyphs_data[tempglyphs[ii]].anim
 						start.trialsdata.trial[i].trialstep[j].glyphline.pos[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = {0,0}
 						start.trialsdata.trial[i].trialstep[j].glyphline.width[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
 						start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[#start.trialsdata.trial[i].trialstep[j].glyphline.glyph+1] = 0
@@ -578,6 +614,7 @@ function start.f_trialsBuilder()
 				else
 					for ii = 1, #tempglyphs do
 						start.trialsdata.trial[i].trialstep[j].glyphline.glyph[ii] = tempglyphs[ii]
+						start.trialsdata.trial[i].trialstep[j].glyphline.glyphdata[ii] = motif.glyphs_data[tempglyphs[ii]].anim
 						start.trialsdata.trial[i].trialstep[j].glyphline.pos[ii] = {0,0}
 						start.trialsdata.trial[i].trialstep[j].glyphline.width[ii] = 0
 						start.trialsdata.trial[i].trialstep[j].glyphline.alignOffset[ii] = 0
@@ -681,6 +718,7 @@ function start.f_trialsBuilder()
 	end
 
 	start.trialsdata.trialsInitialized = true
+	if main.debugLog then main.f_printTable(start.trialsdata, "debug/t_trialsdata.txt") end
 end
 
 function start.f_trialsDummySetup()
@@ -804,7 +842,7 @@ function start.f_trialsDrawer()
 			--This is the draw loop
 			for i = startonstep, drawtothisstep, 1 do
 				local tempoffset = {motif.trials_mode.trialsteps_spacing[1]*(i-startonstep),motif.trials_mode.trialsteps_spacing[2]*(i-startonstep)}
-				sub = 'current'
+				--sub = 'current'
 				if i < cts then
 					sub = 'completed'
 				elseif i == cts then
@@ -835,7 +873,15 @@ function start.f_trialsDrawer()
 						text = start.trialsdata.trial[ct].trialstep[i].text
 					})
 					start.trialsdata.draw[sub .. 'textline'][i]:draw()
-
+					animSetPalFX(motif.trials_mode[sub .. 'step_bg_data'], {
+						time = 1,
+						add = motif.trials_mode[sub .. 'step_bg_palfx_add'],
+						mul = motif.trials_mode[sub .. 'step_bg_palfx_mul'],
+						sinadd = motif.trials_mode[sub .. 'step_bg_palfx_sinadd'],
+						invertall = motif.trials_mode[sub .. 'step_bg_palfx_invertall'],
+						color = motif.trials_mode[sub .. 'step_bg_palfx_color']
+					})
+					animUpdate(motif.trials_mode[sub .. 'step_bg_data'])
 				elseif motif.trials_mode.trialslayout == "horizontal" then
 					--Horizontal layouts are much more complicated. Text is not drawn in horizontal mode, instead we only display the glyphs. A small sprite is dynamically tiled to the width of the
 					--glyphs, and an optional background element called an incrementor (bginc) can be used to link the pieces together (think of an arrow where the body of the arrow is where the
@@ -872,6 +918,15 @@ function start.f_trialsDrawer()
 					animSetPos(motif.trials_mode[sub .. 'step_bg_data'], bgtargetpos[1], bgtargetpos[2])
 					animUpdate(motif.trials_mode[sub .. 'step_bg_data'])
 					animDraw(motif.trials_mode[sub .. 'step_bg_data'])
+					animSetPalFX(motif.trials_mode[sub .. 'step_bg_data'], {
+						time = 1,
+						add = motif.trials_mode[sub .. 'step_bg_palfx_add'],
+						mul = motif.trials_mode[sub .. 'step_bg_palfx_mul'],
+						sinadd = motif.trials_mode[sub .. 'step_bg_palfx_sinadd'],
+						invertall = motif.trials_mode[sub .. 'step_bg_palfx_invertall'],
+						color = motif.trials_mode[sub .. 'step_bg_palfx_color']
+					})
+					animUpdate(motif.trials_mode[sub .. 'step_bg_data'])
 					if i ~= #start.trialsdata.trial[ct].trialstep then
 						local suffix = 'step_bginc_'
 						if i == cts - 1 then suffix = 'step_bginctocts_' end -- -1 added for cts
@@ -884,10 +939,19 @@ function start.f_trialsDrawer()
 						animDraw(motif.trials_mode[sub .. suffix .. 'data'])
 					end
 				end
-				for m in pairs(start.trialsdata.trial[ct].trialstep[i].glyphline.glyph) do
-					animSetScale(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim, start.trialsdata.trial[ct].trialstep[i].glyphline.scale[m][1], start.trialsdata.trial[ct].trialstep[i].glyphline.scale[m][2])
-					animSetPos(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim, start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1], start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][2]+tempoffset[2])
-					animDraw(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim)
+				for m = 1, #start.trialsdata.trial[ct].trialstep[i].glyphline.glyph, 1 do
+					animSetScale(start.trialsdata.trial[ct].trialstep[i].glyphline.glyphdata[m], start.trialsdata.trial[ct].trialstep[i].glyphline.scale[m][1], start.trialsdata.trial[ct].trialstep[i].glyphline.scale[m][2])
+					animSetPos(start.trialsdata.trial[ct].trialstep[i].glyphline.glyphdata[m], start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1], start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][2]+tempoffset[2])
+					animDraw(start.trialsdata.trial[ct].trialstep[i].glyphline.glyphdata[m])
+					animSetPalFX(start.trialsdata.trial[ct].trialstep[i].glyphline.glyphdata[m], {
+						time = 1,
+						add = motif.trials_mode[sub .. 'step_glyphs_palfx_add'],
+						mul = motif.trials_mode[sub .. 'step_glyphs_palfx_mul'],
+						sinadd = motif.trials_mode[sub .. 'step_glyphs_palfx_sinadd'],
+						invertall = motif.trials_mode[sub .. 'step_glyphs_palfx_invertall'],
+						color = motif.trials_mode[sub .. 'step_glyphs_palfx_color']
+					})
+					animUpdate(start.trialsdata.trial[ct].trialstep[i].glyphline.glyphdata[m])
 				end
 			end
 		
@@ -1088,6 +1152,40 @@ function start.f_trialsFade()
 	start.trialsdata.draw.fade = start.trialsdata.draw.fade - 1
 end
 
+function start.f_trialsSelectScreen()
+	-- Grays out portaits on the trial select screen for characters without trials files
+	if gamemode("trials") then
+		for row = 1, motif.select_info.rows do
+			for col = 1, motif.select_info.columns do
+				local t = start.t_grid[row][col]
+				if t.skip ~= 1 then
+					--draw random cell
+					if t.char == 'randomselect' or t.hidden == 3 then
+						animSetPalFX(motif.select_info.cell_random_data, {
+							time = 1,
+							add = motif.trials_mode.selscreenpalfx_add,
+							mul = motif.trials_mode.selscreenpalfx_mul,
+							sinadd = motif.trials_mode.selscreenpalfx_sinadd,
+							invertall = motif.trials_mode.selscreenpalfx_invertall,
+							color = motif.trials_mode.selscreenpalfx_color
+						})
+					--draw face cell
+					elseif t.char ~= nil and t.hidden == 0 and start.f_getCharData(t.char_ref).trialsdef == ""  then
+						animSetPalFX(start.f_getCharData(t.char_ref).cell_data, {
+							time = 1,
+							add = motif.trials_mode.selscreenpalfx_add,
+							mul = motif.trials_mode.selscreenpalfx_mul,
+							sinadd = motif.trials_mode.selscreenpalfx_sinadd,
+							invertall = motif.trials_mode.selscreenpalfx_invertall,
+							color = motif.trials_mode.selscreenpalfx_color
+						})
+					end
+				end
+			end
+		end
+	end
+end
+
 function start.f_trialsMode()
 	if roundstart() then
 		start.trialsdata = nil
@@ -1263,6 +1361,7 @@ for row = 1, #main.t_selChars, 1 do
 					validforval = {},
 					glyphline = {
 						glyph = {},
+						glyphdata = {},
 						pos = {},
 						width = {},
 						alignOffset = {},
@@ -1366,3 +1465,4 @@ end
 --; global.lua
 --;===========================================================
 hook.add("loop#trials", "f_trialsMode", start.f_trialsMode)
+hook.add("start.f_selectScreen", "f_trialsSelectScreen", start.f_trialsSelectScreen)

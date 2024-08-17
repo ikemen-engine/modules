@@ -44,20 +44,24 @@ for pn = 1; PlayerCount; 1 {
 }
 
 [Function TrialsReposition(cp, sp1, sp2)]
-if playerIndex(1), facing = 1 {
-	PosAdd{x: - $cp - $sp1 + playerIndex(1), map(_iksys_trialsScreenPosX); redirectID: playerIndex(1),id;}
-} else {
-	PosAdd{x: $cp + $sp1 - playerIndex(1), map(_iksys_trialsScreenPosX); redirectID: playerIndex(1),id;}
-}
-if playerIndex(2), facing = 1 {
-	PosAdd{x: - $cp - $sp2 + playerIndex(2), map(_iksys_trialsScreenPosX); redirectID: playerIndex(2),id;}
-} else {
-	PosAdd{x: $cp + $sp2 - playerIndex(2), map(_iksys_trialsScreenPosX); redirectID: playerIndex(2),id;}
-}
-
-# for pn = 1; PlayerCount; 1 {
-# 	if playerIndex($pn), map(_iksys_trialsPosX) != 0 {PosSet{x:playerIndex($pn), map(_iksys_trialsPosX); redirectID: playerIndex($pn),id;}}
+Camera{view: free; pos:0,0;}
+# if playerIndex(1), facing = 1 {
+# 	PosAdd{x: - $cp - $sp1 + playerIndex(1), map(_iksys_trialsScreenPosX); redirectID: playerIndex(1),id;}
+# } else {
+# 	PosAdd{x: $cp + $sp1 - playerIndex(1), map(_iksys_trialsScreenPosX); redirectID: playerIndex(1),id;}
 # }
+# if playerIndex(2), facing = 1 {
+# 	PosAdd{x: - $cp - $sp2 + playerIndex(2), map(_iksys_trialsScreenPosX); redirectID: playerIndex(2),id;}
+# } else {
+# 	PosAdd{x: $cp + $sp2 - playerIndex(2), map(_iksys_trialsScreenPosX); redirectID: playerIndex(2),id;}
+# }
+for pn = 1; PlayerCount; 1 {
+	if playerIndex($pn), map(_iksys_trialsPosX) != 0 {PosSet{x:playerIndex($pn), map(_iksys_trialsPosX); redirectID: playerIndex($pn),id;}}
+}
+Camera{view: fighting}
+
+
+
 
 printtoconsole{text: "New P1 Pos X = %f"; params: playerIndex(1), Pos x}
 printtoconsole{text: "New P2 Pos X = %f"; params: playerIndex(2), Pos x}

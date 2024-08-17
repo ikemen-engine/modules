@@ -39,12 +39,21 @@ You can make the trials mode look as fancy or as basic as you want. The default 
 
 ```
 [Trials Mode]
-trialsteps.pos = 42,40
-trialsteps.spacing = 0,11
-trialsteps.window = 40,40, 320,240
+; resetonsuccess: set to "true" to reset character positions after each trial success (except the final one). Can optionally specify fadein and fadeout parameters - will default to shown values.
+; trialslayout: "vertical" or "horizontal" are the only valid values. Defaults to "vertical" if not specified. Affects scrolling logic, as stated above, also enables dynamic step width
+; ==========================
 resetonsuccess = "false"
 trialslayout = "vertical"
 
+; selscreenpalfx: sets specified palfx color to character portraits WITHOUT trials files in the trials select screen. See definition for palfx for different fields and options.
+; ==========================
+selscreenpalfx.color = 0
+; selscreenpalfx.invertall = 0
+; selscreenpalfx.sinadd = 0, 0, 0, 0
+; selscreenpalfx.mul = 0, 0, 0
+; selscreenpalfx.add = 0, 0, 0
+
+; fadein/fadeout: used when "resetonsuccess" is set to true; defaults to the commented values below.
 ; fadein.time = 40, --Ikemen feature
 ; fadein.col = {0, 0, 0}, --Ikemen feature
 ; fadein.anim = -1, --Ikemen feature
@@ -55,8 +64,10 @@ trialslayout = "vertical"
 ; trialsteps.pos: local origin from which trial steps are drawn. Other elements have their own origin specifications.
 ; trialsteps.spacing: spacing between trial steps.
 ; trialsteps.window: X1,Y1,X2,Y2: display window for trials--will create automated scrolling or line returns, depending on the trial layout of choice
-; trialsteps.resetonsuccess: set to "true" to reset character positions after each trial success (except the final one). Can optionally specify fadein and fadeout parameters - will default to shown values.
-; trialsteps.trialslayout: "vertical" or "horizontal" are the only valid values. Defaults to "vertical" if not specified. Affects scrolling logic, as stated above, also enables dynamic step width
+; ==========================
+trialsteps.pos = 42,40
+trialsteps.spacing = 0,11
+trialsteps.window = 40,40, 320,240
 
 ; upcomingstep: text and background elements, shown for all upcoming trial steps
 ; ==========================
@@ -69,6 +80,16 @@ upcomingstep.text.scale	= 1,1
 ; upcomingstep.bg.spr = 701,1
 ; upcomingstep.bg.scale = 1,1
 ; upcomingstep.bg.displaytime = -1
+; upcomingstep.bg.palfx.color = 256
+; upcomingstep.bg.palfx.invertall = 0
+; upcomingstep.bg.palfx.sinadd = 0, 0, 0, 0
+; upcomingstep.bg.palfx.mul = 0, 0, 0
+; upcomingstep.bg.palfx.add = 0, 0, 0
+; upcomingstep.glyphs.palfx.color = 256
+; upcomingstep.glyphs.palfx.invertall = 0
+; upcomingstep.glyphs.palfx.sinadd = 0, 0, 0, 0
+; upcomingstep.glyphs.palfx.mul = 0, 0, 0
+; upcomingstep.glyphs.palfx.add = 0, 0, 0
 
 ; upcomingstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between upcoming horizontal steps
 ; ==========================
@@ -90,6 +111,16 @@ currentstep.bg.spr = 190,0
 currentstep.bg.scale = .8,.8
 currentstep.bg.facing = -1
 ; currentstep.bg.displaytime = -1
+; currentstep.bg.palfx.color = 256
+; currentstep.bg.palfx.invertall = 0
+; currentstep.bg.palfx.sinadd = 0, 0, 0, 0
+; currentstep.bg.palfx.mul = 0, 0, 0
+; currentstep.bg.palfx.add = 0, 0, 0
+; currentstep.glyphs.palfx.color = 256
+; currentstep.glyphs.palfx.invertall = 0
+; currentstep.glyphs.palfx.sinadd = 0, 0, 0, 0
+; currentstep.glyphs.palfx.mul = 0, 0, 0
+; currentstep.glyphs.palfx.add = 0, 0, 0
 
 ; currentstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between current horizontal steps
 ; ==========================
@@ -111,6 +142,16 @@ completedstep.text.scale = 1,1
 ; completedstep.bg.scale = 1,1
 ; completedstep.bg.facing = 1
 ; completedstep.bg.displaytime = -1
+; completedstep.bg.palfx.color = 256
+; completedstep.bg.palfx.invertall = 0
+; completedstep.bg.palfx.sinadd = 0, 0, 0, 0
+; completedstep.bg.palfx.mul = 0, 0, 0
+; completedstep.bg.palfx.add = 0, 0, 0
+completedstep.glyphs.palfx.color = 0
+; completedstep.glyphs.palfx.invertall = 0
+; completedstep.glyphs.palfx.sinadd = 0, 0, 0, 0
+; completedstep.glyphs.palfx.mul = 0, 0, 0
+; completedstep.glyphs.palfx.add = 0, 0, 0
 
 ; completedstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between completed horizontal steps
 ; completedstep.bginctoCTS: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between horizontal steps (latest completed step to the current trial step)
