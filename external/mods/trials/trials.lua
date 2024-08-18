@@ -75,15 +75,16 @@ local function f_strtonumber(str)
     return array
 end
 
-local function deepCopy(orig)
+local function f_deepCopy(orig)
+	-- copies a table into a local instance that can be modified freely
     local orig_type = type(orig)
     local copy
     if orig_type == 'table' then
         copy = {}
         for orig_key, orig_value in next, orig, nil do
-            copy[deepCopy(orig_key)] = deepCopy(orig_value)
+            copy[f_deepCopy(orig_key)] = f_deepCopy(orig_value)
         end
-        setmetatable(copy, deepCopy(getmetatable(orig)))
+        setmetatable(copy, f_deepCopy(getmetatable(orig)))
     else -- number, string, boolean, etc
         copy = orig
     end
@@ -120,7 +121,6 @@ end
 --;===========================================================
 --; motif.lua
 --;===========================================================
--- [Select Info] default parameters. Displayed in select screen.
 if motif.select_info.title_trials_text == nil then
 	motif.select_info.title_trials_text = 'Trials'
 end
@@ -551,7 +551,7 @@ function start.f_inittrialsData()
 		maxsteps = 0,
 		starttick = tickcount(),
 		elapsedtime = 0,
-		trial = deepCopy(start.f_getCharData(start.p[1].t_selected[1].ref).trialsdata),
+		trial = f_deepCopy(start.f_getCharData(start.p[1].t_selected[1].ref).trialsdata),
 		displaytimers = {
 			totaltimer = true,
 			trialtimer = true,
