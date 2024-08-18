@@ -147,6 +147,7 @@ local t_base = {
     bg_displaytime = 0,
 	trialsteps_pos = {0, 0},
     trialsteps_spacing = {0, 0},
+	trialsteps_horizontal_padding = 0,
     trialsteps_window = {0,0,0,0},
 	trialtitle_pos = {0,0},
 	trialtitle_text_offset = {0,0},
@@ -422,6 +423,8 @@ local t_base_info = {
 	menu_valuename_trialsList = "", --Ikemen feature
 	menu_valuename_trialAdvancement_autoadvance = "Auto-Advance",
 	menu_valuename_trialAdvancement_repeat = "Repeat",
+	menu_valuename_trialResetonSuccess_yes = "Yes",
+	menu_valuename_trialResetonSuccess_no = "No",
 }
 if motif.trials_info == nil then
 	motif.trials_info = {}
@@ -497,6 +500,7 @@ function motif.setBaseTrialsInfo()
 	motif.trials_info.menu_itemname_previoustrial = "Previous Trial"
 	motif.trials_info.menu_itemname_trialsList = "Trials List"
 	motif.trials_info.menu_itemname_trialAdvancement = "Trial Advancement"
+	motif.trials_info.menu_itemname_trialResetonSuccess = "Reset on Success"
 	motif.trials_info.menu_itemname_empty = ""
 	motif.trials_info.menu_itemname_menuinput = "Button Config"
 	motif.trials_info.menu_itemname_menuinput_keyboard = "Key Config"
@@ -516,6 +520,7 @@ function motif.setBaseTrialsInfo()
 		"previoustrial",
 		"trialsList",
 		"trialAdvancement",
+		"trialResetonSuccess",
 		"empty",
 		"menuinput",
 		"menuinput_keyboard",
@@ -796,7 +801,7 @@ function start.f_trialsDummySetup()
 end
 
 function start.f_trialsDrawer()
-	if start.trialsdata.trialsInitialized and roundstate() == 2 and not start.trialsdata.active then
+	if start.trialsdata.trialsInitialized and roundstate() == 2 and not start.trialsdata.active and start.trialsdata.draw.fade == 0 then
 		start.f_trialsDummySetup()
 		start.trialsdata.active = true
 	end
@@ -817,7 +822,7 @@ function start.f_trialsDrawer()
 	ctms = start.trialsdata.currenttrialmicrostep
 
 	if start.trialsdata.active then
-		if ct <= #start.trialsdata.trial and start.trialsdata.draw.success == 0 and start.trialsdata.draw.fade == 0 then
+		if ct <= #start.trialsdata.trial and start.trialsdata.draw.success == 0 then
 
 			--According to motif instructions, draw trials counter on screen
 			local trtext = motif.trials_mode.trialcounter_text
@@ -925,9 +930,10 @@ function start.f_trialsDrawer()
 
 					totalglyphlength = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[#start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset]
 					local tailoffset = motif.trials_mode[sub .. 'step_bg_tail_offset'][1]
-					padding = motif.trials_mode.trialsteps_spacing[1]
+					padding = motif.trials_mode.trialsteps_horizontal_padding
+					spacing = motif.trials_mode.trialsteps_spacing[1]
 
-					local tempwidth = bgtailwidth + tailoffset + padding + totalglyphlength + padding + bgheadwidth + accwidth
+					local tempwidth = spacing + bgtailwidth + tailoffset + padding + totalglyphlength + padding + bgheadwidth + accwidth
 					if tempwidth - motif.trials_mode.trialsteps_spacing[1] > start.trialsdata.draw.windowXrange then
 						accwidth = 0
 						addrow = addrow + 1
@@ -939,7 +945,7 @@ function start.f_trialsDrawer()
 					if accwidth == 0 then
 						bgcomponentposX = motif.trials_mode.trialsteps_pos[1] + motif.trials_mode[sub .. 'step_bg_tail_offset'][1]
 					else
-						bgcomponentposX = accwidth - bgheadwidth + bgtailwidth + motif.trials_mode[sub .. 'step_bg_tail_offset'][1]
+						bgcomponentposX = accwidth + spacing - bgheadwidth + bgtailwidth + motif.trials_mode[sub .. 'step_bg_tail_offset'][1]
 					end
 					
 					-- Draw tail
@@ -1170,7 +1176,15 @@ function start.f_trialsChecker()
 	if start.trialsdata.draw.success > 0 then
 		start.f_trialsSuccess('success', ct)
 	elseif start.trialsdata.draw.fade > 0 and motif.trials_mode.resetonsuccess == "true" then
-		start.f_trialsFade()
+		if start.trialsdata.draw.fade < start.trialsdata.draw.fadein + start.trialsdata.draw.fadeout then
+			start.f_trialsFade()
+		else
+			player(2)
+			if stateno() == 0 then
+				start.f_trialsFade()
+			end
+			player(1)
+		end
 	end
 end
 
@@ -1212,6 +1226,8 @@ function start.f_trialsFade()
 		if main.fadeType == 'fadeout' then
 			charMapSet(2, '_iksys_trialsReposition', 1)
 			main.f_fadeReset('fadein',motif.trials_mode)
+		elseif main.fadeType == 'fadein' then
+			charMapSet(2, '_iksys_trialsCameraReset', 1)
 		end
 		main.f_fadeAnim(motif.trials_mode)
 		start.trialsdata.draw.fadein = start.trialsdata.draw.fadein - 1
@@ -1303,6 +1319,10 @@ menu.t_valuename.trialAdvancement = {
 	{itemname = "Auto-Advance", displayname = motif.trials_info.menu_valuename_trialAdvancement_autoadvance},
 	{itemname = "Repeat", displayname = motif.trials_info.menu_valuename_trialAdvancement_repeat}
 }
+menu.t_valuename.trialResetonSuccess = {
+	{itemname = "Yes", displayname = motif.trials_info.menu_valuename_trialResetonSuccess_yes},
+	{itemname = "No", displayname = motif.trials_info.menu_valuename_trialResetonSuccess_no}
+}
 
 menu.t_itemname['trialsList'] = function(t, item, cursorPosY, moveTxt, section)
 	if menu.f_valueChanged(t.items[item], motif[section]) then
@@ -1331,6 +1351,20 @@ menu.t_itemname['trialAdvancement'] = function(t, item, cursorPosY, moveTxt, sec
 end
 menu.t_vardisplay['trialAdvancement'] = function()
 	return menu.t_valuename.trialAdvancement[menu.trialAdvancement or 1].displayname
+end
+
+menu.t_itemname['trialResetonSuccess'] = function(t, item, cursorPosY, moveTxt, section)
+	if menu.f_valueChanged(t.items[item], motif[section]) then
+		if menu.t_valuename.trialResetonSuccess[menu.trialResetonSuccess or 1].itemname == "Yes" then
+			motif.trials_mode.resetonsuccess = "true"
+		else
+			motif.trials_mode.resetonsuccess = "false"
+		end
+	end
+	return true
+end
+menu.t_vardisplay['trialResetonSuccess'] = function()
+	return menu.t_valuename.trialResetonSuccess[menu.trialResetonSuccess or 1].displayname
 end
 
 menu.t_itemname['nexttrial'] = function(t, item, cursorPosY, moveTxt, section)
@@ -1362,6 +1396,11 @@ end
 function menu.f_trialsReset()
 	for k, _ in pairs(menu.t_valuename) do
 		menu[k] = 1
+	end
+	if motif.trials_mode.resetonsuccess == "true" then
+		menu.trialResetonSuccess = 1
+	else
+		menu.trialResetonSuccess = 2
 	end
 	for _, v in ipairs(menu.t_vardisplayPointers) do
 		v.vardisplay = menu.f_vardisplay(v.itemname)
