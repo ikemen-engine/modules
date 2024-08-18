@@ -75,6 +75,64 @@ local function f_strtonumber(str)
     return array
 end
 
+local function deepCopy(value, cache, promises, copies)
+	-- from https://gist.github.com/cpeosphoros/0aa286c6b39c1e452d9aa15d7537ac95
+	cache    = cache    or {}
+	promises = promises or {}
+	copies   = copies   or {}
+	local copy
+    if type(value) == 'table' then
+		if(cache[value]) then
+			copy = cache[value]
+		else
+			promises[value] = promises[value] or {}
+			copy = {}
+			for k, v in next, value, nil do
+				local nKey   = promises[k] or deepCopy(k, cache, promises, copies)
+				local nValue = promises[v] or deepCopy(v, cache, promises, copies)
+				copies[nKey]   = type(k) == "table" and k or nil
+				copies[nValue] = type(v) == "table" and v or nil
+				copy[nKey] = nValue
+			end
+			local mt = getmetatable(value)
+			if mt then
+				setmetatable(copy, mt.__immutable and mt or deepCopy(mt, cache, promises, copies))
+			end
+			cache[value]    = copy
+		end
+    else -- number, string, boolean, etc
+        copy = value
+    end
+	for k, v in pairs(copies) do
+		if k == cache[v] then
+			copies[k] = nil
+		end
+	end
+	local function correctRec(tbl)
+		if type(tbl) ~= "table" then return tbl end
+		if copies[tbl] and cache[copies[tbl]] then
+			return cache[copies[tbl]]
+		end
+		local new = {}
+		for k, v in pairs(tbl) do
+			local oldK = k
+			k, v = correctRec(k), correctRec(v)
+			if k ~= oldK then
+				tbl[oldK] = nil
+				new[k] = v
+			else
+				tbl[k] = v
+			end
+		end
+		for k, v in pairs(new) do
+			tbl[k] = v
+		end
+		return tbl
+	end
+	correctRec(copy)
+    return copy
+end
+
 --;===========================================================
 --; main.lua
 --;===========================================================
@@ -536,7 +594,7 @@ function start.f_inittrialsData()
 		maxsteps = 0,
 		starttick = tickcount(),
 		elapsedtime = 0,
-		trial = start.f_getCharData(start.p[1].t_selected[1].ref).trialsdata,
+		trial = deepCopy(start.f_getCharData(start.p[1].t_selected[1].ref).trialsdata),
 		displaytimers = {
 			totaltimer = true,
 			trialtimer = true,
@@ -909,35 +967,24 @@ function start.f_trialsDrawer()
 					if start.trialsdata.bgelemdata[sub .. 'bgsize'] ~= nil then bgsize = start.trialsdata.bgelemdata[sub .. 'bgsize'].Size end
 
 					totalglyphlength = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[#start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset]
-					tailoffset = motif.trials_mode[sub .. 'step_bg_tail_offset'][1]
+					local tailoffset = motif.trials_mode[sub .. 'step_bg_tail_offset'][1]
 					padding = motif.trials_mode.trialsteps_spacing[1]
 
 					local tempwidth = bgtailwidth + tailoffset + padding + totalglyphlength + padding + bgheadwidth + accwidth
-
 					if tempwidth - motif.trials_mode.trialsteps_spacing[1] > start.trialsdata.draw.windowXrange then
 						accwidth = 0
-						--accwidth = bgtailwidth + tailoffset + padding + totalglyphlength + padding + bgheadwidth + accwidth
 						addrow = addrow + 1
-					elseif i == 1 then
-						accwidth = 0
-					else
-						accwidth = tempwidth
 					end
 
 					tempoffset[2] = motif.trials_mode.trialsteps_spacing[2]*(addrow)
 
-					local gpoffset = 0
-					for m in pairs(start.trialsdata.trial[ct].trialstep[i].glyphline.glyph) do
-						if m > 1 then gpoffset = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[m-1] end
-						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1] = motif.trials_mode.trialsteps_pos[1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[m] + (accwidth-totalglyphlength-bgtailwidth+tailoffset-bgheadwidth-padding) + gpoffset
+					-- Calculate initial positions
+					if accwidth == 0 then
+						bgcomponentposX = motif.trials_mode.trialsteps_pos[1] + motif.trials_mode[sub .. 'step_bg_tail_offset'][1]
+					else
+						bgcomponentposX = accwidth - bgheadwidth + bgtailwidth + motif.trials_mode[sub .. 'step_bg_tail_offset'][1]
 					end
-
-					-- bgtargetpos = {
-					-- 	motif.trials_mode.trialsteps_pos[1] + motif.trials_mode[sub .. 'step_bg_offset'][1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[1] + (accwidth-totalglyphlength-bgtailwidth+tailoffset-bgheadwidth-2*padding),
-					-- 	start.trialsdata.trial[ct].trialstep[i].glyphline.pos[1][2] + motif.trials_mode[sub .. 'step_bg_offset'][2] + tempoffset[2]
-					-- }
-
-					bgcomponentposX = motif.trials_mode.trialsteps_pos[1] + motif.trials_mode[sub .. 'step_bg_tail_offset'][1] + accwidth
+					
 					-- Draw tail
 					animSetPos(motif.trials_mode[sub .. 'step_bg_tail_data'], 
 						bgcomponentposX, 
@@ -954,13 +1001,15 @@ function start.f_trialsDrawer()
 					animReset(motif.trials_mode[sub .. 'step_bg_tail_data'])
 					animUpdate(motif.trials_mode[sub .. 'step_bg_tail_data'])
 					animDraw(motif.trials_mode[sub .. 'step_bg_tail_data'])
-					-- BG for Glyphs - scale to length, start from tail pos
-					bgtargetscale = {
-						(padding + totalglyphlength + padding)/bgsize[1],
-						1
-					}
-
+					
+					-- Draw BG for Glyphs - scale to length, start from tail pos
+					bgtargetscale = {(padding + totalglyphlength + padding)/bgsize[1], 1}
 					bgcomponentposX = bgcomponentposX + bgtailwidth + motif.trials_mode[sub .. 'step_bg_offset'][1]
+					local gpoffset = 0
+					for m in pairs(start.trialsdata.trial[ct].trialstep[i].glyphline.glyph) do
+						if m > 1 then gpoffset = start.trialsdata.trial[ct].trialstep[i].glyphline.lengthOffset[m-1] end
+						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1] = bgcomponentposX + padding + gpoffset -- motif.trials_mode.trialsteps_pos[1] + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[m] +
+					end
 
 					animSetScale(motif.trials_mode[sub .. 'step_bg_data'], bgtargetscale[1], bgtargetscale[2])
 					animSetPos(motif.trials_mode[sub .. 'step_bg_data'], 
@@ -981,7 +1030,6 @@ function start.f_trialsDrawer()
 					
 					-- Draw head
 					bgcomponentposX = bgcomponentposX + start.trialsdata.trial[ct].trialstep[i].glyphline.alignOffset[1] + (totalglyphlength + 2*padding) + motif.trials_mode[sub .. 'step_bg_head_offset'][1]
-
 					animSetPos(motif.trials_mode[sub .. 'step_bg_head_data'], 
 						bgcomponentposX, 
 						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[1][2] + motif.trials_mode[sub .. 'step_bg_head_offset'][2] + tempoffset[2]
@@ -1002,7 +1050,7 @@ function start.f_trialsDrawer()
 					animSetScale(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim, start.trialsdata.trial[ct].trialstep[i].glyphline.scale[m][1], start.trialsdata.trial[ct].trialstep[i].glyphline.scale[m][2])
 					animSetPos(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim, 
 						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][1], 
-						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][2]+tempoffset[2]
+						start.trialsdata.trial[ct].trialstep[i].glyphline.pos[m][2] + tempoffset[2] + motif.trials_mode.glyphs_offset[2]
 					)
 					animSetPalFX(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim, {
 						time = 1,
@@ -1016,6 +1064,7 @@ function start.f_trialsDrawer()
 					animUpdate(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim)
 					animDraw(motif.glyphs_data[start.trialsdata.trial[ct].trialstep[i].glyphline.glyph[m]].anim)
 				end
+				accwidth = bgcomponentposX
 			end
 		elseif ct > #start.trialsdata.trial then
 			-- All trials have been completed, draw the all clear and freeze the timer
