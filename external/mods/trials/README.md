@@ -27,15 +27,16 @@ You can make the trials mode look as fancy or as basic as you want. The default 
 - A window must be specified in which the trial steps are drawn. This feature enables long trial lists that need to scroll (for vertical layouts) or have line returns and potentially scrolling (for horizontal layouts).
 - The trial title name can optionally be displayed. Text and two background elements (bg and front) can be specified.
 - Trial steps come in three flavors: upcoming, current, and completed. Text and background elements can be specified for each type. 
-	- For horizontal layouts, the background elements are handled differently. Background elements are tiled dynamically to fit the width and height of the glyphs and desired padding around the glyph for that step.
-    - Additionally, each trial step type has an "incrementor" background element. This incrementor is displayed between trial steps (for instance, as an arrow). Upcoming and current step both have incrementors, while completed steps have incrementors to other completed step, as well as an incrementor to the current step (since they could be formatted differently, for instance).
-	- Note that trial step text is not displayed in horizontal layouts.
+	- For horizontal layouts, the background elements are handled differently. Background elements are tiled dynamically to fit the width and height of the glyphs and desired padding around the glyph for that step. Each trial step type has "tail" and a "head" that sandwiches the main background element. Tail, head, and background elements are specified for upcoming, current, and completed steps. Note that trial step text is not displayed in horizontal layouts.
+	- palFX can be specified for upcoming, current, and completed steps, as well as for the displayed glyphs associated with each step type.
 - A static or animated background can be displayed for all trial steps. This background is independent of all trial step backgrounds, and is only displayed when a trial is active.
 - Glyphs can be automatically scaled according to the font used (especially useful for vertical layouts).
-	- Glyphs are optional for vertical layouts, but they are mandatory for horizontal layouts as text is not displayed in horizontal layouts.
+	- Glyphs are optional for vertical layouts, but they are mandatory for horizontal layouts as text is not displayed in horizontal layouts. Trials definition files with missing glyphs will crash horizontal layouts.
 - For Success and All Clear events, text and sound elements, as well as two background elements (bg and front) can be specified.
 - Two timers are available: one keeps track of the entire time spent on the trials, while the other keeps track of the time spent on the current trial. Display of the timers is optional. Utilization of the various pause menu functions (such as skipping to the nex trial) will void the total timer, for instance.
 - A text string that shows the current trial can optionally be displayed.
+- Other features:
+	- The user can choose to apply palFX in the Trials select screen to portraits of characters who do not have trials definition files.
 
 ```
 [Trials Mode]
@@ -50,7 +51,7 @@ trialslayout = "vertical"
 selscreenpalfx.color = 0
 ; selscreenpalfx.invertall = 0
 ; selscreenpalfx.sinadd = 0, 0, 0, 0
-; selscreenpalfx.mul = 0, 0, 0
+selscreenpalfx.mul = 100, 100, 100
 ; selscreenpalfx.add = 0, 0, 0
 
 ; fadein/fadeout: used when "resetonsuccess" is set to true; defaults to the commented values below.
@@ -70,7 +71,7 @@ trialsteps.spacing = 0,11
 trialsteps.window = 40,40, 320,240
 
 ; upcomingstep: text and background elements, shown for all upcoming trial steps
-; ==========================
+;---------------------- UPCOMINGSTEP VERTICAL LAYOUT OPTIONS
 upcomingstep.text.offset = 0,0
 upcomingstep.text.font = 1, 0, 1, 255, 255, 255
 upcomingstep.text.scale	= 1,1
@@ -80,6 +81,23 @@ upcomingstep.text.scale	= 1,1
 ; upcomingstep.bg.spr = 701,1
 ; upcomingstep.bg.scale = 1,1
 ; upcomingstep.bg.displaytime = -1
+;--------------------- UPCOMINGSTEP HORIZONTAL LAYOUT OPTIONS
+; upcomingstep.bg.offset = 0,-14
+; ; upcomingstep.bg.anim = 609
+; upcomingstep.bg.spr = 703,0
+; upcomingstep.bg.scale = 1,1
+; upcomingstep.bg.displaytime = -1
+; upcomingstep.bg.tail.offset = 0,-14
+; ; upcomingstep.bg.tail.anim = -1
+; upcomingstep.bg.tail.spr = 703,2
+; upcomingstep.bg.tail.scale = 1,1
+; upcomingstep.bg.tail.facing = 1
+; upcomingstep.bg.head.offset = 0,-14
+; ; upcomingstep.bg.head.anim = -1
+; upcomingstep.bg.head.spr = 703,1
+; upcomingstep.bg.head.scale = 1,1
+; upcomingstep.bg.head.facing = 1
+;------------------------- UPCOMINGSTEP PALFX OPTIONS
 ; upcomingstep.bg.palfx.color = 256
 ; upcomingstep.bg.palfx.invertall = 0
 ; upcomingstep.bg.palfx.sinadd = 0, 0, 0, 0
@@ -91,16 +109,8 @@ upcomingstep.text.scale	= 1,1
 ; upcomingstep.glyphs.palfx.mul = 0, 0, 0
 ; upcomingstep.glyphs.palfx.add = 0, 0, 0
 
-; upcomingstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between upcoming horizontal steps
-; ==========================
-; upcomingstep.bginc.offset = 0,-14
-; upcomingstep.bginc.anim = -1
-; upcomingstep.bginc.spr = 702,4
-; upcomingstep.bginc.scale = 1,1
-; upcomingstep.bginc.facing = 1
-
 ; currentstep: text and background elements, shown for current trial step
-; ==========================
+;------------------------ CURRENTSTEP VERTICAL LAYOUT OPTIONS
 currentstep.text.offset = 0,0
 currentstep.text.font = 1, 0, 1, 255, 255, 0
 currentstep.text.scale = 1,1
@@ -111,6 +121,24 @@ currentstep.bg.spr = 190,0
 currentstep.bg.scale = .8,.8
 currentstep.bg.facing = -1
 ; currentstep.bg.displaytime = -1
+;-------------------- CURRENTSTEP HORIZONTAL LAYOUT OPTIONS
+; currentstep.bg.offset = 0,-14
+; currentstep.bg.anim = -1
+; currentstep.bg.spr = 703,0
+; currentstep.bg.scale = 1,1
+; currentstep.bg.facing = 1
+; currentstep.bg.displaytime = -1
+; currentstep.bg.tail.offset = 0,-14
+; ; currentstep.bg.tail.anim = -1
+; currentstep.bg.tail.spr = 703,2
+; currentstep.bg.tail.scale = 1,1
+; currentstep.bg.tail.facing = 1
+; currentstep.bg.head.offset = 0,-14
+; ; currentstep.bg.head.anim 		= -1
+; currentstep.bg.head.spr = 703,1
+; currentstep.bg.head.scale = 1,1
+; currentstep.bg.head.facing = 1
+;------------------------ CURRENTSTEP PALFX OPTIONS
 ; currentstep.bg.palfx.color = 256
 ; currentstep.bg.palfx.invertall = 0
 ; currentstep.bg.palfx.sinadd = 0, 0, 0, 0
@@ -122,16 +150,8 @@ currentstep.bg.facing = -1
 ; currentstep.glyphs.palfx.mul = 0, 0, 0
 ; currentstep.glyphs.palfx.add = 0, 0, 0
 
-; currentstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between current horizontal steps
-; ==========================
-; currentstep.bginc.offset = 0,-14
-; currentstep.bginc.anim = -1
-; currentstep.bginc.spr = 702,2
-; currentstep.bginc.scale = 1,1
-; currentstep.bginc.facing = 1
-
 ; completedstep: text and background elements, shown for completed trial steps
-; ==========================
+;------------------------ COMPLETEDSTEP VERTICAL
 completedstep.text.offset = 0,0
 completedstep.text.font = 1, 0, 1, 100, 100, 100
 completedstep.text.scale = 1,1
@@ -142,30 +162,33 @@ completedstep.text.scale = 1,1
 ; completedstep.bg.scale = 1,1
 ; completedstep.bg.facing = 1
 ; completedstep.bg.displaytime = -1
+;------------------------ COMPLETEDSTEP HORIZONTAL
+; completedstep.bg.offset = 0,-14
+; completedstep.bg.spr = 703,0
+; ; completedstep.bg.anim = 2
+; completedstep.bg.scale = 1,1
+; completedstep.bg.displaytime = -1
+; completedstep.bg.tail.offset = 0,-14
+; ; completedstep.bg.tail.anim = -1
+; completedstep.bg.tail.spr = 703,2
+; completedstep.bg.tail.scale = 1,1
+; completedstep.bg.tail.facing = 1
+; completedstep.bg.head.offset = 0,-14
+; ; completedstep.bg.head.anim = -1
+; completedstep.bg.head.spr = 703,1
+; completedstep.bg.head.scale = 1,1
+; completedstep.bg.head.facing	= 1
+;------------------------ COMPLETEDSTEP PALFX
 ; completedstep.bg.palfx.color = 256
 ; completedstep.bg.palfx.invertall = 0
 ; completedstep.bg.palfx.sinadd = 0, 0, 0, 0
-; completedstep.bg.palfx.mul = 0, 0, 0
+; completedstep.bg.palfx.mul = 100, 100, 100
 ; completedstep.bg.palfx.add = 0, 0, 0
 completedstep.glyphs.palfx.color = 0
 ; completedstep.glyphs.palfx.invertall = 0
 ; completedstep.glyphs.palfx.sinadd = 0, 0, 0, 0
-; completedstep.glyphs.palfx.mul = 0, 0, 0
+completedstep.glyphs.palfx.mul = 100, 100, 100
 ; completedstep.glyphs.palfx.add = 0, 0, 0
-
-; completedstep.bginc: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between completed horizontal steps
-; completedstep.bginctoCTS: ONLY FOR HORIZONTAL LAYOUTS - background element for an increment separator between horizontal steps (latest completed step to the current trial step)
-; ==========================
-; completedstep.bginc.offset = 0,-14
-; completedstep.bginc.anim = -1
-; completedstep.bginc.spr = 702,0
-; completedstep.bginc.scale = 1,1
-; completedstep.bginc.facing = 1
-; completedstep.bginctoCTS.offset = 0,-14
-; completedstep.bginctoCTS.anim = -1
-; completedstep.bginctoCTS.spr = 702,6
-; completedstep.bginctoCTS.scale = 1,1
-; completedstep.bginctoCTS.facing = 1
 
 ; glyphs: defines glyphs offset from respective trial step, as well as scale and alignment
 ; ==========================
@@ -268,6 +291,28 @@ allclear.text.scale	= 4,4
 ; allclear.front.anim = 652
 ; allclear.front.scale = 1,1
 ; allclear.front.spr = 701,0
+
+[Trials Info]
+; See trials.lua for pause menu options
+; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features/#submenus
+; If custom menu is not declared, following menu is loaded by default:
+; menu.itemname.back 						= "Continue"
+; ; menu.itemname.menutrials 				= "Trials Menu"
+; ; menu.itemname.menutrials.trialslist 	= "Trials List"
+; ; menu.itemname.menutraining.back 		= "Back"
+; menu.itemname.empty 			= ""
+; menu.itemname.empty 			= ""
+; menu.itemname.empty 			= ""
+; menu.itemname.empty 			= ""
+; menu.itemname.menuinput 				= "Button Config"
+; menu.itemname.menuinput.keyboard 		= "Key Config"
+; menu.itemname.menuinput.gamepad 		= "Joystick Config"
+; menu.itemname.menuinput.empty 			= ""
+; menu.itemname.menuinput.inputdefault 	= "Default"
+; menu.itemname.menuinput.back 			= "Back"
+; menu.itemname.commandlist 				= "Command List"
+; menu.itemname.characterchange 			= "Character Change"
+; menu.itemname.exit 						= "Exit"
 
 [TrialsBgDef] ;Ikemen feature
 	spr = ""

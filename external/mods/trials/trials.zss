@@ -58,7 +58,7 @@ Camera{view: free; pos:0,0;}
 for pn = 1; PlayerCount; 1 {
 	if playerIndex($pn), map(_iksys_trialsPosX) != 0 {PosSet{x:playerIndex($pn), map(_iksys_trialsPosX); redirectID: playerIndex($pn),id;}}
 }
-Camera{view: fighting}
+# Camera{view: fighting}
 
 
 
