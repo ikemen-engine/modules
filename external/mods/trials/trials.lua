@@ -498,9 +498,11 @@ function motif.setBaseTrialsInfo()
 	motif.trials_info.menu_itemname_back = "Continue"
 	motif.trials_info.menu_itemname_nexttrial = "Next Trial"
 	motif.trials_info.menu_itemname_previoustrial = "Previous Trial"
-	motif.trials_info.menu_itemname_trialsList = "Trials List"
-	motif.trials_info.menu_itemname_trialAdvancement = "Trial Advancement"
-	motif.trials_info.menu_itemname_trialResetonSuccess = "Reset on Success"
+	motif.trials_info.menu_itemname_menutrials = "Trials Menu"
+	motif.trials_info.menu_itemname_menutrials_trialsList = "Trials List"
+	motif.trials_info.menu_itemname_menutrials_trialAdvancement = "Trial Advancement"
+	motif.trials_info.menu_itemname_menutrials_trialResetonSuccess = "Reset on Success"
+	motif.trials_info.menu_itemname_menutrials_back = "Back"
 	motif.trials_info.menu_itemname_empty = ""
 	motif.trials_info.menu_itemname_menuinput = "Button Config"
 	motif.trials_info.menu_itemname_menuinput_keyboard = "Key Config"
@@ -518,9 +520,11 @@ function motif.setBaseTrialsInfo()
 		"back",
 		"nexttrial",
 		"previoustrial",
-		"trialsList",
-		"trialAdvancement",
-		"trialResetonSuccess",
+		"menutrials",
+		"menutrials_trialsList",
+		"menutrials_trialAdvancement",
+		"menutrials_trialResetonSuccess",
+		"menutrials_back",
 		"empty",
 		"menuinput",
 		"menuinput_keyboard",
