@@ -1,5 +1,5 @@
 # Universal Trials Mode
-> Last tested on Ikemen GO v0.99
+> Last tested on Ikemen GO v0.99 and Nightly Build (08/24/2024).
 
 > Module developed by two4teezee
 ---
@@ -22,13 +22,13 @@ Using this external module allows full customization of the trials mode in syste
 
 The universal trials mode supports **vertical** trials readouts, and **horizontal** readouts as seen in KOF XIV, among other games. The sample `system.def` included in this file can be configured to support either layouts, but as shown, it is configured to work exclusively with default assets (only uses fonts and stock glyphs, for instance). Below you'll find a brief summary of screenpack features supported by trials mode. For more detail, please consult the example `system.def` templates provided in this file for both vertical and horizontal layouts.
 
-You can make the trials mode look as fancy or as basic as you want. The default trials mode example shipped with this module leverage "stock" Ikemen fonts and sprites in the most minimal way possible.
+You can make the trials mode look as fancy or as basic as you want. The `system.def` trials mode example included in this readme only leverage "stock" Ikemen fonts and sprites in the most minimal way possible.
 
 - A window must be specified in which the trial steps are drawn. This feature enables long trial lists that need to scroll (for vertical layouts) or have line returns and potentially scrolling (for horizontal layouts).
 - The trial title name can optionally be displayed. Text and two background elements (bg and front) can be specified.
-- Trial steps come in three flavors: upcoming, current, and completed. Text and background elements can be specified for each type. 
-	- For horizontal layouts, the background elements are handled differently. Background elements are tiled dynamically to fit the width and height of the glyphs and desired padding around the glyph for that step. Each trial step type has "tail" and a "head" that sandwiches the main background element. Tail, head, and background elements are specified for upcoming, current, and completed steps. Note that trial step text is not displayed in horizontal layouts.
-	- palFX can be specified for upcoming, current, and completed steps, as well as for the displayed glyphs associated with each step type.
+- Trial steps come in three flavors: Upcoming, Current, and Completed. Text and background elements can be specified for each type. 
+	- For horizontal layouts, the background elements are handled differently. Background elements are tiled dynamically to fit the width and height of the glyphs and desired padding around the glyph for that step. Each trial step type has "tail" and a "head" that sandwiches the main background element. Tail, head, and background elements are specified for Upcoming, Current, and Completed steps. Note that trial step text is not displayed in horizontal layouts.
+	- palFX can be specified for Upcoming, Current, and Completed steps, as well as for the displayed glyphs associated with each step type.
 - A static or animated background can be displayed for all trial steps. This background is independent of all trial step backgrounds, and is only displayed when a trial is active.
 - Glyphs can be automatically scaled according to the font used (especially useful for vertical layouts).
 	- Glyphs are optional for vertical layouts, but they are mandatory for horizontal layouts as text is not displayed in horizontal layouts. Trials definition files with missing glyphs will crash horizontal layouts.
@@ -36,7 +36,9 @@ You can make the trials mode look as fancy or as basic as you want. The default 
 - Two timers are available: one keeps track of the entire time spent on the trials, while the other keeps track of the time spent on the current trial. Display of the timers is optional. Utilization of the various pause menu functions (such as skipping to the nex trial) will void the total timer, for instance.
 - A text string that shows the current trial can optionally be displayed.
 - Other features:
-	- The user can choose to apply palFX in the Trials select screen to portraits of characters who do not have trials definition files.
+	- The user can choose to apply palFX in the Trials Select Screen to portraits of characters who do not have trials definition files.
+
+## select.def Example
 
 ```
 [Trials Mode]
@@ -296,23 +298,23 @@ allclear.text.scale	= 4,4
 ; See trials.lua for pause menu options
 ; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features/#submenus
 ; If custom menu is not declared, following menu is loaded by default:
-; menu.itemname.back 						= "Continue"
-; ; menu.itemname.menutrials 				= "Trials Menu"
-; ; menu.itemname.menutrials.trialslist 	= "Trials List"
-; ; menu.itemname.menutraining.back 		= "Back"
-; menu.itemname.empty 			= ""
-; menu.itemname.empty 			= ""
-; menu.itemname.empty 			= ""
-; menu.itemname.empty 			= ""
-; menu.itemname.menuinput 				= "Button Config"
-; menu.itemname.menuinput.keyboard 		= "Key Config"
-; menu.itemname.menuinput.gamepad 		= "Joystick Config"
-; menu.itemname.menuinput.empty 			= ""
-; menu.itemname.menuinput.inputdefault 	= "Default"
-; menu.itemname.menuinput.back 			= "Back"
-; menu.itemname.commandlist 				= "Command List"
-; menu.itemname.characterchange 			= "Character Change"
-; menu.itemname.exit 						= "Exit"
+; menu.itemname.back = "Continue"
+; menu.itemname.nexttrial = "Next Trial"
+; menu.itemname.previoustrial = "Previous Trial"
+; menu.itemname.menutrials = "Trials Menu"
+; menu.itemname.menutrials.trialsList = "Trials List"
+; menu.itemname.menutrials.trialAdvancement = "Trials Advancement"
+; menu.itemname.menutrials.trialResetonSuccess = "Reset to Center on Success"
+; menu.itemname.menutrials.back = "Back"
+; menu.itemname.menuinput = "Button Config"
+; menu.itemname.menuinput.keyboard = "Key Config"
+; menu.itemname.menuinput.gamepad = "Joystick Config"
+; menu.itemname.menuinput.empty = ""
+; menu.itemname.menuinput.inputdefault = "Default"
+; menu.itemname.menuinput.back = "Back"
+; menu.itemname.commandlist = "Command List"
+; menu.itemname.characterchange = "Character Change"
+; menu.itemname.exit = "Exit"
 
 [TrialsBgDef] ;Ikemen feature
 	spr = ""
@@ -330,23 +332,23 @@ A sample `trials.def` for kfmZ is provided below. The trials are presented to th
 
 [TrialDef, KFM's First Trial]
 
-trial.dummymode			    = stand
-trial.guardmode			    = none
-trial.dummybuttonjam 	    = none
-; trial.showforvarvalpairs	= 
+trial.dummymode = stand
+trial.guardmode = none
+trial.dummybuttonjam = none
+; trial.showforvarvalpairs = 
 
-trialstep.1.text 		    = Strong Kung Fu Palm
-trialstep.1.glyphs 		    = _QDF^Y
+trialstep.1.text = Strong Kung Fu Palm
+trialstep.1.glyphs = _QDF^Y
 ; trialstep.1.validforvarvalpairs = 
 
-trialstep.1.stateno 		= 1010
-; trialstep.1.anim			=
-; trialstep.1.numofhits		=
-; trialstep.1.isthrow 		=
-; trialstep.1.isnohit		=
-; trialstep.1.iscounterhit	=
-; trialstep.1.ishelper		=
-; trialstep.1.isproj		=
+trialstep.1.stateno = 1010
+; trialstep.1.anim =
+; trialstep.1.numofhits =
+; trialstep.1.isthrow =
+; trialstep.1.isnohit =
+; trialstep.1.iscounterhit =
+; trialstep.1.ishelper =
+; trialstep.1.isproj =
 ; trialstep.1.validuntilnexthit = 
 
 ; TrialDef Parameter Descriptions
@@ -377,29 +379,29 @@ trialstep.1.stateno 		= 1010
 ;---------------------------------------------
 
 [TrialDef, Kung Fu Throw]
-trialstep.1.text 		= Kung Fu Throw
-trialstep.1.glyphs 		= [_B/_F]_+^Y
-trialstep.1.stateno 	= 810
-trialstep.1.isthrow		= true
+trialstep.1.text = Kung Fu Throw
+trialstep.1.glyphs = [_B/_F]_+^Y
+trialstep.1.stateno = 810
+trialstep.1.isthrow = true
 
 ;---------------------------------------------
 
 [TrialDef, Kung Fu Taunt]
-trialstep.1.text 		= Kung Fu Taunt
-trialstep.1.glyphs 		= ^S
-trialstep.1.stateno 	= 195
-trialstep.1.isnohit		= true
+trialstep.1.text = Kung Fu Taunt
+trialstep.1.glyphs = ^S
+trialstep.1.stateno = 195
+trialstep.1.isnohit = true
 
 ;---------------------------------------------
 
 [TrialDef, Standing Punch Chain]
-trialstep.1.text 		= Standing Light Punch
-trialstep.1.glyphs 		= ^X
-trialstep.1.stateno 	= 200
+trialstep.1.text = Standing Light Punch
+trialstep.1.glyphs = ^X
+trialstep.1.stateno = 200
 
-trialstep.2.text 		= Standing Strong Punch
-trialstep.2.glyphs 		= ^Y
-trialstep.2.stateno 	= 210
+trialstep.2.text = Standing Strong Punch
+trialstep.2.glyphs = ^Y
+trialstep.2.stateno = 210
 
 ;---------------------------------------------
 
@@ -409,10 +411,10 @@ trialstep.2.stateno 	= 210
 ; The next trial uses a combination of condensed steps and normal steps to provide a concise trial.
 ; Condensed steps can be very practical for multi-state moves where the trial step should only clear if all of the states are met, without having to create multiple trial steps.
 
-trialstep.1.text 		= Standing Light to Strong Punch Chain		
-trialstep.1.glyphs 		= ^X_-^Y			
-trialstep.1.stateno 	= 200, 210		
-trialstep.1.numofhits	= 1, 1
+trialstep.1.text = Standing Light to Strong Punch Chain		
+trialstep.1.glyphs = ^X_-^Y			
+trialstep.1.stateno = 200, 210		
+trialstep.1.numofhits = 1, 1
 
 ; When desired, you can collapsed multiple steps into a single one but using comma separated values in the following parameters:
 ; stateno, animno, numofhits, isthrow, iscounterhit, isnohit, ishelper, isproj, specialbool, specialvar, specialstr
@@ -421,60 +423,60 @@ trialstep.1.numofhits	= 1, 1
 ;---------------------------------------------
 
 [TrialDef, Kung Fu Juggle Combo]
-trialstep.1.text 		= Kung Fu Knee and Extra Kick
-trialstep.1.glyphs 		= _F_F_+^K_.^K
-trialstep.1.stateno 	= 1060, 1055
+trialstep.1.text = Kung Fu Knee and Extra Kick
+trialstep.1.glyphs = _F_F_+^K_.^K
+trialstep.1.stateno = 1060, 1055
 
-trialstep.2.text 		= Crouching Jab
-trialstep.2.glyphs 		= _D_+^X
-trialstep.2.stateno 	= 400
+trialstep.2.text = Crouching Jab
+trialstep.2.glyphs = _D_+^X
+trialstep.2.stateno = 400
 
-trialstep.3.text 		= Weak Kung Fu Palm
-trialstep.3.glyphs 		= _QCF_+^X
-trialstep.3.stateno 	= 1000
+trialstep.3.text = Weak Kung Fu Palm
+trialstep.3.glyphs = _QCF_+^X
+trialstep.3.stateno = 1000
 
 ;---------------------------------------------
 
 [TrialDef, Kung Fu Fist Four Piece]
-trialstep.1.text 		= Jumping Strong Punch
-trialstep.1.glyphs 		= _AIR^Y
-trialstep.1.stateno 	= 610
+trialstep.1.text = Jumping Strong Punch
+trialstep.1.glyphs = _AIR^Y
+trialstep.1.stateno = 610
 
-trialstep.2.text 		= Standing Light Punch
-trialstep.2.glyphs 		= ^X
-trialstep.2.stateno 	= 200
+trialstep.2.text = Standing Light Punch
+trialstep.2.glyphs = ^X
+trialstep.2.stateno = 200
 
-trialstep.3.text 		= Standing Strong Punch
-trialstep.3.glyphs 		= ^Y
-trialstep.3.stateno 	= 210
+trialstep.3.text = Standing Strong Punch
+trialstep.3.glyphs = ^Y
+trialstep.3.stateno = 210
 
-trialstep.4.text 		= Strong Kung Fu Palm
-trialstep.4.glyphs 		= _QDF^Y
-trialstep.4.stateno 	= 1010
+trialstep.4.text = Strong Kung Fu Palm
+trialstep.4.glyphs = _QDF^Y
+trialstep.4.stateno = 1010
 
 ;---------------------------------------------
 
 [TrialDef, Kung Fu Super Cancel]
-trialstep.1.text 		= Jumping Strong Kick
-trialstep.1.glyphs 		= _AIR^B
-trialstep.1.stateno 	= 640
+trialstep.1.text = Jumping Strong Kick
+trialstep.1.glyphs = _AIR^B
+trialstep.1.stateno = 640
 
-trialstep.2.text 		= Standing Light Kick
-trialstep.2.glyphs 		= ^A
-trialstep.2.stateno 	= 230
+trialstep.2.text = Standing Light Kick
+trialstep.2.glyphs = ^A
+trialstep.2.stateno = 230
 
-trialstep.3.text 		= Standing Strong Kick
-trialstep.3.glyphs 		= ^B
-trialstep.3.stateno 	= 240
+trialstep.3.text = Standing Strong Kick
+trialstep.3.glyphs = ^B
+trialstep.3.stateno = 240
 
-trialstep.4.text 		= Fast Kung Fu Zankou
-trialstep.4.glyphs 		= _QDF^A^B
-trialstep.4.stateno 	= 1420
+trialstep.4.text = Fast Kung Fu Zankou
+trialstep.4.glyphs = _QDF^A^B
+trialstep.4.stateno = 1420
 
-trialstep.5.text 		= Triple Kung Fu Palm
-trialstep.5.glyphs 		= _QDF_QDF^P
-trialstep.5.stateno 	= 3000
-trialstep.5.numofhits   = 3
+trialstep.5.text = Triple Kung Fu Palm
+trialstep.5.glyphs = _QDF_QDF^P
+trialstep.5.stateno = 3000
+trialstep.5.numofhits = 3
 ```
 
 ## Editing the Character's Def File
@@ -493,3 +495,4 @@ Trials Mode ships with the several pause menu options. Customizing the pause men
 - **Previous Trial**: return to the previous trial
 - **Trials List**: view a list of the trials, and select the one to activate
 - **Trial Advancement**: toggles between either Auto-Advance or Repeat, allows the player to play a single trial on repeat if desired
+- **Reset on Success**: resets the players to center stage when the trial is cleared. This can be set in the `system.def`, but the player can modify it in-game as well.
