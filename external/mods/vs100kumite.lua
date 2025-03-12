@@ -163,7 +163,7 @@ end
 -- Background data generation.
 -- Refer to official Elecbyte docs for information how to define backgrounds.
 -- http://www.elecbyte.com/mugendocs/bgs.html#description-of-background-elements
-motif.vs100kumiteresultsbgdef.bg = bgNew(motif.vs100kumiteresultsbgdef.spr_data, motif.def, 'vs100kumiteresultsbg')
+motif.vs100kumiteresultsbgdef.bg = bgNew(motif.vs100kumiteresultsbgdef.spr_data, motif.files.model_data, motif.def, 'vs100kumiteresultsbg')
 
 -- fadein/fadeout anim data generation.
 if motif.vs100_kumite_results_screen.fadein_anim ~= -1 then

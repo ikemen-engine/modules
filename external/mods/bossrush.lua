@@ -169,7 +169,7 @@ end
 -- Background data generation.
 -- Refer to official Elecbyte docs for information how to define backgrounds.
 -- http://www.elecbyte.com/mugendocs/bgs.html#description-of-background-elements
-motif.bossrushresultsbgdef.bg = bgNew(motif.bossrushresultsbgdef.spr_data, motif.def, 'bossrushresultsbg')
+motif.bossrushresultsbgdef.bg = bgNew(motif.bossrushresultsbgdef.spr_data, motif.files.model_data, motif.def, 'bossrushresultsbg')
 
 -- fadein/fadeout anim data generation.
 if motif.boss_rush_results_screen.fadein_anim ~= -1 then
