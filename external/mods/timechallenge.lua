@@ -152,7 +152,7 @@ end
 -- Background data generation.
 -- Refer to official Elecbyte docs for information how to define backgrounds.
 -- http://www.elecbyte.com/mugendocs/bgs.html#description-of-background-elements
-motif.timechallengeresultsbgdef.bg = bgNew(motif.timechallengeresultsbgdef.spr_data, motif.files.model_data, motif.def, 'timechallengeresultsbg')
+motif.timechallengeresultsbgdef.bg = bgNew(motif.timechallengeresultsbgdef.spr_data, motif.def, 'timechallengeresultsbg', motif.files.model_data)
 
 -- fadein/fadeout anim data generation.
 if motif.time_challenge_results_screen.fadein_anim ~= -1 then

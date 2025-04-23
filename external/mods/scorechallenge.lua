@@ -149,7 +149,7 @@ end
 -- Background data generation.
 -- Refer to official Elecbyte docs for information how to define backgrounds.
 -- http://www.elecbyte.com/mugendocs/bgs.html#description-of-background-elements
-motif.scorechallengeresultsbgdef.bg = bgNew(motif.scorechallengeresultsbgdef.spr_data, motif.files.model_data, motif.def, 'scorechallengeresultsbg')
+motif.scorechallengeresultsbgdef.bg = bgNew(motif.scorechallengeresultsbgdef.spr_data, motif.def, 'scorechallengeresultsbg', motif.files.model_data)
 
 -- fadein/fadeout anim data generation.
 if motif.score_challenge_results_screen.fadein_anim ~= -1 then
