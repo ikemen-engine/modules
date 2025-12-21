@@ -1,0 +1,117 @@
+name: releases
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag for the new release. Use semantic versioning e.g. v1.0.0. Leave empty to only update the latest build.'
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  checks: write
+
+jobs:
+  tag:
+    name: prepare tag
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ env.version }}
+      buildTime: ${{ env.buildTime }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set version
+        shell: bash
+        run: |
+          if [ "${{ github.event.inputs.tag }}" != "" ]; then
+            echo "version=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+          else
+            echo "version=latest" >> $GITHUB_ENV
+          fi
+          echo "buildTime=$(date '+%Y.%m.%d')" >> $GITHUB_ENV
+
+  build:
+    name: build & release
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    needs: tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Prepare release artifact
+        id: artifacts
+        shell: bash
+        run: |
+          echo "Preparing files for deployment"
+          mkdir -p deploy
+
+          if [ "${{ github.event.inputs.tag }}" = "" ]; then
+            ARTIFACT_NAME=repo-latest.zip
+          else
+            ARTIFACT_NAME=repo-${{ needs.tag.outputs.version }}.zip
+          fi
+
+          # Zip everything in the repo root except hidden files/dirs (dotfiles) and the deploy dir itself
+          zip -r "deploy/$ARTIFACT_NAME" . -x "deploy/*" -x ".*" -x ".*/**"
+
+          echo "artifact=deploy/$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
+
+          echo "Successfully prepared assets for deployment"
+
+      - name: Update latest release
+        if: "${{ github.event.inputs.tag == '' }}"
+        uses: ncipollo/release-action@v1
+        with:
+          #token: ${{ secrets.IKEMEN_TOKEN }}
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: "${{ steps.artifacts.outputs.artifact }}"
+          body: |
+            This release is built automatically from the latest commit. It may contain experimental or unstable changes.
+          draft: false
+          generateReleaseNotes: false
+          makeLatest: false
+          name: latest
+          omitBody: false
+          omitBodyDuringUpdate: false
+          omitDraftDuringUpdate: true
+          omitName: false
+          omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
+          prerelease: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          skipIfReleaseExists: false
+          tag: latest
+          updateOnlyUnreleased: false
+
+      - name: Create tagged Release
+        if: "${{ github.event.inputs.tag != '' }}"
+        uses: ncipollo/release-action@v1
+        with:
+          #token: ${{ secrets.IKEMEN_TOKEN }}
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: "${{ steps.artifacts.outputs.artifact }}"
+          draft: false
+          generateReleaseNotes: true
+          makeLatest: true
+          name: ${{ needs.tag.outputs.version }}
+          omitBody: false
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitName: false
+          omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
+          prerelease: false
+          removeArtifacts: false
+          replacesArtifacts: true
+          skipIfReleaseExists: false
+          tag: ${{ needs.tag.outputs.version }}
+          updateOnlyUnreleased: false
