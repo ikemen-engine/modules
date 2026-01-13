@@ -11,7 +11,7 @@ Copy the entire `bossrush` directory into:
 Ikemen GO will load the module automatically on startup.
 
 ### 2) Add the menu item to your screenpack
-Add this entry to your main `data/system.def` under **`[Title Info]`**, alongside other `menu.itemname.*` entries. Place it where you want it to be grouped/ordered in the menu (grouping rules: https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features#grouping-elements-submenus). Without this, the mode won't show up in-game.
+Add this entry to your main `data/system.def` under **`[Title Info]`**, alongside other `menu.itemname.*` entries. Place it where you want it to be grouped/ordered in the menu (grouping rules: https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features#menus). Without this, the mode won't show up in-game.
 
 ```ini
 [Title Info]

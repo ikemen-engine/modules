@@ -4,7 +4,7 @@
 
 [Title Info]
 	; You need to add itemname to the main system.def so menu items keep the expected order. Grouping rules:
-	; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features#grouping-elements-submenus
+	; https://github.com/ikemen-engine/Ikemen-GO/wiki/Screenpack-features#menus
 ;menu.itemname.bossrush = "BOSS RUSH"
 
 [Select Info]
