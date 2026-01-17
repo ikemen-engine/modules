@@ -5,8 +5,6 @@
 -- main.t_itemname is a table storing functions with general game mode
 -- configuration (usually ending with start.f_selectMode function call).
 main.t_itemname.scorechallenge = function()
-	main.f_playerInput(main.playerInput, 1)
-	main.t_pIn[2] = 1
 	--main.lifebar.p1score = true
 	--main.lifebar.p2ailevel = true
 	main.motif.hiscore = true
@@ -29,6 +27,8 @@ main.t_itemname.scorechallenge = function()
 	main.teamMenu[2].tag = true
 	main.teamMenu[2].turns = true
 	textImgSetText(motif.select_info.title.TextSpriteData, motif.select_info.title.text.scorechallenge)
+	remapInput(main.playerInput, 1)
+	setCommandInputSource(2, 1)
 	setGameMode('scorechallenge')
 	hook.run("main.t_itemname")
 	return start.f_selectMode

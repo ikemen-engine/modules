@@ -5,8 +5,6 @@
 -- main.t_itemname is a table storing functions with general game mode
 -- configuration (usually ending with start.f_selectMode function call).
 main.t_itemname.vs100kumite = function()
-	main.f_playerInput(main.playerInput, 1)
-	main.t_pIn[2] = 1
 	main.aiRamp = false
 	main.charparam.ai = true
 	main.charparam.music = true
@@ -48,6 +46,8 @@ main.t_itemname.vs100kumite = function()
 	main.teamMenu[2].tag = true
 	main.teamMenu[2].turns = true
 	textImgSetText(motif.select_info.title.TextSpriteData, motif.select_info.title.text.vs100kumite)
+	remapInput(main.playerInput, 1)
+	setCommandInputSource(2, 1)
 	setGameMode('vs100kumite')
 	hook.run("main.t_itemname")
 	return start.f_selectMode
