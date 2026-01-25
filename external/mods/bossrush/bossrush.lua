@@ -36,7 +36,7 @@ main.t_itemname.bossrush = function()
 	main.teamMenu[2].tag = true
 	main.teamMenu[2].turns = true
 	textImgSetText(motif.select_info.title.TextSpriteData, motif.select_info.title.text.bossrush)
-	remapInput(main.playerInput, 1)
+	remapInput(1, getLastInputController())
 	setCommandInputSource(2, 1)
 	setGameMode('bossrush')
 	hook.run("main.t_itemname")

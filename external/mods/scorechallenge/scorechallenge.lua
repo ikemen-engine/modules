@@ -27,7 +27,7 @@ main.t_itemname.scorechallenge = function()
 	main.teamMenu[2].tag = true
 	main.teamMenu[2].turns = true
 	textImgSetText(motif.select_info.title.TextSpriteData, motif.select_info.title.text.scorechallenge)
-	remapInput(main.playerInput, 1)
+	remapInput(1, getLastInputController())
 	setCommandInputSource(2, 1)
 	setGameMode('scorechallenge')
 	hook.run("main.t_itemname")
