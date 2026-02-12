@@ -8,6 +8,7 @@ main.t_itemname.bossrush = function()
 	main.aiRamp = false
 	main.charparam.ai = true
 	main.charparam.music = true
+	main.charparam.rounds = true
 	main.charparam.single = true
 	main.charparam.stage = true
 	main.charparam.time = true
@@ -46,16 +47,21 @@ end
 main.t_bossChars = {}
 for _, v in ipairs(main.t_selChars) do
 	if v.boss ~= nil and v.boss == 1 then
-		if main.t_bossChars[v.order] == nil then
-			main.t_bossChars[v.order] = {}
+		local order = math.max(1, v.order)
+		if main.t_bossChars[order] == nil then
+			main.t_bossChars[order] = {}
 		end
-		table.insert(main.t_bossChars[v.order], v.char_ref)
+		table.insert(main.t_bossChars[order], v.char_ref)
 	end
 end
 
 if main.t_selOptions.bossrushmaxmatches == nil or #main.t_selOptions.bossrushmaxmatches == 0 then
 	local size = 1
-	for k, _ in pairs(main.t_bossChars) do if k > size then size = k end end
+	for k, _ in pairs(main.t_bossChars) do
+		if k > size then
+			size = k
+		end
+	end
 	main.t_selOptions.bossrushmaxmatches = {}
 	for i = 1, size do
 		table.insert(main.t_selOptions.bossrushmaxmatches, 0)
@@ -74,6 +80,4 @@ start.t_makeRoster.bossrush = function()
 	return start.f_unifySettings(main.t_selOptions.bossrushmaxmatches, main.t_bossChars), main.t_bossChars
 end
 
-if main.debugLog then
-	main.f_printTable(main.t_bossChars, "debug/t_bossChars.txt")
-end
+if gameOption('Debug.DumpLuaTables') then main.f_printTable(main.t_bossChars, "debug/t_bossChars.txt") end
