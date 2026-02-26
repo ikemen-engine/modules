@@ -61,13 +61,9 @@ cancel.key = a, b, c, x, y, z, s
 
 p1.state = 175, 170
 p1.win.state = 180
-p1.teammate.state = 
-p1.teammate.win.state = 
 
 p2.state = 
 p2.win.state = 
-p2.teammate.state = 
-p2.teammate.win.state = 
 
 [VS100KumiteResultsBGdef]
 ; Left blank (character and stage not covered)

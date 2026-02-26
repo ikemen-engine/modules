@@ -47,7 +47,7 @@ main.t_itemname.vs100kumite = function()
 	main.teamMenu[2].turns = true
 	textImgSetText(motif.select_info.title.TextSpriteData, motif.select_info.title.text.vs100kumite)
 	remapInput(1, getLastInputController())
-	setCommandInputSource(2, 1)
+	remapInput(getLastInputController(), 1)
 	setGameMode('vs100kumite')
 	hook.run("main.t_itemname")
 	return start.f_selectMode
