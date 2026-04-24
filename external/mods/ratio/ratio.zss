@@ -1,0 +1,25 @@
+[StateDef -4]
+
+if isHelper || teamSide = 0 || playerNo != teamLeader || map(ratiolevel) = 0 {
+	# Do nothing
+} else if roundTime = 0 {
+	modifyPlayer{lifemax: float(lifeMax) * map(lifeRatio)}
+	if roundsExisted = 0 {
+		modifyPlayer{attack: float(attack) * map(attackRatio)}
+	}
+} else ignoreHitPause if !gameVar(hidebars) && !isAsserted(nobardisplay) {
+	explod{
+		anim: RATIO (10 * teamSide + map(ratiolevel));
+		postype: left;
+		sprpriority: -5;
+		ownpal: 1;
+		scale: 1, 1;
+		ignorehitpause: 1;
+		removetime: 1;
+		hideonpausemenu: 1;
+	}
+	#printToConsole{
+	#	text: "%v: %v, %v (%v/%v), %v (%v)";
+	#	params: id, map(ratioLevel), map(lifeRatio), life, lifeMax, map(attackRatio), attack;
+	#}
+}

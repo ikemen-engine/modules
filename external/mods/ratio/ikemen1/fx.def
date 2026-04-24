@@ -1,0 +1,9 @@
+﻿[Info]
+prefix = RATIO
+fx.scale = 1
+localcoord = 1280, 720
+
+[Files]
+sff = external/mods/ratio/ikemen1/fx.sff
+air = external/mods/ratio/ikemen1/fx.air
+;snd = 
