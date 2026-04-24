@@ -4,7 +4,7 @@
 --;===========================================================
 -- main.t_itemname is a table storing functions with general game mode
 -- configuration (usually ending with start.f_selectMode function call).
-main.t_itemname.vs100kumite = function()
+main.t_itemname.vs100kumite = function(t, item)
 	main.aiRamp = false
 	main.charparam.ai = true
 	main.charparam.music = true
@@ -49,7 +49,7 @@ main.t_itemname.vs100kumite = function()
 	remapInput(1, getLastInputController())
 	remapInput(getLastInputController(), 1)
 	setGameMode('vs100kumite')
-	hook.run("main.t_itemname")
+	hook.run("main.t_itemname", t, item)
 	return start.f_selectMode
 end
 

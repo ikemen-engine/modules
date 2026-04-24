@@ -4,7 +4,7 @@
 --;===========================================================
 -- main.t_itemname is a table storing functions with general game mode
 -- configuration (usually ending with start.f_selectMode function call).
-main.t_itemname.bossrush = function()
+main.t_itemname.bossrush = function(t, item)
 	main.aiRamp = false
 	main.charparam.ai = true
 	main.charparam.music = true
@@ -40,7 +40,7 @@ main.t_itemname.bossrush = function()
 	remapInput(1, getLastInputController())
 	remapInput(getLastInputController(), 1)
 	setGameMode('bossrush')
-	hook.run("main.t_itemname")
+	hook.run("main.t_itemname", t, item)
 	return start.f_selectMode
 end
 

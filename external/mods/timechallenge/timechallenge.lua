@@ -4,12 +4,12 @@
 --;===========================================================
 -- main.t_itemname is a table storing functions with general game mode
 -- configuration (usually ending with start.f_selectMode function call).
-main.t_itemname.timechallenge = function()
+main.t_itemname.timechallenge = function(t, item)
 	--main.lifebar.p1score = true
 	--main.lifebar.p2ailevel = true
 	main.motif.hiscore = true
 	main.motif.losescreen = true
-	main.motif.versusscreen = true
+	main.motif.vsscreen = true
 	main.motif.victoryscreen = true
 	main.motif.winscreen = true
 	main.orderSelect[1] = true
@@ -30,6 +30,6 @@ main.t_itemname.timechallenge = function()
 	remapInput(1, getLastInputController())
 	remapInput(getLastInputController(), 1)
 	setGameMode('timechallenge')
-	hook.run("main.t_itemname")
+	hook.run("main.t_itemname", t, item)
 	return start.f_selectMode
 end
