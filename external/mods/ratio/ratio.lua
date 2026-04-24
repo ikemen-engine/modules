@@ -304,9 +304,9 @@ end)
 local function loadAnimData(data, side)
 	local a
 	if data.anim >= 0 then
-		a = animNew(motif.Sff, animTable[data.anim])
+		a = animNew(sff, animTable[data.anim])
 	else
-		a = animNew(motif.Sff, data.spr[1] .. ',' .. data.spr[2] .. ', 0,0, -1')
+		a = animNew(sff, data.spr[1] .. ',' .. data.spr[2] .. ', 0,0, -1')
 	end
 	if data.localcoord ~= nil and data.localcoord ~= '' then
 		animSetLocalcoord(a, data.localcoord[1], data.localcoord[2])
