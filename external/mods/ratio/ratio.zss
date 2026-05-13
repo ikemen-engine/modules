@@ -17,7 +17,7 @@ if isHelper || teamSide = 0 || playerNo != teamLeader || map(ratiolevel) = 0 {
 		scale: 1, 1;
 		ignorehitpause: 1;
 		removetime: 1;
-		hideonpausemenu: 1;
+		hidewithbars: 1;
 	}
 	#printToConsole{
 	#	text: "%v: %v, %v (%v/%v), %v (%v)";
