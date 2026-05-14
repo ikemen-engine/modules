@@ -186,21 +186,9 @@ end)
 
 -- Enables Ratio team mode in supported game modes.
 hook.add("main.t_itemname", "ratio", function(t, item)
-	local itemname = t and t[item] and t[item].itemname or ''
-	local mode = gameMode()
-	if mode == 'arcade' and main.teamarcade then
-		main.teamMenu[1].ratio = true
-		main.teamMenu[2].ratio = true
-	elseif mode == 'freebattle' or mode == 'netplayversus' or mode == 'survival' or mode == 'watch' or mode == 'timeattack' then
-		main.teamMenu[1].ratio = true
-		main.teamMenu[2].ratio = true
-	elseif mode == 'training' then
-		main.teamMenu[1].ratio = true
-	elseif mode == 'teamcoop' or mode == 'netplayteamcoop' or mode == 'survivalcoop' or mode == 'netplaysurvivalcoop' then
-		main.teamMenu[2].ratio = true
-	elseif (mode == 'versus' or mode == 'challenger') and (itemname == 'teamversus' or main.teamarcade) then
-		main.teamMenu[1].ratio = true
-		main.teamMenu[2].ratio = true
+	for side = 1, 2 do
+		local m = main.teamMenu[side]
+		m.ratio = (m.simul or m.turns or m.tag) and true or nil
 	end
 end)
 
