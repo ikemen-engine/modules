@@ -186,6 +186,9 @@ end)
 
 -- Enables Ratio team mode in supported game modes.
 hook.add("main.t_itemname", "ratio", function(t, item)
+	if main.teamMenu == nil then
+		return
+	end
 	for side = 1, 2 do
 		local m = main.teamMenu[side]
 		m.ratio = (m.simul or m.turns or m.tag) and true or nil
