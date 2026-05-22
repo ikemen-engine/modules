@@ -12,6 +12,7 @@ main.t_itemname.timechallenge = function(t, item)
 	main.motif.vsscreen = true
 	main.motif.victoryscreen = true
 	main.motif.winscreen = true
+	main.rankingCondition = true
 	main.orderSelect[1] = true
 	main.orderSelect[2] = true
 	main.selectMenu[2] = true
