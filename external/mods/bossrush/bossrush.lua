@@ -46,8 +46,8 @@ end
 
 main.t_bossChars = {}
 for _, v in ipairs(main.t_selChars) do
-	if v.boss ~= nil and v.boss == 1 then
-		local order = math.max(1, v.order)
+	if v.boss == 1 and (v.order or 0) > 0 then
+		local order = v.order
 		if main.t_bossChars[order] == nil then
 			main.t_bossChars[order] = {}
 		end
