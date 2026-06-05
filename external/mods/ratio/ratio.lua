@@ -213,7 +213,7 @@ start.t_makeRoster.arcade = function()
 		end
 		matches = matches or main.t_selOptions.arcaderatiomatches
 		if type(matches) == "table" then
-			return matches, main.t_orderChars
+			return matches, start.f_getOrderChars('arcade')
 		end
 	end
 	return oldArcadeMakeRoster()
