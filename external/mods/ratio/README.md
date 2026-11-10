@@ -41,6 +41,16 @@ Ikemen GO will load the module automatically on startup.
 
 No title menu item or `[Select Info] teammenu.itemname.ratio` entry has to be added manually. The module appends the Ratio team mode entry and Ratio options menu entries at runtime, without overwriting entries already defined by the screenpack.
 
+### Ikemen GO 1.0.0: enable VS screen loading
+
+On Ikemen GO 1.0.0, Ratio levels are not applied to human players who pick their team order on the VS screen, unless VS screen loading is enabled. Set it in Options > Engine Options > VS Screen Loading, or in `save/config.ini`:
+
+```ini
+VsScreenLoading = 1
+```
+
+This is not needed on Ikemen GO nightly builds or the next stable release.
+
 ## Configuration
 
 The main configuration file is:
