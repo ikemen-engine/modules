@@ -199,19 +199,24 @@ end)
 --; ROSTER / AI RAMP OVERRIDES
 --;===========================================================
 
+-- Returns arcade Ratio roster settings, preferring P1 character's ratiomatches.
+local function getArcadeRatioMatches()
+	local matches = nil
+	local p1 = start.p[1].t_selected[1]
+	local char = p1 and start.f_getCharData(p1.ref) or nil
+	local key = char and char.ratiomatches or nil
+	if key ~= nil then
+		matches = main.t_selOptions[key .. '_arcaderatiomatches']
+	end
+	return matches or main.t_selOptions.arcaderatiomatches
+end
+
 -- Overrides arcade/teamcoop/netplayteamcoop/timeattack roster generation when
 -- Ratio mode is selected for the opponent team.
 local oldArcadeMakeRoster = start.t_makeRoster.arcade
 start.t_makeRoster.arcade = function()
 	if start.p[2].ratio then
-		local matches = nil
-		local p1 = start.p[1].t_selected[1]
-		local char = p1 and start.f_getCharData(p1.ref) or nil
-		local key = char and char.ratiomatches or nil
-		if key ~= nil then
-			matches = main.t_selOptions[key .. '_arcaderatiomatches']
-		end
-		matches = matches or main.t_selOptions.arcaderatiomatches
+		local matches = getArcadeRatioMatches()
 		if type(matches) == "table" then
 			return matches, start.f_getOrderChars('arcade')
 		end
@@ -233,6 +238,23 @@ end
 start.t_aiRampData.teamcoop = start.t_aiRampData.arcade
 start.t_aiRampData.netplayteamcoop = start.t_aiRampData.arcade
 start.t_aiRampData.timeattack = start.t_aiRampData.arcade
+
+-- Custom arcade paths call launchFight() without p2numchars, so the opponent
+-- team size would stay fixed. Use p2char count or the ratiomatches entry instead.
+local oldLaunchFight = launchFight
+function launchFight(data)
+	data = data or {}
+	if start.p[2].ratio and start.customArcadePath and data.p2numchars == nil and not continued() then
+		if type(data.p2char) == 'table' and #data.p2char > 0 then
+			data.p2numchars = #data.p2char
+		else
+			local m = getArcadeRatioMatches()
+			m = type(m) == 'table' and (m[matchNo()] or m[#m]) or nil
+			data.p2numchars = m and math.random(m.rmin, math.min(m.rmax, 3)) or math.random(1, 3)
+		end
+	end
+	return oldLaunchFight(data)
+end
 
 --;===========================================================
 --; CHARACTER-SPECIFIC RATIO LUA PATH
