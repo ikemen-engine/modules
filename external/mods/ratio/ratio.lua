@@ -241,20 +241,18 @@ start.t_aiRampData.timeattack = start.t_aiRampData.arcade
 
 -- Custom arcade paths call launchFight() without p2numchars, so the opponent
 -- team size would stay fixed. Use p2char count or the ratiomatches entry instead.
-local oldLaunchFight = launchFight
-function launchFight(data)
-	data = data or {}
-	if start.p[2].ratio and start.customArcadePath and data.p2numchars == nil and not continued() then
-		if type(data.p2char) == 'table' and #data.p2char > 0 then
-			data.p2numchars = #data.p2char
-		else
-			local m = getArcadeRatioMatches()
-			m = type(m) == 'table' and (m[matchNo()] or m[#m]) or nil
-			data.p2numchars = m and math.random(m.rmin, math.min(m.rmax, 3)) or math.random(1, 3)
-		end
+hook.add("launchFight.data", "ratio", function(data)
+	if not start.p[2].ratio or not start.customArcadePath or data.p2numchars ~= nil then
+		return
 	end
-	return oldLaunchFight(data)
-end
+	if type(data.p2char) == 'table' and #data.p2char > 0 then
+		data.p2numchars = #data.p2char
+	else
+		local m = getArcadeRatioMatches()
+		m = type(m) == 'table' and (m[matchNo()] or m[#m]) or nil
+		data.p2numchars = m and math.random(m.rmin, math.min(m.rmax, 3)) or math.random(1, 3)
+	end
+end)
 
 --;===========================================================
 --; CHARACTER-SPECIFIC RATIO LUA PATH
